@@ -1,1 +1,78 @@
-<h2>Register</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .card {
+      background: #020617;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 360px;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background: #16a34a;
+      color: white;
+      font-weight: 600;
+    }
+    a {
+      color: #93c5fd;
+      text-decoration: none;
+      display: block;
+      margin-top: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Create account</h2>
+
+    <input id="name" placeholder="Name" />
+    <input id="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+
+    <button onclick="register()">Register</button>
+
+    <a href="/login.html">Already have an account?</a>
+  </div>
+
+  <script>
+    async function register() {
+      const res = await fetch("/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.value,
+          email: email.value,
+          password: password.value
+        })
+      });
+
+      if (res.ok) {
+        location.href = "/login.html";
+      } else {
+        alert("Registration failed");
+      }
+    }
+  </script>
+</body>
+</html>
