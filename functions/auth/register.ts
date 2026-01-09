@@ -1,3 +1,12 @@
+// GET request (browser visit)
+export async function onRequestGet() {
+  return new Response(
+    "This endpoint only accepts POST requests",
+    { status: 405 }
+  );
+}
+
+// POST request (actual registration)
 export async function onRequestPost({ request, env }) {
   if (!env.DB) {
     return new Response(
@@ -11,7 +20,7 @@ export async function onRequestPost({ request, env }) {
     body = await request.json();
   } catch {
     return new Response(
-      JSON.stringify({ error: "Invalid JSON body" }),
+      JSON.stringify({ error: "Invalid JSON" }),
       { status: 400 }
     );
   }
@@ -25,6 +34,7 @@ export async function onRequestPost({ request, env }) {
     );
   }
 
+  // Hash password (Cloudflare-safe)
   const enc = new TextEncoder();
   const hashBuffer = await crypto.subtle.digest(
     "SHA-256",
@@ -42,8 +52,8 @@ export async function onRequestPost({ request, env }) {
       .run();
   } catch (e) {
     return new Response(
-      JSON.stringify({ error: String(e) }),
-      { status: 500 }
+      JSON.stringify({ error: "Email already exists" }),
+      { status: 409 }
     );
   }
 
