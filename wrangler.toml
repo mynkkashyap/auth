@@ -1,10 +1,10 @@
-name = "cf-auth"
+name = "auth"
 compatibility_date = "2025-01-01"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "auth-db"
-database_id = "YOUR_D1_ID"
+database_id = "1def3473-55cf-4797-8278-5a7a2045ddf5"
 
 [vars]
 GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"
