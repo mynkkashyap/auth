@@ -1,0 +1,12 @@
+name = "cf-auth"
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "auth-db"
+database_id = "YOUR_D1_ID"
+
+[vars]
+GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"
+GOOGLE_CLIENT_SECRET = "YOUR_GOOGLE_SECRET"
+BASE_URL = "https://your-site.pages.dev"
