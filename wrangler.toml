@@ -9,4 +9,4 @@ database_id = "1def3473-55cf-4797-8278-5a7a2045ddf5"
 [vars]
 GOOGLE_CLIENT_ID = "662047030240-ndto429qnhd8sc8rr3ennlbv17bqg2h7.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = "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"
-BASE_URL = "https://your-site.pages.dev"
+BASE_URL = "https://auth.pages.dev"
