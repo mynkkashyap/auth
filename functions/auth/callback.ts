@@ -1,21 +1,15 @@
 export async function onRequest({ request, env }) {
   const url = new URL(request.url);
 
-  // 🔍 Show Google error if present
+  // Show Google error clearly
   const error = url.searchParams.get("error");
   if (error) {
-    return new Response(
-      "Google OAuth error: " + error,
-      { status: 400 }
-    );
+    return new Response("Google OAuth error: " + error, { status: 400 });
   }
 
   const code = url.searchParams.get("code");
   if (!code) {
-    return new Response(
-      "Missing code. Full URL: " + url.toString(),
-      { status: 400 }
-    );
+    return new Response("Missing code", { status: 400 });
   }
 
   // Exchange code for token
@@ -40,6 +34,7 @@ export async function onRequest({ request, env }) {
     );
   }
 
+  // Get Google user info
   const userInfo = await fetch(
     "https://www.googleapis.com/oauth2/v2/userinfo",
     {
@@ -49,11 +44,35 @@ export async function onRequest({ request, env }) {
     }
   ).then(r => r.json());
 
+  // Insert user if not exists
   await env.DB.prepare(
     "INSERT OR IGNORE INTO users (email, name, provider) VALUES (?, ?, 'google')"
   )
     .bind(userInfo.email, userInfo.name)
     .run();
 
-  return Response.redirect(env.BASE_URL + "/dashboard.html", 302);
+  // Get user id
+  const user = await env.DB.prepare(
+    "SELECT id FROM users WHERE email = ?"
+  )
+    .bind(userInfo.email)
+    .first();
+
+  // 🔑 CREATE SESSION (THIS WAS MISSING)
+  const sessionId = crypto.randomUUID();
+
+  await env.DB.prepare(
+    "INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)"
+  )
+    .bind(sessionId, user.id, Date.now() + 86400000)
+    .run();
+
+  // 🔐 SET COOKIE
+  return new Response(null, {
+    status: 302,
+    headers: {
+      "Set-Cookie": `session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax`,
+      "Location": env.BASE_URL + "/dashboard.html"
+    }
+  });
 }
