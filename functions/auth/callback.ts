@@ -5,9 +5,9 @@ export async function onRequest({ request, env }) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       code,
-      client_id: env.GOOGLE_CLIENT_ID,
-      client_secret: env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: env.BASE_URL + "/auth/callback",
+      client_id: env.662047030240-ndto429qnhd8sc8rr3ennlbv17bqg2h7.apps.googleusercontent.com,
+      client_secret: env.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,
+      redirect_uri: env.auth.pages.dev + "/auth/callback",
       grant_type: "authorization_code"
     })
   });
