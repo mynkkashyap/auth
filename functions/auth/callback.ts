@@ -1,9 +1,24 @@
 export async function onRequest({ request, env }) {
-  const code = new URL(request.url).searchParams.get("code");
-  if (!code) {
-    return new Response("Missing code", { status: 400 });
+  const url = new URL(request.url);
+
+  // 🔍 Show Google error if present
+  const error = url.searchParams.get("error");
+  if (error) {
+    return new Response(
+      "Google OAuth error: " + error,
+      { status: 400 }
+    );
   }
 
+  const code = url.searchParams.get("code");
+  if (!code) {
+    return new Response(
+      "Missing code. Full URL: " + url.toString(),
+      { status: 400 }
+    );
+  }
+
+  // Exchange code for token
   const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -17,6 +32,13 @@ export async function onRequest({ request, env }) {
   });
 
   const token = await tokenRes.json();
+
+  if (!token.access_token) {
+    return new Response(
+      "Token exchange failed: " + JSON.stringify(token),
+      { status: 400 }
+    );
+  }
 
   const userInfo = await fetch(
     "https://www.googleapis.com/oauth2/v2/userinfo",
