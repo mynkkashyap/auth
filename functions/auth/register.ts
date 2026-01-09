@@ -8,17 +8,37 @@ async function hashPassword(password: string): Promise<string> {
 }
 
 export async function onRequestPost({ request, env }) {
-  const { email, password, name } = await request.json();
+  try {
+    const body = await request.json();
+    const { email, password, name } = body;
 
-  const password_hash = await hashPassword(password);
+    if (!email || !password) {
+      return new Response(
+        JSON.stringify({ error: "Missing fields" }),
+        { status: 400 }
+      );
+    }
 
-  await env.DB.prepare(
-    "INSERT INTO users (email, name, password_hash) VALUES (?, ?, ?)"
-  )
-    .bind(email, name, password_hash)
-    .run();
+    const password_hash = await hashPassword(password);
 
-  return new Response(JSON.stringify({ success: true }), {
-    headers: { "Content-Type": "application/json" }
-  });
+    await env.DB.prepare(
+      "INSERT INTO users (email, name, password_hash) VALUES (?, ?, ?)"
+    )
+      .bind(email, name ?? "", password_hash)
+      .run();
+
+    return new Response(
+      JSON.stringify({ success: true }),
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+  } catch (err) {
+    return new Response(
+      JSON.stringify({
+        error: "Registration error",
+        details: String(err)
+      }),
+      { status: 500 }
+    );
+  }
 }
