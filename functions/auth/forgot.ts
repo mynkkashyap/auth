@@ -35,7 +35,7 @@ export async function onRequestPost({ request, env }) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: "Auth <onboarding@resend.dev>",
+        from: "Auth <onboarding@auth.medr.in>",
         to: normalizedEmail,
         subject: "Reset your password",
         html: `
