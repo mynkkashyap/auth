@@ -1,5 +1,3 @@
-import { nanoid } from "nanoid";
-
 const enc = new TextEncoder();
 
 /* 🔐 PBKDF2 helper */
@@ -26,9 +24,18 @@ async function pbkdf2Hash(password: string) {
   );
 
   return {
-    hash: Buffer.from(bits).toString("hex"),
-    salt: Buffer.from(salt).toString("hex")
+    hash: Array.from(new Uint8Array(bits))
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join(""),
+    salt: Array.from(salt)
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("")
   };
+}
+
+/* 🔑 Verification token */
+function generateToken() {
+  return crypto.randomUUID().replace(/-/g, "");
 }
 
 /* ❌ Block GET requests */
@@ -39,7 +46,7 @@ export async function onRequestGet() {
   );
 }
 
-/* ✅ POST – Register user */
+/* ✅ POST – Register */
 export async function onRequestPost({ request, env }) {
   if (!env.DB) {
     return Response.json({ error: "DB binding missing" }, { status: 500 });
@@ -61,11 +68,8 @@ export async function onRequestPost({ request, env }) {
     );
   }
 
-  // 🔐 PBKDF2 hash
   const { hash, salt } = await pbkdf2Hash(password);
-
-  // ✉️ Email verification token
-  const verifyToken = nanoid(32);
+  const verifyToken = generateToken();
 
   try {
     await env.DB.prepare(
