@@ -88,25 +88,35 @@ export async function onRequestPost({ request, env }) {
 
     /* 📧 Send verification email */
     const emailRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        from: "Auth <onboarding@resend.dev>",
-        to: normalizedEmail,
-        subject: "Verify your account",
-        html: `
-          <h2>Verify your email</h2>
-          <p>Click the link below to activate your account:</p>
-          <a href="${env.BASE_URL}/auth/verify?token=${verifyToken}">
-            Verify Email
-          </a>
-        `
-      })
-    });
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Auth <onboarding@resend.dev>",
+    to: normalizedEmail,
+    subject: "Verify your account",
+    html: `
+      <p>Verify your account:</p>
+      <a href="${env.BASE_URL}/auth/verify?token=${verifyToken}">
+        Verify Email
+      </a>
+    `
+  })
+});
 
+const bodyText = await emailRes.text();
+
+console.log("RESEND STATUS:", emailRes.status);
+console.log("RESEND RESPONSE:", bodyText);
+
+if (!emailRes.ok) {
+  return Response.json(
+    { error: "Failed to send verification email" },
+    { status: 500 }
+  );
+}
     if (!emailRes.ok) {
       const errText = await emailRes.text();
       console.error("EMAIL SEND FAILED:", errText);
