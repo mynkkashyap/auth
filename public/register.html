@@ -181,31 +181,36 @@
   </div>
 
   <script>
-    async function register() {
-      msg.textContent = "";
-      msg.className = "msg";
+  async function register() {
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const msg = document.getElementById("msg");
 
-      const res = await fetch("/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.value.trim(),
-          email: email.value.trim(),
-          password: password.value
-        })
-      });
+    msg.textContent = "";
+    msg.className = "msg";
 
-      const data = await res.json();
+    const res = await fetch("/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: nameInput.value.trim(),
+        email: emailInput.value.trim(),
+        password: passwordInput.value
+      })
+    });
 
-      if (res.ok) {
-        msg.textContent = "Account created. Redirecting…";
-        msg.classList.add("success");
-        setTimeout(() => location.href = "/login.html", 900);
-      } else {
-        msg.textContent = data.error || "Registration failed";
-        msg.classList.add("error");
-      }
+    const data = await res.json();
+
+    if (res.ok) {
+      msg.textContent = "Account created. Redirecting…";
+      msg.classList.add("success");
+      setTimeout(() => location.href = "/login.html", 900);
+    } else {
+      msg.textContent = data.error || "Registration failed";
+      msg.classList.add("error");
     }
-  </script>
+  }
+</script>
 </body>
 </html>
