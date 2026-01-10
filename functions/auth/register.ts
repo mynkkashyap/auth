@@ -103,7 +103,7 @@ export async function onRequestPost({ request, env }) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      from: "Auth <no-reply@yourdomain.com>",
+      from: "Auth <no-reply@medr.in>",
       to: email,
       subject: "Verify your account",
       html: `
