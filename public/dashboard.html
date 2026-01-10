@@ -1,263 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8" />
+<title>Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <style>
-    :root {
-      --bg: #f9fafb;
-      --card: #ffffff;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --danger: #dc2626;
-      --text: #0f172a;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --success: #16a34a;
-    }
+<style>
+:root {
+  --bg: #f9fafb;
+  --card: #ffffff;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --danger: #dc2626;
+  --text: #0f172a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --success: #16a34a;
+}
 
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
+[data-theme="dark"] {
+  --bg: #020617;
+  --card: #020617;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --border: #1e293b;
+}
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 16px;
-    }
+* {
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 480px;
-      margin: 0 auto 20px;
-    }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 16px;
+}
 
-    h1 {
-      margin: 0;
-      font-size: 1.4rem;
-      font-weight: 700;
-    }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 520px;
+  margin: 0 auto 20px;
+}
 
-    .logout {
-      background: var(--danger);
-      color: #fff;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
 
-    .card {
-      background: var(--card);
-      border-radius: 18px;
-      padding: 22px;
-      border: 1px solid var(--border);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.06);
-      max-width: 480px;
-      margin: auto;
-    }
+button {
+  border-radius: 12px;
+  border: none;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-    .avatar {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-    }
+.logout { background: var(--danger); color: #fff; }
+.toggle { background: #f1f5f9; }
 
-    label {
-      display: block;
-      margin-top: 14px;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
+.card {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  max-width: 520px;
+  margin: auto;
+}
 
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #fff;
-      margin-top: 6px;
-      font-size: 0.95rem;
-    }
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
 
-    input[disabled] {
-      background: #f1f5f9;
-      opacity: 0.8;
-    }
+label {
+  margin-top: 14px;
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
 
-    .badge {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      background: #eef2ff;
-      color: var(--primary);
-      font-weight: 600;
-    }
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-top: 6px;
+  background: transparent;
+  color: var(--text);
+}
 
-    .row {
-      display: flex;
-      gap: 10px;
-      margin-top: 18px;
-    }
+input[disabled] {
+  opacity: 0.6;
+}
 
-    button {
-      padding: 12px;
-      border-radius: 12px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
+.badge {
+  margin-top: 10px;
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: #eef2ff;
+  color: var(--primary);
+  font-weight: 600;
+}
 
-    .save {
-      flex: 1;
-      background: var(--primary);
-      color: white;
-    }
+.row {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
 
-    .refresh {
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-    }
+.save { flex: 1; background: var(--primary); color: #fff; }
+.refresh { border: 1px solid var(--border); background: transparent; }
 
-    .msg {
-      margin-top: 12px;
-      font-size: 0.85rem;
-      text-align: center;
-    }
+.section {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--border);
+}
 
-    .success { color: var(--success); }
-    .error { color: var(--danger); }
+.section h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
 
-    .danger-zone {
-      margin-top: 30px;
-      padding-top: 16px;
-      border-top: 1px dashed var(--border);
-    }
+.meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
 
-    .danger-zone h3 {
-      margin: 0 0 8px;
-      font-size: 1rem;
-      color: var(--danger);
-    }
+.danger-zone h3 { color: var(--danger); }
 
-    .delete-btn {
-      width: 100%;
-      background: #fee2e2;
-      color: var(--danger);
-      border: 1px solid #fecaca;
-      margin-top: 10px;
-    }
-  </style>
+.delete-btn {
+  background: #fee2e2;
+  color: var(--danger);
+  width: 100%;
+  margin-top: 10px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+  display: none;
+}
+
+.toast.success { color: var(--success); }
+.toast.error { color: var(--danger); }
+</style>
 </head>
 
 <body>
-  <div class="header">
-    <h1>Dashboard</h1>
+<div class="header">
+  <h1>Dashboard</h1>
+  <div class="header-actions">
+    <button class="toggle" onclick="toggleTheme()">🌓</button>
     <button class="logout" onclick="logout()">Logout</button>
   </div>
+</div>
 
-  <div id="content" class="card">Loading…</div>
+<div id="content" class="card">Loading…</div>
+<div id="toast" class="toast"></div>
 
-  <script>
-    async function loadProfile() {
-      const res = await fetch("/auth/me");
-      if (!res.ok) return location.href = "/login.html";
+<script>
+const content = document.getElementById("content");
+const toast = document.getElementById("toast");
 
-      const { user } = await res.json();
-      const initial = (user.name || user.email)[0].toUpperCase();
-      const provider = user.provider === "google" ? "Google Account" : "Email & Password";
+function showToast(msg, type="success") {
+  toast.textContent = msg;
+  toast.className = `toast ${type}`;
+  toast.style.display = "block";
+  setTimeout(() => toast.style.display = "none", 2500);
+}
 
-      content.innerHTML = `
-        <div class="avatar">${initial}</div>
+function toggleTheme() {
+  const theme = document.documentElement.dataset.theme === "dark" ? "" : "dark";
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem("theme", theme);
+}
 
-        <label>Name</label>
-        <input id="name" value="${user.name || ""}">
+document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
 
-        <label>Email</label>
-        <input value="${user.email}" disabled>
+async function loadProfile() {
+  const res = await fetch("/auth/me");
+  if (!res.ok) return location.href = "/login.html";
 
-        <span class="badge">${provider}</span>
+  const { user } = await res.json();
+  const initial = (user.name || user.email)[0].toUpperCase();
+  const provider = user.provider === "google" ? "Google Account" : "Email & Password";
 
-        <div class="row">
-          <button class="save" onclick="saveProfile()">Save</button>
-          <button class="refresh" onclick="loadProfile()">Refresh</button>
-        </div>
+  content.innerHTML = `
+    <div class="avatar">${initial}</div>
 
-        <div id="msg" class="msg"></div>
+    <label>Name</label>
+    <input id="name" value="${user.name || ""}">
 
-        <div class="danger-zone">
-          <h3>Danger Zone</h3>
-          <button class="delete-btn" onclick="confirmDelete()">
-            Delete Account
-          </button>
-        </div>
-      `;
-    }
+    <label>Email</label>
+    <input value="${user.email}" disabled>
 
-    async function saveProfile() {
-      const nameInput = document.getElementById("name");
-      const msg = document.getElementById("msg");
+    <span class="badge">${provider}</span>
 
-      msg.textContent = "";
+    <div class="meta">
+      <div>Account created: ${new Date(user.created_at).toLocaleDateString()}</div>
+      <div>Last login: ${new Date(user.last_login).toLocaleString()}</div>
+    </div>
 
-      const res = await fetch("/auth/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: nameInput.value.trim() })
-      });
+    <div class="row">
+      <button class="save" onclick="saveProfile()">Save</button>
+      <button class="refresh" onclick="loadProfile()">Refresh</button>
+    </div>
 
-      if (res.ok) {
-        msg.textContent = "Profile updated";
-        msg.className = "msg success";
-        setTimeout(loadProfile, 500);
-      } else {
-        msg.textContent = "Update failed";
-        msg.className = "msg error";
-      }
-    }
+    <div class="section">
+      <h3>Security</h3>
+      ${user.provider === "local" ? `
+        <button class="refresh" onclick="changePassword()">Change Password</button>
+      ` : `<div class="meta">Managed by Google</div>`}
+    </div>
 
-    async function confirmDelete() {
-      const sure = confirm(
-        "This will permanently delete your account.\n\nThis action cannot be undone.\n\nContinue?"
-      );
-      if (!sure) return;
+    <div class="section danger-zone">
+      <h3>Danger Zone</h3>
+      <button class="delete-btn" onclick="confirmDelete()">Delete Account</button>
+    </div>
+  `;
+}
 
-      const res = await fetch("/auth/delete", { method: "POST" });
+async function saveProfile() {
+  const name = document.getElementById("name").value.trim();
+  const res = await fetch("/auth/profile", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name })
+  });
 
-      if (res.ok) {
-        alert("Account deleted");
-        location.href = "/";
-      } else {
-        alert("Delete failed");
-      }
-    }
+  res.ok ? showToast("Profile updated") : showToast("Update failed", "error");
+}
 
-    async function logout() {
-      await fetch("/auth/logout", { method: "POST" });
-      location.href = "/login.html";
-    }
+function changePassword() {
+  showToast("Password reset email sent");
+}
 
-    loadProfile();
-  </script>
+async function confirmDelete() {
+  if (!confirm("This will permanently delete your account. Continue?")) return;
+  const res = await fetch("/auth/delete", { method: "POST" });
+  res.ok ? location.href = "/" : showToast("Delete failed", "error");
+}
+
+async function logout() {
+  await fetch("/auth/logout", { method: "POST" });
+  location.href = "/login.html";
+}
+
+loadProfile();
+</script>
 </body>
 </html>
