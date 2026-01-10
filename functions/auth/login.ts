@@ -1,8 +1,9 @@
-async function hashPassword(password: string): Promise<string> {
-  const enc = new TextEncoder();
-  const data = enc.encode(password);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hash))
+async function sha256(password: string) {
+  const hash = await crypto.subtle.digest(
+    "SHA-256",
+    enc.encode(password)
+  );
+  return [...new Uint8Array(hash)]
     .map(b => b.toString(16).padStart(2, "0"))
     .join("");
 }
@@ -10,37 +11,66 @@ async function hashPassword(password: string): Promise<string> {
 export async function onRequestPost({ request, env }) {
   const { email, password } = await request.json();
 
-  const password_hash = await hashPassword(password);
-
   const user = await env.DB.prepare(
-    "SELECT id FROM users WHERE email = ? AND password_hash = ?"
-  )
-    .bind(email, password_hash)
-    .first();
+    `SELECT id, verified, password_hash, password_pbkdf2, password_salt
+     FROM users WHERE email = ?`
+  ).bind(email).first();
 
   if (!user) {
-    return new Response(
-      JSON.stringify({ error: "Invalid credentials" }),
-      { status: 401 }
+    return Response.json({ error: "Invalid credentials" }, { status: 401 });
+  }
+
+  if (!user.verified) {
+    return Response.json(
+      { error: "Please verify your email first" },
+      { status: 403 }
     );
   }
 
-  // 🔑 CREATE SESSION
+  let passwordOK = false;
+
+  // 🟢 PBKDF2 USER
+  if (user.password_pbkdf2 && user.password_salt) {
+    passwordOK = await pbkdf2Verify(
+      password,
+      user.password_pbkdf2,
+      user.password_salt
+    );
+  }
+
+  // 🟡 OLD SHA-256 USER → MIGRATE
+  else if (user.password_hash) {
+    const legacyHash = await sha256(password);
+    passwordOK = legacyHash === user.password_hash;
+
+    if (passwordOK) {
+      const { hash, salt } = await pbkdf2Hash(password);
+
+      await env.DB.prepare(
+        `UPDATE users
+         SET password_pbkdf2 = ?, password_salt = ?, password_hash = NULL
+         WHERE id = ?`
+      ).bind(hash, salt, user.id).run();
+    }
+  }
+
+  if (!passwordOK) {
+    return Response.json({ error: "Invalid credentials" }, { status: 401 });
+  }
+
+  // 🔐 SESSION
   const sessionId = crypto.randomUUID();
   const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
 
   await env.DB.prepare(
     "INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)"
-  )
-    .bind(sessionId, user.id, expiresAt)
-    .run();
+  ).bind(sessionId, user.id, expiresAt).run();
 
-  return new Response(
-    JSON.stringify({ success: true }),
+  return Response.json(
+    { success: true },
     {
       headers: {
         "Set-Cookie": `session=${sessionId}; HttpOnly; Secure; Path=/; SameSite=Lax`,
-        "Content-Type": "application/json",
         "Cache-Control": "no-store"
       }
     }
