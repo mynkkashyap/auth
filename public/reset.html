@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reset Password</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg: #f9fafb;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --text: #0f172a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --error: #dc2626;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 30px 26px;
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    p.subtitle {
+      margin: 0 0 22px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin: 14px 0 6px;
+      color: var(--muted);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 13px;
+      border-radius: 14px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    .msg {
+      margin-top: 14px;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .error { color: var(--error); }
+    .success { color: var(--success); }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Reset password</h1>
+    <p class="subtitle">Choose a new password</p>
+
+    <label for="password">New password</label>
+    <input id="password" type="password" placeholder="••••••••" />
+
+    <label for="confirm">Confirm password</label>
+    <input id="confirm" type="password" placeholder="••••••••" />
+
+    <button onclick="resetPassword()">Reset password</button>
+
+    <div id="msg" class="msg"></div>
+  </div>
+
+  <script>
+    const token = new URLSearchParams(location.search).get("token");
+    const msg = document.getElementById("msg");
+
+    if (!token) {
+      msg.textContent = "Invalid or missing reset link";
+      msg.className = "msg error";
+    }
+
+    async function resetPassword() {
+      msg.textContent = "";
+      msg.className = "msg";
+
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm").value;
+
+      if (password.length < 8) {
+        msg.textContent = "Password must be at least 8 characters";
+        msg.classList.add("error");
+        return;
+      }
+
+      if (password !== confirm) {
+        msg.textContent = "Passwords do not match";
+        msg.classList.add("error");
+        return;
+      }
+
+      const res = await fetch("/auth/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        msg.textContent = "Password reset successful. Redirecting…";
+        msg.classList.add("success");
+        setTimeout(() => location.href = "/login.html", 1200);
+      } else {
+        msg.textContent = data.error || "Reset failed";
+        msg.classList.add("error");
+      }
+    }
+  </script>
+</body>
+</html>
