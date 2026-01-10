@@ -126,6 +126,39 @@
       box-shadow: 0 0 0 4px var(--focus-ring);
     }
 
+    /* CAPTCHA Specific Styles */
+    .captcha-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    #captchaCanvas {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-refresh {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-refresh:hover {
+      background: #f1f5f9;
+      color: var(--primary);
+    }
+
     /* Toggle Password Visibility */
     .toggle-password {
       position: absolute;
@@ -283,6 +316,25 @@
         </div>
       </div>
 
+      <div class="input-group">
+        <label>Security Check</label>
+        <div class="captcha-container">
+          <canvas id="captchaCanvas" width="160" height="50" onclick="generateCaptcha()"></canvas>
+          <button type="button" class="btn-refresh" onclick="generateCaptcha()" title="Refresh Captcha">
+            <i class="ph ph-arrows-clockwise" style="font-size: 1.2rem;"></i>
+          </button>
+        </div>
+        <div class="input-wrapper">
+          <i class="ph ph-shield-check input-icon"></i>
+          <input 
+            id="captchaInput" 
+            type="text" 
+            placeholder="Enter the code above" 
+            required 
+          />
+        </div>
+      </div>
+
       <button type="submit" id="submitBtn" class="btn-primary">
         <span class="spinner" id="spinner"></span>
         <span id="btnText">Sign in</span>
@@ -311,6 +363,72 @@
   </div>
 
 <script>
+  let generatedCaptcha = "";
+
+  // Initialize Captcha on Load
+  window.onload = function() {
+    generateCaptcha();
+  };
+
+  function generateCaptcha() {
+    const canvas = document.getElementById('captchaCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Characters to use
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No I, 1, O, 0 to avoid confusion
+    let uniqueChar = "";
+
+    // Generate random string
+    for (let i = 0; i < 5; i++) {
+      uniqueChar += chars.charAt(Math.random() * chars.length);
+    }
+    
+    generatedCaptcha = uniqueChar;
+
+    // Add visual noise (lines)
+    for(let i=0; i<7; i++) {
+      ctx.strokeStyle = `rgba(37, 99, 235, ${Math.random()})`;
+      ctx.beginPath();
+      ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+      ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+      ctx.stroke();
+    }
+
+    // Add visual noise (dots)
+    for(let i=0; i<30; i++) {
+      ctx.fillStyle = `rgba(100, 116, 139, ${Math.random()})`;
+      ctx.beginPath();
+      ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 1, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+
+    // Draw Text
+    ctx.font = 'bold 24px Inter';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    
+    // Draw each character with slight rotation/offset
+    const charWidth = canvas.width / 5;
+    for (let i = 0; i < 5; i++) {
+      ctx.save();
+      // Random position slightly
+      const x = (i * charWidth) + (charWidth / 2);
+      const y = canvas.height / 2;
+      
+      // Random rotation
+      const angle = (Math.random() - 0.5) * 0.4;
+      
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.fillStyle = "#1e293b";
+      ctx.fillText(uniqueChar[i], 0, 0);
+      ctx.restore();
+    }
+  }
+
   // Toggle Password Visibility
   function togglePassword() {
     const passwordInput = document.getElementById("password");
@@ -327,10 +445,11 @@
 
   // Handle Login Logic
   async function handleLogin(e) {
-    e.preventDefault(); // Prevent default form submission reload
+    e.preventDefault(); 
     
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
+    const captchaInput = document.getElementById("captchaInput").value.trim().toUpperCase();
     const msg = document.getElementById("msg");
     const btn = document.getElementById("submitBtn");
     const spinner = document.getElementById("spinner");
@@ -339,6 +458,15 @@
     // Reset UI
     msg.className = "msg"; 
     msg.textContent = "";
+
+    // 1. Validate CAPTCHA Client-side
+    if (captchaInput !== generatedCaptcha) {
+      msg.textContent = "Incorrect Captcha code. Please try again.";
+      msg.classList.add("msg", "error", "visible");
+      generateCaptcha(); // Refresh code to prevent brute forcing this one code
+      document.getElementById("captchaInput").value = "";
+      return; // Stop execution here
+    }
     
     // Loading State
     btn.disabled = true;
@@ -352,13 +480,12 @@
         body: JSON.stringify({ email, password })
       });
 
-      const data = await res.json().catch(() => ({})); // Handle empty JSON gracefully
+      const data = await res.json().catch(() => ({})); 
 
       if (res.ok) {
         msg.textContent = "Login successful. Redirecting...";
         msg.classList.add("msg", "success", "visible");
         
-        // Wait briefly for user to see success message
         setTimeout(() => location.href = "/dashboard.html", 1000);
       } else {
         throw new Error(data.error || "Invalid credentials");
@@ -371,6 +498,8 @@
       btn.disabled = false;
       spinner.style.display = "none";
       btnText.textContent = "Sign in";
+      generateCaptcha(); // Regenerate captcha on failed login attempt
+      document.getElementById("captchaInput").value = "";
     }
   }
 </script>
