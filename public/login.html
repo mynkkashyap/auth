@@ -186,16 +186,30 @@ async function login() {
   msg.textContent = "";
   msg.className = "msg";
 
-  const res = await fetch("/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email: emailInput.value.trim(),
-      password: passwordInput.value
-    })
-  });
+  let res;
+  try {
+    res = await fetch("/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: emailInput.value.trim(),
+        password: passwordInput.value
+      })
+    });
+  } catch (e) {
+    msg.textContent = "Network error. Please try again.";
+    msg.classList.add("error");
+    return;
+  }
 
-  const data = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    msg.textContent = "Unexpected server response";
+    msg.classList.add("error");
+    return;
+  }
 
   if (res.ok) {
     msg.textContent = "Login successful. Redirecting…";
