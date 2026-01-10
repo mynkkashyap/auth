@@ -24,10 +24,10 @@ async function pbkdf2Hash(password: string) {
   );
 
   return {
-    hash: Array.from(new Uint8Array(bits))
+    hash: [...new Uint8Array(bits)]
       .map(b => b.toString(16).padStart(2, "0"))
       .join(""),
-    salt: Array.from(salt)
+    salt: [...salt]
       .map(b => b.toString(16).padStart(2, "0"))
       .join("")
   };
@@ -38,40 +38,37 @@ function generateToken() {
   return crypto.randomUUID().replace(/-/g, "");
 }
 
-/* ❌ Block GET requests */
+/* ❌ Block GET */
 export async function onRequestGet() {
-  return new Response(
-    "This endpoint only accepts POST requests",
-    { status: 405 }
-  );
+  return new Response("POST only", { status: 405 });
 }
 
-/* ✅ POST – Register */
+/* ✅ POST /auth/register */
 export async function onRequestPost({ request, env }) {
-  if (!env.DB) {
-    return Response.json({ error: "DB binding missing" }, { status: 500 });
-  }
-
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return Response.json({ error: "Invalid JSON" }, { status: 400 });
-  }
-
-  const { name = "", email, password } = body;
-
-  if (!email || !password) {
-    return Response.json(
-      { error: "Missing email or password" },
-      { status: 400 }
-    );
-  }
-
-  const { hash, salt } = await pbkdf2Hash(password);
-  const verifyToken = generateToken();
+  const headers = { "Content-Type": "application/json" };
 
   try {
+    if (!env.DB || !env.RESEND_API_KEY || !env.BASE_URL) {
+      throw new Error("Missing environment variables");
+    }
+
+    const body = await request.json();
+    const { name = "", email, password } = body;
+
+    if (!email || !password) {
+      return new Response(
+        JSON.stringify({ error: "Missing email or password" }),
+        { status: 400, headers }
+      );
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    /* 🔐 Hash password */
+    const { hash, salt } = await pbkdf2Hash(password);
+    const verifyToken = generateToken();
+
+    /* 🧾 Insert user */
     await env.DB.prepare(
       `
       INSERT INTO users
@@ -82,38 +79,62 @@ export async function onRequestPost({ request, env }) {
       .bind(
         crypto.randomUUID(),
         name,
-        email,
+        normalizedEmail,
         hash,
         salt,
         verifyToken
       )
       .run();
-  } catch {
-    return Response.json(
-      { error: "Email already exists" },
-      { status: 409 }
+
+    /* 📧 Send verification email */
+    const emailRes = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        from: "Auth <onboarding@resend.dev>",
+        to: normalizedEmail,
+        subject: "Verify your account",
+        html: `
+          <h2>Verify your email</h2>
+          <p>Click the link below to activate your account:</p>
+          <a href="${env.BASE_URL}/auth/verify?token=${verifyToken}">
+            Verify Email
+          </a>
+        `
+      })
+    });
+
+    if (!emailRes.ok) {
+      const errText = await emailRes.text();
+      console.error("EMAIL SEND FAILED:", errText);
+
+      return new Response(
+        JSON.stringify({ error: "Failed to send verification email" }),
+        { status: 500, headers }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ success: true }),
+      { headers }
+    );
+
+  } catch (err: any) {
+    console.error("REGISTER ERROR:", err?.message || err);
+
+    if (String(err).includes("UNIQUE")) {
+      return new Response(
+        JSON.stringify({ error: "Email already exists" }),
+        { status: 409, headers }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ error: "Internal server error" }),
+      { status: 500, headers }
     );
   }
-
-  /* 📧 Send verification email */
-  await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      from: "Auth <no-reply@medr.in>",
-      to: email,
-      subject: "Verify your account",
-      html: `
-        <p>Click the link below to verify your account:</p>
-        <a href="${env.BASE_URL}/auth/verify?token=${verifyToken}">
-          Verify email
-        </a>
-      `
-    })
-  });
-
-  return Response.json({ success: true });
 }
