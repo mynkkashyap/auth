@@ -196,18 +196,22 @@ async function login() {
         password: passwordInput.value
       })
     });
-  } catch (e) {
+  } catch {
     msg.textContent = "Network error. Please try again.";
     msg.classList.add("error");
     return;
   }
 
-  let data;
-  try {
+  const contentType = res.headers.get("content-type") || "";
+  let data = null;
+
+  if (contentType.includes("application/json")) {
     data = await res.json();
-  } catch {
-    msg.textContent = "Unexpected server response";
+  } else {
+    const text = await res.text();
+    msg.textContent = "Server error. Please try again.";
     msg.classList.add("error");
+    console.error("Non-JSON response:", text);
     return;
   }
 
@@ -218,7 +222,6 @@ async function login() {
       window.location.href = "/dashboard.html";
     }, 700);
   } else {
-    // ✅ SHOW REAL BACKEND ERROR
     msg.textContent = data.error || "Login failed";
     msg.classList.add("error");
   }
