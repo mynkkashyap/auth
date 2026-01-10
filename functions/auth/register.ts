@@ -116,7 +116,7 @@ async function sendVerificationEmail(env: any, email: string, token: string) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: "Auth <onboarding@resend.dev>",
+        from: "Auth <onboarding@auth.medr.in>",
         to: email,
         subject: "Verify your account",
         html: `
