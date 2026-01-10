@@ -1,14 +1,137 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Auth App</title>
+  <meta charset="UTF-8" />
+  <title>Welcome</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #f8fafc, #eef2ff);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 32px 26px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+      text-align: center;
+      animation: fadeIn 0.4s ease;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 1.7rem;
+    }
+
+    p.subtitle {
+      margin: 0 0 26px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    a.button {
+      display: block;
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .secondary {
+      background: white;
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+
+    .secondary:hover {
+      background: #f1f5f9;
+    }
+
+    .divider {
+      margin: 22px 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Welcome</h1>
-  <p>
-    <a href="/login.html">Login</a> |
-    <a href="/register.html">Register</a>
-  </p>
+  <div class="container">
+    <h1>Welcome 👋</h1>
+    <p class="subtitle">
+      Sign in or create an account to continue
+    </p>
+
+    <div class="actions">
+      <a href="/login.html" class="button primary">
+        Login
+      </a>
+
+      <a href="/register.html" class="button secondary">
+        Create account
+      </a>
+    </div>
+
+    <div class="divider">
+      Secure authentication powered by Cloudflare
+    </div>
+
+    <footer>
+      © 2026 · Your App Name
+    </footer>
+  </div>
 </body>
 </html>
