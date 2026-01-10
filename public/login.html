@@ -178,32 +178,37 @@
   </div>
 
   <script>
-  async function login() {
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const msg = document.getElementById("msg");
+async function login() {
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const msg = document.getElementById("msg");
 
-    msg.textContent = "";
-    msg.className = "msg";
+  msg.textContent = "";
+  msg.className = "msg";
 
-    const res = await fetch("/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: emailInput.value.trim(),
-        password: passwordInput.value
-      })
-    });
+  const res = await fetch("/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: emailInput.value.trim(),
+      password: passwordInput.value
+    })
+  });
 
-    if (res.ok) {
-      msg.textContent = "Login successful. Redirecting…";
-      msg.classList.add("success");
-      setTimeout(() => location.href = "/dashboard.html", 700);
-    } else {
-      msg.textContent = "Invalid email or password";
-      msg.classList.add("error");
-    }
+  const data = await res.json();
+
+  if (res.ok) {
+    msg.textContent = "Login successful. Redirecting…";
+    msg.classList.add("success");
+    setTimeout(() => {
+      window.location.href = "/dashboard.html";
+    }, 700);
+  } else {
+    // ✅ SHOW REAL BACKEND ERROR
+    msg.textContent = data.error || "Login failed";
+    msg.classList.add("error");
   }
+}
 </script>
 </body>
 </html>
