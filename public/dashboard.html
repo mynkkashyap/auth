@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Dashboard</title>
+  <title>My Profile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
@@ -26,19 +26,19 @@
       background: linear-gradient(135deg, #020617, #0f172a);
       color: var(--text);
       min-height: 100vh;
-      padding: 20px;
+      padding: 16px;
     }
 
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     h1 {
       margin: 0;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
     }
 
     .logout {
@@ -52,59 +52,76 @@
       cursor: pointer;
     }
 
-    .logout:hover {
-      opacity: 0.9;
-    }
-
     .card {
       background: var(--card);
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 25px 50px rgba(0,0,0,.45);
+      max-width: 420px;
+      margin: auto;
       animation: fadeIn 0.4s ease;
     }
 
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
     .avatar {
-      width: 52px;
-      height: 52px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
       background: var(--primary);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 1.6rem;
       font-weight: 700;
-      font-size: 1.2rem;
-      color: white;
+      margin-bottom: 12px;
     }
 
-    .info h2 {
-      margin: 0;
-      font-size: 1.05rem;
-    }
-
-    .info p {
-      margin: 2px 0 0;
-      color: var(--muted);
+    label {
+      display: block;
+      margin-top: 14px;
       font-size: 0.85rem;
-    }
-
-    .status {
-      margin-top: 16px;
-      font-size: 0.9rem;
-      color: var(--success);
-    }
-
-    .loading {
-      text-align: center;
-      margin-top: 40px;
       color: var(--muted);
     }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+      background: #020617;
+      color: var(--text);
+      margin-top: 6px;
+    }
+
+    input[disabled] {
+      opacity: 0.6;
+    }
+
+    button.save {
+      width: 100%;
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .meta {
+      margin-top: 14px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .msg {
+      margin-top: 12px;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .success { color: var(--success); }
+    .error { color: var(--danger); }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
@@ -115,44 +132,68 @@
 
 <body>
   <div class="header">
-    <h1>Dashboard</h1>
+    <h1>My Profile</h1>
     <button class="logout" onclick="logout()">Logout</button>
   </div>
 
-  <div id="content" class="loading">
-    Loading your account…
+  <div id="content" class="card">
+    Loading profile…
   </div>
 
   <script>
-    async function loadUser() {
+    let currentUser = null;
+
+    async function loadProfile() {
       const res = await fetch("/auth/me");
 
       if (!res.ok) {
-        // Not logged in
         location.href = "/login.html";
         return;
       }
 
       const data = await res.json();
-      const user = data.user;
+      currentUser = data.user;
 
-      const initial = (user.name || user.email)[0].toUpperCase();
+      const initial = (currentUser.name || currentUser.email)[0].toUpperCase();
 
       content.innerHTML = `
-        <div class="card">
-          <div class="profile">
-            <div class="avatar">${initial}</div>
-            <div class="info">
-              <h2>${user.name || "User"}</h2>
-              <p>${user.email}</p>
-            </div>
-          </div>
+        <div class="avatar">${initial}</div>
 
-          <div class="status">
-            ✅ You are logged in successfully
-          </div>
+        <label>Name</label>
+        <input id="name" value="${currentUser.name || ""}">
+
+        <label>Email</label>
+        <input value="${currentUser.email}" disabled>
+
+        <div class="meta">
+          Login method: <b>${currentUser.provider}</b>
         </div>
+
+        <button class="save" onclick="saveProfile()">Save changes</button>
+
+        <div id="msg" class="msg"></div>
       `;
+    }
+
+    async function saveProfile() {
+      msg.textContent = "";
+      msg.className = "msg";
+
+      const res = await fetch("/auth/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.value.trim() })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        msg.textContent = "Profile updated successfully";
+        msg.classList.add("success");
+      } else {
+        msg.textContent = data.error || "Update failed";
+        msg.classList.add("error");
+      }
     }
 
     async function logout() {
@@ -160,7 +201,7 @@
       location.href = "/login.html";
     }
 
-    loadUser();
+    loadProfile();
   </script>
 </body>
 </html>
