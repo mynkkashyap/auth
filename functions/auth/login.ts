@@ -59,12 +59,7 @@ export async function onRequestPost({ request, env }) {
   };
 
   try {
-    if (!env.DB) {
-      throw new Error("DB binding missing");
-    }
-
-    const body = await request.json();
-    const { email, password } = body;
+    const { email, password } = await request.json();
 
     if (!email || !password) {
       return new Response(
@@ -88,7 +83,8 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
-    if (user.provider === "email" && !user.verified) {
+    // 🔐 STRICT EMAIL VERIFICATION CHECK
+    if (user.provider === "email" && user.verified !== 1) {
       return new Response(
         JSON.stringify({ error: "Please verify your email before logging in" }),
         { status: 403, headers }
@@ -148,7 +144,6 @@ export async function onRequestPost({ request, env }) {
 
   } catch (err) {
     console.error("LOGIN ERROR:", err);
-
     return new Response(
       JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers }
