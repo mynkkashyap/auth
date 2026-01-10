@@ -256,9 +256,12 @@
       const data = await res.json();
 
       if (res.ok) {
-        msg.textContent = "Profile updated successfully";
-        msg.classList.add("success");
-      } else {
+  msg.textContent = "Profile updated successfully";
+  msg.classList.add("success");
+
+  // 🔄 Reload updated user data
+  setTimeout(loadProfile, 600);
+} else {
         msg.textContent = data.error || "Update failed";
         msg.classList.add("error");
       }
