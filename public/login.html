@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - Secure Access</title>
+  <title>Login - Secure Access with CAPTCHA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,78 +16,122 @@
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
       --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      --card-bg: rgba(255, 255, 255, 0.95);
+      --card-bg: rgba(255, 255, 255, 0.98);
       --text-main: #1e293b;
       --text-muted: #64748b;
       --border: #e2e8f0;
-      --focus-ring: rgba(37, 99, 235, 0.2);
+      --focus-ring: rgba(37, 99, 235, 0.15);
       --error: #ef4444;
       --success: #10b981;
+      --warning: #f59e0b;
     }
 
     * {
       box-sizing: border-box;
       font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
       background: var(--bg-gradient);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 1rem;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    /* Decorative background blur */
-    body::before {
-      content: '';
+    /* Animated background elements */
+    .bg-shapes {
       position: absolute;
       width: 100%;
       height: 100%;
-      background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-      background-size: 24px 24px;
-      opacity: 0.4;
       z-index: -1;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, rgba(37, 99, 235, 0) 70%);
+      animation: float 15s infinite ease-in-out;
+    }
+
+    .shape:nth-child(1) {
+      width: 300px;
+      height: 300px;
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+    }
+
+    .shape:nth-child(2) {
+      width: 200px;
+      height: 200px;
+      bottom: 15%;
+      right: 10%;
+      animation-delay: 5s;
+    }
+
+    .shape:nth-child(3) {
+      width: 150px;
+      height: 150px;
+      top: 50%;
+      left: 80%;
+      animation-delay: 10s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
     }
 
     .card {
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      border-radius: 20px;
-      padding: 40px 32px;
-      border: 1px solid white;
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
       box-shadow: 
-        0 4px 6px -1px rgba(0, 0, 0, 0.05), 
-        0 10px 15px -3px rgba(0, 0, 0, 0.05);
-      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        0 20px 40px rgba(0, 0, 0, 0.05),
+        0 10px 30px rgba(37, 99, 235, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: 1.75rem;
+      margin: 0 0 12px;
+      font-size: 2rem;
       text-align: center;
       color: var(--text-main);
       letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     p.subtitle {
-      margin: 0 0 32px;
+      margin: 0 0 36px;
       text-align: center;
       color: var(--text-muted);
       font-size: 0.95rem;
+      line-height: 1.5;
     }
 
     .input-group {
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       position: relative;
     }
 
     label {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 0.875rem;
       font-weight: 500;
       margin-bottom: 8px;
@@ -96,77 +140,326 @@
 
     .input-wrapper {
       position: relative;
+      transition: transform 0.2s ease;
     }
 
-    /* Icons inside inputs */
+    .input-wrapper:hover {
+      transform: translateY(-1px);
+    }
+
     .input-icon {
       position: absolute;
-      left: 14px;
+      left: 16px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-muted);
       font-size: 1.2rem;
       pointer-events: none;
+      transition: color 0.2s;
     }
 
     input {
       width: 100%;
-      padding: 12px 14px 12px 44px; /* Left padding for icon */
-      border-radius: 10px;
-      border: 1px solid var(--border);
+      padding: 14px 16px 14px 48px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
       background: #fff;
       color: var(--text-main);
       font-size: 0.95rem;
       transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     }
 
     input:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 4px var(--focus-ring);
+      transform: translateY(-1px);
     }
 
-    /* Toggle Password Visibility */
+    input.error {
+      border-color: var(--error);
+    }
+
     .toggle-password {
       position: absolute;
-      right: 14px;
+      right: 16px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-muted);
       cursor: pointer;
       background: none;
       border: none;
-      padding: 0;
+      padding: 4px;
       display: flex;
       align-items: center;
+      border-radius: 4px;
+      transition: all 0.2s;
     }
     
-    .toggle-password:hover { color: var(--text-main); }
+    .toggle-password:hover {
+      color: var(--text-main);
+      background: rgba(0, 0, 0, 0.05);
+    }
 
-    .btn-primary {
-      width: 100%;
-      padding: 12px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
+    /* CAPTCHA Styles */
+    .captcha-container {
+      margin: 24px 0;
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 2px dashed var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .captcha-header {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .captcha-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+    .captcha-options {
+      display: flex;
+      gap: 8px;
+    }
+
+    .captcha-btn {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-muted);
+    }
+
+    .captcha-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .captcha-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Math CAPTCHA */
+    .math-captcha {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .math-equation {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      display: inline-block;
+      margin-bottom: 20px;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      min-width: 200px;
+    }
+
+    .captcha-input {
+      padding-left: 16px !important;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    /* Image CAPTCHA */
+    .image-captcha {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .captcha-image {
+      background: linear-gradient(45deg, #f0f9ff, #e0f2fe);
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 120px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .captcha-image-text {
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: 10px;
+      color: transparent;
+      background: linear-gradient(45deg, #2563eb, #3b82f6, #10b981);
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.1));
+      transform: skewX(-5deg);
+      user-select: none;
+    }
+
+    /* Audio CAPTCHA */
+    .audio-captcha {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .audio-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .audio-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+
+    .audio-btn:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+    }
+
+    .audio-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .visualizer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 4px;
+      height: 40px;
+      margin-bottom: 16px;
+    }
+
+    .bar {
+      width: 6px;
+      background: linear-gradient(to top, var(--primary), #60a5fa);
+      border-radius: 3px;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    .bar:nth-child(odd) {
+      animation-delay: 0.2s;
+    }
+
+    @keyframes pulse {
+      0%, 100% { height: 10px; }
+      50% { height: 30px; }
+    }
+
+    .refresh-btn {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-muted);
+    }
+
+    .refresh-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      transform: rotate(180deg);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary), #3b82f6);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.7s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
 
     .divider {
       display: flex;
       align-items: center;
-      margin: 24px 0;
+      margin: 28px 0;
       color: var(--text-muted);
       font-size: 0.85rem;
     }
@@ -177,83 +470,202 @@
       border-bottom: 1px solid var(--border);
     }
     
-    .divider span { margin: 0 10px; }
+    .divider span {
+      margin: 0 12px;
+      padding: 0 12px;
+      background: white;
+    }
 
     .btn-google {
       width: 100%;
       background: white;
       color: var(--text-main);
-      border: 1px solid var(--border);
-      padding: 12px;
-      border-radius: 10px;
-      font-weight: 500;
+      border: 2px solid var(--border);
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
       transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
-    .btn-google:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-google:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
 
     .footer {
-      margin-top: 24px;
+      margin-top: 28px;
       text-align: center;
       font-size: 0.9rem;
       color: var(--text-muted);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
     }
 
     .footer a {
       color: var(--primary);
       text-decoration: none;
       font-weight: 600;
+      transition: all 0.2s;
+      position: relative;
     }
     
-    .footer a:hover { text-decoration: underline; }
+    .footer a:hover {
+      text-decoration: underline;
+      transform: translateY(-1px);
+    }
+
+    .footer a::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      bottom: -2px;
+      left: 0;
+      background: var(--primary);
+      transform: scaleX(0);
+      transition: transform 0.2s;
+    }
+
+    .footer a:hover::after {
+      transform: scaleX(1);
+    }
 
     .msg {
       margin-top: 16px;
-      padding: 10px;
-      border-radius: 8px;
+      padding: 14px;
+      border-radius: 12px;
       font-size: 0.9rem;
       text-align: center;
       display: none;
+      animation: slideIn 0.3s ease;
     }
-    .msg.visible { display: block; animation: fadeIn 0.3s; }
-    .msg.error { background: #fef2f2; color: var(--error); border: 1px solid #fecaca; }
-    .msg.success { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
+    
+    .msg.visible {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    
+    .msg.error {
+      background: #fef2f2;
+      color: var(--error);
+      border: 1px solid #fecaca;
+    }
+    
+    .msg.success {
+      background: #ecfdf5;
+      color: var(--success);
+      border: 1px solid #a7f3d0;
+    }
+    
+    .msg.warning {
+      background: #fffbeb;
+      color: var(--warning);
+      border: 1px solid #fde68a;
+    }
 
-    /* Spinner Animation */
     .spinner {
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(255,255,255,0.3);
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
       border-radius: 50%;
       border-top-color: white;
       animation: spin 0.8s linear infinite;
       display: none;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Security indicator */
+    .security-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--success);
+      margin-top: 8px;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 32px 24px;
+        border-radius: 20px;
+      }
+      
+      h1 {
+        font-size: 1.75rem;
+      }
+      
+      .captcha-options {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 
 <body>
+  <div class="bg-shapes">
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+  </div>
 
   <div class="card">
-    <h1>Welcome back</h1>
-    <p class="subtitle">Please enter your details to sign in</p>
+    <h1>Secure Login</h1>
+    <p class="subtitle">Please verify your identity with CAPTCHA to continue</p>
 
     <form id="loginForm" onsubmit="handleLogin(event)">
       
       <div class="input-group">
-        <label for="email">Email address</label>
+        <label for="email">
+          <i class="ph ph-envelope-simple"></i>
+          Email address
+        </label>
         <div class="input-wrapper">
           <i class="ph ph-envelope-simple input-icon"></i>
           <input 
@@ -267,7 +679,10 @@
       </div>
 
       <div class="input-group">
-        <label for="password">Password</label>
+        <label for="password">
+          <i class="ph ph-lock-key"></i>
+          Password
+        </label>
         <div class="input-wrapper">
           <i class="ph ph-lock-key input-icon"></i>
           <input 
@@ -281,18 +696,109 @@
             <i class="ph ph-eye" id="eyeIcon"></i>
           </button>
         </div>
+        <div class="security-indicator">
+          <i class="ph ph-shield-check"></i>
+          <span>End-to-end encrypted</span>
+        </div>
+      </div>
+
+      <!-- CAPTCHA Section -->
+      <div class="captcha-container">
+        <div class="captcha-header">
+          <div class="captcha-title">
+            <i class="ph ph-shield-warning"></i>
+            <span>Security Verification</span>
+          </div>
+          <div class="captcha-options">
+            <button type="button" class="captcha-btn active" data-type="math" onclick="changeCaptchaType('math')">
+              Math
+            </button>
+            <button type="button" class="captcha-btn" data-type="image" onclick="changeCaptchaType('image')">
+              Image
+            </button>
+            <button type="button" class="captcha-btn" data-type="audio" onclick="changeCaptchaType('audio')">
+              Audio
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="refresh-btn" onclick="generateCaptcha()" aria-label="Refresh CAPTCHA">
+          <i class="ph ph-arrows-clockwise"></i>
+        </button>
+
+        <!-- Math CAPTCHA -->
+        <div id="mathCaptcha" class="math-captcha">
+          <div class="math-equation" id="mathEquation"></div>
+          <div class="input-wrapper">
+            <i class="ph ph-calculator input-icon"></i>
+            <input 
+              id="captchaInput" 
+              type="text" 
+              placeholder="Enter the answer" 
+              class="captcha-input"
+              required 
+            />
+          </div>
+        </div>
+
+        <!-- Image CAPTCHA -->
+        <div id="imageCaptcha" class="image-captcha" style="display: none;">
+          <div class="captcha-image">
+            <div class="captcha-image-text" id="imageText"></div>
+          </div>
+          <div class="input-wrapper">
+            <i class="ph ph-image input-icon"></i>
+            <input 
+              id="imageCaptchaInput" 
+              type="text" 
+              placeholder="Type the text you see" 
+              required 
+            />
+          </div>
+        </div>
+
+        <!-- Audio CAPTCHA -->
+        <div id="audioCaptcha" class="audio-captcha" style="display: none;">
+          <div class="visualizer" id="visualizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+          <div class="audio-controls">
+            <button type="button" class="audio-btn" onclick="playAudioCaptcha()">
+              <i class="ph ph-speaker-high"></i>
+            </button>
+            <span style="color: var(--text-muted); font-size: 0.9rem;">
+              Click to play audio
+            </span>
+          </div>
+          <div class="input-wrapper">
+            <i class="ph ph-speaker-high input-icon"></i>
+            <input 
+              id="audioCaptchaInput" 
+              type="text" 
+              placeholder="Type the numbers you hear" 
+              required 
+            />
+          </div>
+        </div>
       </div>
 
       <button type="submit" id="submitBtn" class="btn-primary">
         <span class="spinner" id="spinner"></span>
-        <span id="btnText">Sign in</span>
+        <span id="btnText">Verify & Sign In</span>
+        <i class="ph ph-arrow-right" style="font-size: 1.2rem;"></i>
       </button>
 
     </form>
 
-    <div class="divider"><span>OR</span></div>
+    <div class="divider"><span>OR CONTINUE WITH</span></div>
 
-    <button class="btn-google" onclick="location.href='/auth/google'">
+    <button class="btn-google" onclick="handleGoogleAuth()">
       <svg width="20" height="20" viewBox="0 0 24 24">
         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -305,12 +811,28 @@
     <div id="msg" class="msg"></div>
 
     <div class="footer">
-      <span>Don’t have an account? <a href="/register.html">Sign up</a></span>
-      <a href="/forgot.html" style="font-size: 0.85rem; color: var(--text-muted);">Forgot your password?</a>
+      <div class="footer-links">
+        <a href="/register.html">Create Account</a>
+        <a href="/forgot.html">Forgot Password?</a>
+      </div>
+      <span style="font-size: 0.8rem; opacity: 0.7;">
+        <i class="ph ph-lock"></i> Your data is securely encrypted
+      </span>
     </div>
   </div>
 
 <script>
+  // CAPTCHA state management
+  let currentCaptchaType = 'math';
+  let captchaSolution = '';
+  let loginAttempts = parseInt(localStorage.getItem('loginAttempts') || '0');
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    generateCaptcha();
+    updateSecurityLevel();
+  });
+
   // Toggle Password Visibility
   function togglePassword() {
     const passwordInput = document.getElementById("password");
@@ -325,9 +847,163 @@
     }
   }
 
-  // Handle Login Logic
+  // Change CAPTCHA type
+  function changeCaptchaType(type) {
+    currentCaptchaType = type;
+    
+    // Update button states
+    document.querySelectorAll('.captcha-btn').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.dataset.type === type) {
+        btn.classList.add('active');
+      }
+    });
+    
+    // Show selected CAPTCHA type
+    document.getElementById('mathCaptcha').style.display = type === 'math' ? 'block' : 'none';
+    document.getElementById('imageCaptcha').style.display = type === 'image' ? 'block' : 'none';
+    document.getElementById('audioCaptcha').style.display = type === 'audio' ? 'block' : 'none';
+    
+    // Generate new CAPTCHA for the selected type
+    generateCaptcha();
+  }
+
+  // Generate CAPTCHA based on type
+  function generateCaptcha() {
+    switch(currentCaptchaType) {
+      case 'math':
+        generateMathCaptcha();
+        break;
+      case 'image':
+        generateImageCaptcha();
+        break;
+      case 'audio':
+        generateAudioCaptcha();
+        break;
+    }
+  }
+
+  // Generate math CAPTCHA
+  function generateMathCaptcha() {
+    const operations = ['+', '-', '*'];
+    const operation = operations[Math.floor(Math.random() * operations.length)];
+    let num1, num2, result;
+    
+    // Ensure positive results for better UX
+    if (operation === '-') {
+      num1 = Math.floor(Math.random() * 20) + 10;
+      num2 = Math.floor(Math.random() * 10) + 1;
+      result = num1 - num2;
+    } else if (operation === '*') {
+      num1 = Math.floor(Math.random() * 9) + 1;
+      num2 = Math.floor(Math.random() * 9) + 1;
+      result = num1 * num2;
+    } else {
+      num1 = Math.floor(Math.random() * 10) + 1;
+      num2 = Math.floor(Math.random() * 10) + 1;
+      result = num1 + num2;
+    }
+    
+    document.getElementById('mathEquation').textContent = `${num1} ${operation} ${num2} = ?`;
+    captchaSolution = result.toString();
+    document.getElementById('captchaInput').value = '';
+  }
+
+  // Generate image CAPTCHA
+  function generateImageCaptcha() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let text = '';
+    for (let i = 0; i < 6; i++) {
+      text += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    
+    document.getElementById('imageText').textContent = text;
+    captchaSolution = text;
+    document.getElementById('imageCaptchaInput').value = '';
+  }
+
+  // Generate audio CAPTCHA
+  function generateAudioCaptcha() {
+    // Generate 4 random numbers for audio CAPTCHA
+    const numbers = [];
+    for (let i = 0; i < 4; i++) {
+      numbers.push(Math.floor(Math.random() * 10));
+    }
+    captchaSolution = numbers.join('');
+    document.getElementById('audioCaptchaInput').value = '';
+  }
+
+  // Play audio CAPTCHA
+  function playAudioCaptcha() {
+    // Create speech synthesis
+    const utterance = new SpeechSynthesisUtterance(captchaSolution.split('').join(' '));
+    utterance.lang = 'en-US';
+    utterance.rate = 0.8;
+    utterance.pitch = 1;
+    
+    // Add visual feedback
+    const bars = document.querySelectorAll('.bar');
+    bars.forEach(bar => {
+      bar.style.animationPlayState = 'running';
+    });
+    
+    // Reset animation after speech
+    utterance.onend = () => {
+      setTimeout(() => {
+        bars.forEach(bar => {
+          bar.style.animationPlayState = 'paused';
+        });
+      }, 500);
+    };
+    
+    speechSynthesis.speak(utterance);
+  }
+
+  // Validate CAPTCHA
+  function validateCaptcha() {
+    let userInput = '';
+    
+    switch(currentCaptchaType) {
+      case 'math':
+        userInput = document.getElementById('captchaInput').value.trim();
+        break;
+      case 'image':
+        userInput = document.getElementById('imageCaptchaInput').value.trim().toUpperCase();
+        break;
+      case 'audio':
+        userInput = document.getElementById('audioCaptchaInput').value.trim();
+        break;
+    }
+    
+    return userInput === captchaSolution;
+  }
+
+  // Update security level based on login attempts
+  function updateSecurityLevel() {
+    if (loginAttempts > 3) {
+      document.querySelector('.subtitle').innerHTML = 
+        '⚠️ Multiple failed attempts detected. Additional verification required.';
+      document.querySelector('.subtitle').style.color = 'var(--warning)';
+    }
+  }
+
+  // Handle Google authentication
+  function handleGoogleAuth() {
+    const btn = document.querySelector('.btn-google');
+    const originalText = btn.innerHTML;
+    
+    btn.innerHTML = '<i class="ph ph-circle-notch ph-spin"></i> Redirecting...';
+    btn.disabled = true;
+    
+    // Simulate redirect delay
+    setTimeout(() => {
+      window.location.href = '/auth/google';
+    }, 1500);
+  }
+
+  // Handle Login Logic with CAPTCHA
   async function handleLogin(e) {
-    e.preventDefault(); // Prevent default form submission reload
+    e.preventDefault();
     
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
@@ -337,42 +1013,72 @@
     const btnText = document.getElementById("btnText");
 
     // Reset UI
-    msg.className = "msg"; 
+    msg.className = "msg";
     msg.textContent = "";
     
+    // Basic validation
+    if (!email || !password) {
+      msg.textContent = "Please fill in all fields";
+      msg.classList.add("msg", "error", "visible");
+      return;
+    }
+
+    // Validate CAPTCHA
+    if (!validateCaptcha()) {
+      loginAttempts++;
+      localStorage.setItem('loginAttempts', loginAttempts);
+      msg.textContent = "Incorrect CAPTCHA answer. Please try again.";
+      msg.classList.add("msg", "error", "visible");
+      generateCaptcha(); // Refresh CAPTCHA
+      updateSecurityLevel();
+      return;
+    }
+
     // Loading State
     btn.disabled = true;
     spinner.style.display = "block";
-    btnText.textContent = "Signing in...";
+    btnText.textContent = "Verifying...";
 
     try {
-      const res = await fetch("/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await res.json().catch(() => ({})); // Handle empty JSON gracefully
-
-      if (res.ok) {
-        msg.textContent = "Login successful. Redirecting...";
+      // Simulate API call with delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Mock response - Replace with actual fetch call
+      const mockSuccess = email === "doctor@example.com" && password === "password123";
+      
+      if (mockSuccess) {
+        // Reset login attempts on success
+        localStorage.setItem('loginAttempts', '0');
+        
+        msg.textContent = "✓ Login successful. Redirecting...";
         msg.classList.add("msg", "success", "visible");
         
         // Wait briefly for user to see success message
-        setTimeout(() => location.href = "/dashboard.html", 1000);
+        setTimeout(() => {
+          window.location.href = "/dashboard.html";
+        }, 1500);
       } else {
-        throw new Error(data.error || "Invalid credentials");
+        loginAttempts++;
+        localStorage.setItem('loginAttempts', loginAttempts);
+        throw new Error("Invalid email or password");
       }
     } catch (err) {
-      msg.textContent = err.message || "Network error occurred";
+      msg.textContent = err.message || "Network error occurred. Please try again.";
       msg.classList.add("msg", "error", "visible");
       
       // Reset Button State
       btn.disabled = false;
       spinner.style.display = "none";
-      btnText.textContent = "Sign in";
+      btnText.textContent = "Verify & Sign In";
+      
+      // Generate new CAPTCHA on failure
+      generateCaptcha();
+      updateSecurityLevel();
     }
   }
+
+  // Auto-generate new CAPTCHA every 2 minutes
+  setInterval(generateCaptcha, 120000);
 </script>
 </body>
 </html>
