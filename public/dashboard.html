@@ -35,9 +35,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
       max-width: 480px;
-      margin-inline: auto;
+      margin: 0 auto 20px;
     }
 
     h1 {
@@ -48,7 +47,7 @@
 
     .logout {
       background: var(--danger);
-      color: white;
+      color: #fff;
       border: none;
       padding: 10px 14px;
       border-radius: 10px;
@@ -65,7 +64,6 @@
       box-shadow: 0 12px 30px rgba(0,0,0,0.06);
       max-width: 480px;
       margin: auto;
-      animation: fadeIn 0.35s ease;
     }
 
     .avatar {
@@ -95,7 +93,6 @@
       border-radius: 12px;
       border: 1px solid var(--border);
       background: #fff;
-      color: var(--text);
       margin-top: 6px;
       font-size: 0.95rem;
     }
@@ -103,6 +100,17 @@
     input[disabled] {
       background: #f1f5f9;
       opacity: 0.8;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: #eef2ff;
+      color: var(--primary);
+      font-weight: 600;
     }
 
     .row {
@@ -118,7 +126,6 @@
       font-weight: 600;
       cursor: pointer;
       font-size: 0.9rem;
-      transition: all 0.15s ease;
     }
 
     .save {
@@ -127,31 +134,9 @@
       color: white;
     }
 
-    .save:hover {
-      background: var(--primary-hover);
-    }
-
     .refresh {
       background: #f1f5f9;
-      color: var(--text);
       border: 1px solid var(--border);
-    }
-
-    .badge {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      background: #eef2ff;
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    .meta {
-      margin-top: 16px;
-      font-size: 0.85rem;
-      color: var(--muted);
     }
 
     .msg {
@@ -164,21 +149,23 @@
     .error { color: var(--danger); }
 
     .danger-zone {
-      margin-top: 28px;
+      margin-top: 30px;
       padding-top: 16px;
       border-top: 1px dashed var(--border);
     }
 
-    .danger-zone button {
+    .danger-zone h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: var(--danger);
+    }
+
+    .delete-btn {
       width: 100%;
       background: #fee2e2;
       color: var(--danger);
       border: 1px solid #fecaca;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -189,44 +176,27 @@
     <button class="logout" onclick="logout()">Logout</button>
   </div>
 
-  <div id="content" class="card">
-    Loading profile…
-  </div>
+  <div id="content" class="card">Loading…</div>
 
   <script>
-    let currentUser = null;
-
     async function loadProfile() {
       const res = await fetch("/auth/me");
+      if (!res.ok) return location.href = "/login.html";
 
-      if (!res.ok) {
-        location.href = "/login.html";
-        return;
-      }
-
-      const data = await res.json();
-      currentUser = data.user;
-
-      const initial = (currentUser.name || currentUser.email)[0].toUpperCase();
-      const providerLabel =
-        currentUser.provider === "google"
-          ? "Google Account"
-          : "Email & Password";
+      const { user } = await res.json();
+      const initial = (user.name || user.email)[0].toUpperCase();
+      const provider = user.provider === "google" ? "Google Account" : "Email & Password";
 
       content.innerHTML = `
         <div class="avatar">${initial}</div>
 
         <label>Name</label>
-        <input id="name" value="${currentUser.name || ""}">
+        <input id="name" value="${user.name || ""}">
 
         <label>Email</label>
-        <input value="${currentUser.email}" disabled>
+        <input value="${user.email}" disabled>
 
-        <span class="badge">${providerLabel}</span>
-
-        <div class="meta">
-          Session active · Secure login
-        </div>
+        <span class="badge">${provider}</span>
 
         <div class="row">
           <button class="save" onclick="saveProfile()">Save</button>
@@ -236,34 +206,49 @@
         <div id="msg" class="msg"></div>
 
         <div class="danger-zone">
-          <button disabled>
-            Delete account (coming soon)
+          <h3>Danger Zone</h3>
+          <button class="delete-btn" onclick="confirmDelete()">
+            Delete Account
           </button>
         </div>
       `;
     }
 
     async function saveProfile() {
+      const nameInput = document.getElementById("name");
+      const msg = document.getElementById("msg");
+
       msg.textContent = "";
-      msg.className = "msg";
 
       const res = await fetch("/auth/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.value.trim() })
+        body: JSON.stringify({ name: nameInput.value.trim() })
       });
 
-      const data = await res.json();
+      if (res.ok) {
+        msg.textContent = "Profile updated";
+        msg.className = "msg success";
+        setTimeout(loadProfile, 500);
+      } else {
+        msg.textContent = "Update failed";
+        msg.className = "msg error";
+      }
+    }
+
+    async function confirmDelete() {
+      const sure = confirm(
+        "This will permanently delete your account.\n\nThis action cannot be undone.\n\nContinue?"
+      );
+      if (!sure) return;
+
+      const res = await fetch("/auth/delete", { method: "POST" });
 
       if (res.ok) {
-  msg.textContent = "Profile updated successfully";
-  msg.classList.add("success");
-
-  // 🔄 Reload updated user data
-  setTimeout(loadProfile, 600);
-} else {
-        msg.textContent = data.error || "Update failed";
-        msg.classList.add("error");
+        alert("Account deleted");
+        location.href = "/";
+      } else {
+        alert("Delete failed");
       }
     }
 
