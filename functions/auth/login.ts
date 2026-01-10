@@ -1,6 +1,6 @@
 const enc = new TextEncoder();
 
-/* ---------- SHA-256 (legacy) ---------- */
+/* ---------- helpers ---------- */
 async function sha256(password: string) {
   const hash = await crypto.subtle.digest(
     "SHA-256",
@@ -11,7 +11,6 @@ async function sha256(password: string) {
     .join("");
 }
 
-/* ---------- PBKDF2 ---------- */
 async function pbkdf2Hash(password: string, salt?: Uint8Array) {
   salt = salt || crypto.getRandomValues(new Uint8Array(16));
 
@@ -44,16 +43,12 @@ async function pbkdf2Hash(password: string, salt?: Uint8Array) {
   };
 }
 
-async function pbkdf2Verify(
-  password: string,
-  hash: string,
-  saltHex: string
-) {
+async function pbkdf2Verify(password: string, hash: string, saltHex: string) {
   const salt = Uint8Array.from(
     saltHex.match(/.{1,2}/g)!.map(b => parseInt(b, 16))
   );
-  const { hash: verifyHash } = await pbkdf2Hash(password, salt);
-  return verifyHash === hash;
+  const { hash: verify } = await pbkdf2Hash(password, salt);
+  return verify === hash;
 }
 
 /* ---------- POST /auth/login ---------- */
@@ -63,85 +58,100 @@ export async function onRequestPost({ request, env }) {
     "Cache-Control": "no-store"
   };
 
-  const { email, password } = await request.json();
-
-  if (!email || !password) {
-    return new Response(
-      JSON.stringify({ error: "Missing email or password" }),
-      { status: 400, headers }
-    );
-  }
-
-  const user = await env.DB.prepare(
-    `
-    SELECT id, provider, verified,
-           password_hash, password_pbkdf2, password_salt
-    FROM users WHERE email = ?
-    `
-  ).bind(email).first();
-
-  if (!user) {
-    return new Response(
-      JSON.stringify({ error: "Invalid credentials" }),
-      { status: 401, headers }
-    );
-  }
-
-  if (user.provider === "email" && !user.verified) {
-    return new Response(
-      JSON.stringify({ error: "Please verify your email before logging in" }),
-      { status: 403, headers }
-    );
-  }
-
-  let passwordOK = false;
-
-  if (user.provider === "google") {
-    passwordOK = true;
-  } else if (user.password_pbkdf2 && user.password_salt) {
-    passwordOK = await pbkdf2Verify(
-      password,
-      user.password_pbkdf2,
-      user.password_salt
-    );
-  } else if (user.password_hash) {
-    const legacy = await sha256(password);
-    passwordOK = legacy === user.password_hash;
-
-    if (passwordOK) {
-      const { hash, salt } = await pbkdf2Hash(password);
-      await env.DB.prepare(
-        `
-        UPDATE users
-        SET password_pbkdf2=?, password_salt=?, password_hash=NULL
-        WHERE id=?
-        `
-      ).bind(hash, salt, user.id).run();
+  try {
+    if (!env.DB) {
+      throw new Error("DB binding missing");
     }
-  }
 
-  if (!passwordOK) {
-    return new Response(
-      JSON.stringify({ error: "Invalid credentials" }),
-      { status: 401, headers }
-    );
-  }
+    const body = await request.json();
+    const { email, password } = body;
 
-  const sessionId = crypto.randomUUID();
-  const expiresAt = Date.now() + 7 * 864e5;
+    if (!email || !password) {
+      return new Response(
+        JSON.stringify({ error: "Missing email or password" }),
+        { status: 400, headers }
+      );
+    }
 
-  await env.DB.prepare(
-    "INSERT INTO sessions (id,user_id,expires_at) VALUES (?,?,?)"
-  ).bind(sessionId, user.id, expiresAt).run();
+    const user = await env.DB.prepare(
+      `
+      SELECT id, provider, verified,
+             password_hash, password_pbkdf2, password_salt
+      FROM users WHERE email = ?
+      `
+    ).bind(email).first();
 
-  return new Response(
-    JSON.stringify({ success: true }),
-    {
-      headers: {
-        ...headers,
-        "Set-Cookie":
-          `session=${sessionId}; HttpOnly; Secure; Path=/; SameSite=Lax`
+    if (!user) {
+      return new Response(
+        JSON.stringify({ error: "Invalid credentials" }),
+        { status: 401, headers }
+      );
+    }
+
+    if (user.provider === "email" && !user.verified) {
+      return new Response(
+        JSON.stringify({ error: "Please verify your email before logging in" }),
+        { status: 403, headers }
+      );
+    }
+
+    let passwordOK = false;
+
+    if (user.provider === "google") {
+      passwordOK = true;
+    } else if (user.password_pbkdf2 && user.password_salt) {
+      passwordOK = await pbkdf2Verify(
+        password,
+        user.password_pbkdf2,
+        user.password_salt
+      );
+    } else if (user.password_hash) {
+      const legacy = await sha256(password);
+      passwordOK = legacy === user.password_hash;
+
+      if (passwordOK) {
+        const { hash, salt } = await pbkdf2Hash(password);
+        await env.DB.prepare(
+          `
+          UPDATE users
+          SET password_pbkdf2=?, password_salt=?, password_hash=NULL
+          WHERE id=?
+          `
+        ).bind(hash, salt, user.id).run();
       }
     }
-  );
+
+    if (!passwordOK) {
+      return new Response(
+        JSON.stringify({ error: "Invalid credentials" }),
+        { status: 401, headers }
+      );
+    }
+
+    const sessionId = crypto.randomUUID();
+    const expiresAt = Date.now() + 7 * 864e5;
+
+    await env.DB.prepare(
+      "INSERT INTO sessions (id,user_id,expires_at) VALUES (?,?,?)"
+    ).bind(sessionId, user.id, expiresAt).run();
+
+    return new Response(
+      JSON.stringify({ success: true }),
+      {
+        headers: {
+          ...headers,
+          "Set-Cookie":
+            `session=${sessionId}; HttpOnly; Secure; Path=/; SameSite=Lax`
+        }
+      }
+    );
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+
+    return new Response(
+      JSON.stringify({ error: "Internal server error" }),
+      { status: 500, headers }
+    );
+  }
 }
