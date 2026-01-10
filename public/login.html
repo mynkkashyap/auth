@@ -2,48 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - Secure Access Portal</title>
+  <title>Login - Secure Access</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Secure login portal with multi-factor authentication and enhanced security features">
   
-  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Font Awesome for more icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
   <style>
     :root {
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
-      --primary-light: #dbeafe;
-      --secondary: #7c3aed;
-      --danger: #ef4444;
-      --success: #10b981;
-      --warning: #f59e0b;
       --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      --bg-gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      --card-bg: rgba(255, 255, 255, 0.98);
-      --card-bg-dark: rgba(30, 41, 59, 0.95);
+      --card-bg: rgba(255, 255, 255, 0.95);
       --text-main: #1e293b;
-      --text-main-dark: #f1f5f9;
       --text-muted: #64748b;
-      --text-muted-dark: #94a3b8;
       --border: #e2e8f0;
-      --border-dark: #475569;
-      --focus-ring: rgba(37, 99, 235, 0.3);
-      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 
-                0 20px 40px -10px rgba(0, 0, 0, 0.05);
-      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+      --focus-ring: rgba(37, 99, 235, 0.2);
+      --error: #ef4444;
+      --success: #10b981;
     }
 
     * {
       box-sizing: border-box;
       font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 0;
     }
 
     body {
@@ -54,215 +38,86 @@
       align-items: center;
       justify-content: center;
       padding: 1rem;
-      transition: background 0.5s ease;
-      position: relative;
-      overflow-x: hidden;
     }
 
-    /* Animated background */
-    .bg-animation {
+    /* Decorative background blur */
+    body::before {
+      content: '';
       position: absolute;
       width: 100%;
       height: 100%;
-      z-index: -2;
-      overflow: hidden;
-    }
-
-    .bg-circle {
-      position: absolute;
-      border-radius: 50%;
-      background: linear-gradient(45deg, var(--primary), var(--secondary));
-      opacity: 0.1;
-      animation: float 20s infinite ease-in-out;
-    }
-
-    .circle-1 {
-      width: 300px;
-      height: 300px;
-      top: -150px;
-      right: -150px;
-      animation-delay: 0s;
-    }
-
-    .circle-2 {
-      width: 200px;
-      height: 200px;
-      bottom: -100px;
-      left: -100px;
-      animation-delay: -5s;
-    }
-
-    .circle-3 {
-      width: 150px;
-      height: 150px;
-      top: 50%;
-      left: 10%;
-      animation-delay: -10s;
-    }
-
-    /* Theme toggle */
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 100;
-    }
-
-    .theme-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-main);
-      font-size: 1.2rem;
-      transition: all 0.3s ease;
-      box-shadow: var(--shadow);
-    }
-
-    .theme-btn:hover {
-      transform: rotate(30deg);
-      box-shadow: var(--shadow-lg);
-    }
-
-    /* Language selector */
-    .language-selector {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 100;
-    }
-
-    .language-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 8px 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      color: var(--text-main);
-      font-weight: 500;
-      transition: all 0.3s ease;
-      box-shadow: var(--shadow);
-    }
-
-    .language-btn:hover {
-      box-shadow: var(--shadow-lg);
+      background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: 0.4;
+      z-index: -1;
     }
 
     .card {
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       background: var(--card-bg);
       backdrop-filter: blur(12px);
-      border-radius: 24px;
-      padding: 40px 36px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: var(--shadow-lg);
-      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-header {
-      text-align: center;
-      margin-bottom: 36px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .logo-icon {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.5rem;
+      border-radius: 20px;
+      padding: 40px 32px;
+      border: 1px solid white;
+      box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+        0 10px 15px -3px rgba(0, 0, 0, 0.05);
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     h1 {
       margin: 0 0 8px;
-      font-size: 1.875rem;
+      font-size: 1.75rem;
+      text-align: center;
       color: var(--text-main);
       letter-spacing: -0.025em;
-      font-weight: 700;
     }
 
-    .subtitle {
-      margin: 0;
+    p.subtitle {
+      margin: 0 0 32px;
       text-align: center;
       color: var(--text-muted);
-      font-size: 1rem;
-      line-height: 1.5;
+      font-size: 0.95rem;
     }
 
-    /* Form styling */
     .input-group {
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       position: relative;
     }
 
     label {
       display: block;
       font-size: 0.875rem;
-      font-weight: 600;
+      font-weight: 500;
       margin-bottom: 8px;
       color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .forgot-link {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    .forgot-link:hover {
-      text-decoration: underline;
     }
 
     .input-wrapper {
       position: relative;
-      display: flex;
-      align-items: center;
     }
 
+    /* Icons inside inputs */
     .input-icon {
       position: absolute;
-      left: 16px;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
       color: var(--text-muted);
       font-size: 1.2rem;
       pointer-events: none;
-      z-index: 1;
     }
 
     input {
       width: 100%;
-      padding: 16px 16px 16px 48px;
-      border-radius: 12px;
-      border: 2px solid var(--border);
-      background: transparent;
+      padding: 12px 14px 12px 44px; /* Left padding for icon */
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
       color: var(--text-main);
-      font-size: 1rem;
-      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
     }
 
     input:focus {
@@ -271,227 +126,49 @@
       box-shadow: 0 0 0 4px var(--focus-ring);
     }
 
-    input.error {
-      border-color: var(--danger);
-    }
-
-    .input-feedback {
-      font-size: 0.8rem;
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      opacity: 0;
-      transform: translateY(-5px);
-      transition: all 0.3s ease;
-    }
-
-    .input-feedback.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .input-feedback.error {
-      color: var(--danger);
-    }
-
-    .input-feedback.success {
-      color: var(--success);
-    }
-
-    /* Password strength indicator */
-    .password-strength {
-      margin-top: 8px;
-      height: 4px;
-      border-radius: 2px;
-      background: #e2e8f0;
-      overflow: hidden;
-      display: none;
-    }
-
-    .password-strength.show {
-      display: block;
-    }
-
-    .strength-meter {
-      height: 100%;
-      width: 0;
-      border-radius: 2px;
-      transition: all 0.3s ease;
-    }
-
-    /* Toggle password */
+    /* Toggle Password Visibility */
     .toggle-password {
       position: absolute;
-      right: 16px;
-      background: none;
-      border: none;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
       color: var(--text-muted);
       cursor: pointer;
+      background: none;
+      border: none;
       padding: 0;
       display: flex;
       align-items: center;
-      font-size: 1.2rem;
-      transition: color 0.2s;
     }
+    
+    .toggle-password:hover { color: var(--text-main); }
 
-    .toggle-password:hover {
-      color: var(--text-main);
-    }
-
-    /* Remember me & options */
-    .form-options {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      font-size: 0.9rem;
-    }
-
-    .remember-me {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      color: var(--text-muted);
-    }
-
-    .checkbox-wrapper {
-      position: relative;
-      width: 18px;
-      height: 18px;
-    }
-
-    .checkbox-wrapper input {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-      z-index: 2;
-    }
-
-    .checkmark {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 18px;
-      height: 18px;
-      border: 2px solid var(--border);
-      border-radius: 4px;
-      transition: all 0.3s ease;
-    }
-
-    .checkbox-wrapper input:checked ~ .checkmark {
-      background: var(--primary);
-      border-color: var(--primary);
-    }
-
-    .checkmark:after {
-      content: "";
-      position: absolute;
-      display: none;
-      left: 5px;
-      top: 1px;
-      width: 5px;
-      height: 10px;
-      border: solid white;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-    }
-
-    .checkbox-wrapper input:checked ~ .checkmark:after {
-      display: block;
-    }
-
-    /* CAPTCHA */
-    .captcha-container {
-      margin-bottom: 24px;
-      background: #f8fafc;
-      border-radius: 12px;
-      padding: 16px;
-      display: none;
-    }
-
-    .captcha-container.show {
-      display: block;
-      animation: fadeIn 0.5s ease;
-    }
-
-    .captcha-challenge {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-
-    .captcha-text {
-      font-family: monospace;
-      font-size: 1.5rem;
-      letter-spacing: 3px;
-      background: linear-gradient(45deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      user-select: none;
-    }
-
-    .captcha-refresh {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 1.2rem;
-      transition: transform 0.3s ease;
-    }
-
-    .captcha-refresh:hover {
-      transform: rotate(180deg);
-      color: var(--primary);
-    }
-
-    /* Buttons */
     .btn-primary {
       width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      padding: 12px;
+      background: var(--primary);
       color: white;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: background 0.2s;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-      position: relative;
-      overflow: hidden;
+      gap: 8px;
     }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
-    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
-    .btn-primary:active {
-      transform: translateY(0);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* Social login */
     .divider {
       display: flex;
       align-items: center;
-      margin: 28px 0;
+      margin: 24px 0;
       color: var(--text-muted);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
     
     .divider::before, .divider::after {
@@ -500,903 +177,202 @@
       border-bottom: 1px solid var(--border);
     }
     
-    .divider span {
-      margin: 0 12px;
-      font-weight: 500;
-    }
+    .divider span { margin: 0 10px; }
 
-    .social-login {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .social-btn {
-      padding: 12px;
-      border-radius: 12px;
-      border: 2px solid var(--border);
-      background: transparent;
-      color: var(--text-main);
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .social-btn:hover {
-      border-color: var(--primary);
-      background: var(--primary-light);
-      transform: translateY(-2px);
-    }
-
-    .social-btn.google:hover { border-color: #ea4335; background: #fef2f2; }
-    .social-btn.github:hover { border-color: #333; background: #f3f4f6; }
-    .social-btn.microsoft:hover { border-color: #00a4ef; background: #f0f9ff; }
-
-    /* MFA Section */
-    .mfa-container {
-      display: none;
-      animation: fadeIn 0.5s ease;
-    }
-
-    .mfa-container.show {
-      display: block;
-    }
-
-    .mfa-options {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin: 20px 0;
-    }
-
-    .mfa-option {
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .mfa-option:hover {
-      border-color: var(--primary);
-      background: var(--primary-light);
-    }
-
-    .mfa-option.active {
-      border-color: var(--primary);
-      background: var(--primary-light);
-    }
-
-    .mfa-icon {
-      font-size: 1.5rem;
-      margin-bottom: 8px;
-      color: var(--primary);
-    }
-
-    /* Progress indicator */
-    .progress-steps {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 32px;
-      position: relative;
-    }
-
-    .progress-steps::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--border);
-      transform: translateY(-50%);
-      z-index: 1;
-    }
-
-    .step {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
+    .btn-google {
+      width: 100%;
       background: white;
-      border: 2px solid var(--border);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 500;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 600;
-      color: var(--text-muted);
-      position: relative;
-      z-index: 2;
-      transition: all 0.3s ease;
+      gap: 10px;
+      transition: all 0.2s;
     }
 
-    .step.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
-    }
+    .btn-google:hover { background: #f8fafc; border-color: #cbd5e1; }
 
-    .step.completed {
-      background: var(--success);
-      border-color: var(--success);
-      color: white;
-    }
-
-    .step-label {
-      position: absolute;
-      top: 100%;
-      margin-top: 8px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    /* Footer links */
     .footer {
-      margin-top: 28px;
+      margin-top: 24px;
       text-align: center;
       font-size: 0.9rem;
       color: var(--text-muted);
       display: flex;
       flex-direction: column;
-      gap: 12px;
-    }
-
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .footer a {
       color: var(--primary);
       text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s;
+      font-weight: 600;
     }
     
-    .footer a:hover {
-      text-decoration: underline;
-      color: var(--primary-hover);
-    }
+    .footer a:hover { text-decoration: underline; }
 
-    /* Messages */
     .msg {
       margin-top: 16px;
-      padding: 14px 16px;
-      border-radius: 12px;
+      padding: 10px;
+      border-radius: 8px;
       font-size: 0.9rem;
       text-align: center;
       display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
     }
+    .msg.visible { display: block; animation: fadeIn 0.3s; }
+    .msg.error { background: #fef2f2; color: var(--error); border: 1px solid #fecaca; }
+    .msg.success { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
 
-    .msg.visible {
-      display: flex;
-      animation: fadeIn 0.5s ease;
-    }
-
-    .msg.error {
-      background: #fef2f2;
-      color: var(--danger);
-      border: 1px solid #fecaca;
-    }
-
-    .msg.success {
-      background: #ecfdf5;
-      color: var(--success);
-      border: 1px solid #a7f3d0;
-    }
-
-    .msg.warning {
-      background: #fffbeb;
-      color: var(--warning);
-      border: 1px solid #fde68a;
-    }
-
-    /* Spinner */
+    /* Spinner Animation */
     .spinner {
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
       border-radius: 50%;
       border-top-color: white;
       animation: spin 0.8s linear infinite;
       display: none;
     }
 
-    /* Dark mode */
-    body.dark-mode {
-      background: var(--bg-gradient-dark);
-      color: var(--text-main-dark);
-    }
-
-    body.dark-mode .card {
-      background: var(--card-bg-dark);
-      border-color: rgba(255, 255, 255, 0.1);
-      color: var(--text-main-dark);
-    }
-
-    body.dark-mode h1,
-    body.dark-mode label,
-    body.dark-mode .theme-btn,
-    body.dark-mode .language-btn {
-      color: var(--text-main-dark);
-    }
-
-    body.dark-mode .subtitle,
-    body.dark-mode .footer,
-    body.dark-mode .divider span {
-      color: var(--text-muted-dark);
-    }
-
-    body.dark-mode input,
-    body.dark-mode .social-btn,
-    body.dark-mode .theme-btn,
-    body.dark-mode .language-btn {
-      background: rgba(30, 41, 59, 0.8);
-      border-color: var(--border-dark);
-      color: var(--text-main-dark);
-    }
-
-    body.dark-mode .bg-circle {
-      opacity: 0.05;
-    }
-
-    /* Animations */
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      33% { transform: translate(30px, -30px) rotate(120deg); }
-      66% { transform: translate(-20px, 20px) rotate(240deg); }
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-      20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-
-    .shake {
-      animation: shake 0.5s ease;
-    }
-
-    /* Responsive */
-    @media (max-width: 480px) {
-      .card {
-        padding: 30px 24px;
-        max-width: 100%;
-      }
-      
-      .social-login {
-        grid-template-columns: 1fr;
-      }
-      
-      .mfa-options {
-        grid-template-columns: 1fr;
-      }
-      
-      .footer-links {
-        flex-direction: column;
-        gap: 8px;
-      }
-      
-      .theme-toggle, .language-selector {
-        position: absolute;
-      }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 
 <body>
-  <!-- Animated Background -->
-  <div class="bg-animation">
-    <div class="bg-circle circle-1"></div>
-    <div class="bg-circle circle-2"></div>
-    <div class="bg-circle circle-3"></div>
-  </div>
 
-  <!-- Theme Toggle -->
-  <div class="theme-toggle">
-    <button class="theme-btn" id="themeToggle">
-      <i class="fas fa-moon"></i>
-    </button>
-  </div>
-
-  <!-- Language Selector -->
-  <div class="language-selector">
-    <button class="language-btn" id="languageToggle">
-      <i class="fas fa-globe"></i>
-      <span>EN</span>
-      <i class="fas fa-chevron-down" style="font-size: 0.8rem;"></i>
-    </button>
-  </div>
-
-  <!-- Main Card -->
   <div class="card">
-    <!-- Progress Steps (for multi-step login) -->
-    <div class="progress-steps">
-      <div class="step active" id="step1">
-        <span>1</span>
-        <div class="step-label">Credentials</div>
-      </div>
-      <div class="step" id="step2">
-        <span>2</span>
-        <div class="step-label">Security</div>
-      </div>
-      <div class="step" id="step3">
-        <span>3</span>
-        <div class="step-label">Complete</div>
-      </div>
-    </div>
+    <h1>Welcome back</h1>
+    <p class="subtitle">Please enter your details to sign in</p>
 
-    <!-- Card Header -->
-    <div class="card-header">
-      <div class="logo">
-        <div class="logo-icon">
-          <i class="fas fa-shield-alt"></i>
-        </div>
-      </div>
-      <h1>Secure Login</h1>
-      <p class="subtitle">Enter your credentials to access your secure dashboard</p>
-    </div>
-
-    <!-- Login Form -->
     <form id="loginForm" onsubmit="handleLogin(event)">
-      <!-- Step 1: Credentials -->
-      <div id="step1-content">
-        <div class="input-group">
-          <label for="email">
-            Email Address
-            <span class="input-feedback" id="emailFeedback"></span>
-          </label>
-          <div class="input-wrapper">
-            <i class="fas fa-envelope input-icon"></i>
-            <input 
-              id="email" 
-              type="email" 
-              placeholder="name@company.com" 
-              autocomplete="email"
-              required
-              oninput="validateEmail()"
-            />
-          </div>
-        </div>
-
-        <div class="input-group">
-          <label for="password">
-            Password
-            <a href="/forgot.html" class="forgot-link">Forgot password?</a>
-          </label>
-          <div class="input-wrapper">
-            <i class="fas fa-lock input-icon"></i>
-            <input 
-              id="password" 
-              type="password" 
-              placeholder="••••••••" 
-              autocomplete="current-password"
-              required
-              oninput="checkPasswordStrength()"
-            />
-            <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Toggle password visibility">
-              <i class="fas fa-eye" id="eyeIcon"></i>
-            </button>
-          </div>
-          <div class="password-strength" id="passwordStrength">
-            <div class="strength-meter" id="strengthMeter"></div>
-          </div>
-          <div class="input-feedback" id="passwordFeedback"></div>
-        </div>
-
-        <!-- Remember me & CAPTCHA trigger -->
-        <div class="form-options">
-          <label class="remember-me">
-            <div class="checkbox-wrapper">
-              <input type="checkbox" id="rememberMe">
-              <span class="checkmark"></span>
-            </div>
-            Remember me
-          </label>
-          <button type="button" class="forgot-link" onclick="toggleCaptcha()" id="captchaToggle">
-            <i class="fas fa-robot"></i> Verify I'm human
-          </button>
-        </div>
-
-        <!-- CAPTCHA -->
-        <div class="captcha-container" id="captchaContainer">
-          <div class="captcha-challenge">
-            <div class="captcha-text" id="captchaText">A3B8C</div>
-            <button type="button" class="captcha-refresh" onclick="generateCaptcha()">
-              <i class="fas fa-redo"></i>
-            </button>
-          </div>
+      
+      <div class="input-group">
+        <label for="email">Email address</label>
+        <div class="input-wrapper">
+          <i class="ph ph-envelope-simple input-icon"></i>
           <input 
-            type="text" 
-            id="captchaInput" 
-            placeholder="Enter the code above"
-            maxlength="5"
-            style="padding-left: 16px;"
+            id="email" 
+            type="email" 
+            placeholder="doctor@example.com" 
+            autocomplete="email"
+            required 
           />
         </div>
-
-        <button type="submit" id="submitBtn" class="btn-primary">
-          <span class="spinner" id="spinner"></span>
-          <span id="btnText">Continue to Security</span>
-          <i class="fas fa-arrow-right"></i>
-        </button>
       </div>
 
-      <!-- Step 2: MFA -->
-      <div class="mfa-container" id="step2-content">
-        <h3 style="text-align: center; margin-bottom: 16px;">Two-Factor Authentication</h3>
-        <p class="subtitle" style="margin-bottom: 24px;">Choose your verification method</p>
-        
-        <div class="mfa-options">
-          <div class="mfa-option" onclick="selectMfaOption('authenticator')">
-            <div class="mfa-icon">
-              <i class="fas fa-mobile-alt"></i>
-            </div>
-            <div style="font-weight: 600; font-size: 0.9rem;">Authenticator App</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Google/Microsoft Auth</div>
-          </div>
-          
-          <div class="mfa-option active" onclick="selectMfaOption('sms')">
-            <div class="mfa-icon">
-              <i class="fas fa-comment-alt"></i>
-            </div>
-            <div style="font-weight: 600; font-size: 0.9rem;">SMS Code</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Sent to your phone</div>
-          </div>
-        </div>
-
-        <div class="input-group" style="margin-top: 24px;">
-          <label for="mfaCode">Verification Code</label>
-          <div class="input-wrapper">
-            <i class="fas fa-key input-icon"></i>
-            <input 
-              id="mfaCode" 
-              type="text" 
-              placeholder="Enter 6-digit code" 
-              maxlength="6"
-              pattern="\d{6}"
-            />
-          </div>
-          <div class="input-feedback" id="mfaFeedback"></div>
-        </div>
-
-        <div style="display: flex; gap: 12px; margin-top: 24px;">
-          <button type="button" class="btn-primary" style="background: var(--text-muted);" onclick="goToStep(1)">
-            <i class="fas fa-arrow-left"></i> Back
-          </button>
-          <button type="button" class="btn-primary" onclick="verifyMfa()" id="verifyMfaBtn">
-            Verify & Continue
+      <div class="input-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <i class="ph ph-lock-key input-icon"></i>
+          <input 
+            id="password" 
+            type="password" 
+            placeholder="••••••••" 
+            autocomplete="current-password"
+            required 
+          />
+          <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Toggle password visibility">
+            <i class="ph ph-eye" id="eyeIcon"></i>
           </button>
         </div>
       </div>
+
+      <button type="submit" id="submitBtn" class="btn-primary">
+        <span class="spinner" id="spinner"></span>
+        <span id="btnText">Sign in</span>
+      </button>
+
     </form>
 
-    <!-- Social Login -->
-    <div class="divider"><span>Or continue with</span></div>
+    <div class="divider"><span>OR</span></div>
 
-    <div class="social-login">
-      <button class="social-btn google" onclick="socialLogin('google')">
-        <i class="fab fa-google"></i>
-      </button>
-      <button class="social-btn github" onclick="socialLogin('github')">
-        <i class="fab fa-github"></i>
-      </button>
-      <button class="social-btn microsoft" onclick="socialLogin('microsoft')">
-        <i class="fab fa-microsoft"></i>
-      </button>
-    </div>
+    <button class="btn-google" onclick="location.href='/auth/google'">
+      <svg width="20" height="20" viewBox="0 0 24 24">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
 
-    <!-- Messages -->
     <div id="msg" class="msg"></div>
 
-    <!-- Footer -->
     <div class="footer">
-      <div class="footer-links">
-        <a href="/register.html">Create an account</a>
-        <a href="/privacy.html">Privacy Policy</a>
-        <a href="/terms.html">Terms of Service</a>
-        <a href="/support.html">Help Center</a>
-      </div>
-      <div style="font-size: 0.8rem;">
-        <i class="fas fa-lock"></i> Your connection is secure
-      </div>
+      <span>Don’t have an account? <a href="/register.html">Sign up</a></span>
+      <a href="/forgot.html" style="font-size: 0.85rem; color: var(--text-muted);">Forgot your password?</a>
     </div>
   </div>
 
-  <script>
-    // ========== STATE MANAGEMENT ==========
-    let currentStep = 1;
-    let selectedMfaOption = 'sms';
-    let loginAttempts = 0;
-    let isDarkMode = localStorage.getItem('darkMode') === 'true';
-    let captchaRequired = false;
-    let captchaSolved = false;
-
-    // ========== INITIALIZATION ==========
-    document.addEventListener('DOMContentLoaded', function() {
-      // Set theme
-      if (isDarkMode) {
-        document.body.classList.add('dark-mode');
-        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
-      }
-      
-      // Generate initial CAPTCHA
-      generateCaptcha();
-      
-      // Check for saved email
-      const savedEmail = localStorage.getItem('rememberedEmail');
-      if (savedEmail) {
-        document.getElementById('email').value = savedEmail;
-        document.getElementById('rememberMe').checked = true;
-      }
-    });
-
-    // ========== THEME TOGGLE ==========
-    document.getElementById('themeToggle').addEventListener('click', function() {
-      isDarkMode = !isDarkMode;
-      document.body.classList.toggle('dark-mode', isDarkMode);
-      localStorage.setItem('darkMode', isDarkMode);
-      
-      this.innerHTML = isDarkMode 
-        ? '<i class="fas fa-sun"></i>' 
-        : '<i class="fas fa-moon"></i>';
-    });
-
-    // ========== FORM VALIDATION ==========
-    function validateEmail() {
-      const email = document.getElementById('email').value;
-      const feedback = document.getElementById('emailFeedback');
-      
-      if (!email) {
-        feedback.textContent = '';
-        feedback.className = 'input-feedback';
-        return false;
-      }
-      
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        feedback.textContent = 'Please enter a valid email address';
-        feedback.className = 'input-feedback error show';
-        return false;
-      }
-      
-      feedback.textContent = '✓ Valid email format';
-      feedback.className = 'input-feedback success show';
-      return true;
+<script>
+  // Toggle Password Visibility
+  function togglePassword() {
+    const passwordInput = document.getElementById("password");
+    const eyeIcon = document.getElementById("eyeIcon");
+    
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      eyeIcon.classList.replace("ph-eye", "ph-eye-slash");
+    } else {
+      passwordInput.type = "password";
+      eyeIcon.classList.replace("ph-eye-slash", "ph-eye");
     }
+  }
 
-    function checkPasswordStrength() {
-      const password = document.getElementById('password').value;
-      const strengthBar = document.getElementById('strengthMeter');
-      const strengthContainer = document.getElementById('passwordStrength');
-      const feedback = document.getElementById('passwordFeedback');
-      
-      if (!password) {
-        strengthContainer.classList.remove('show');
-        feedback.className = 'input-feedback';
-        return;
-      }
-      
-      strengthContainer.classList.add('show');
-      
-      let strength = 0;
-      let feedbackText = '';
-      
-      // Check criteria
-      if (password.length >= 8) strength += 25;
-      if (/[A-Z]/.test(password)) strength += 25;
-      if (/[0-9]/.test(password)) strength += 25;
-      if (/[^A-Za-z0-9]/.test(password)) strength += 25;
-      
-      // Update strength meter
-      strengthBar.style.width = `${strength}%`;
-      
-      // Set color and feedback
-      if (strength < 50) {
-        strengthBar.style.background = '#ef4444';
-        feedbackText = 'Weak password';
-        feedback.className = 'input-feedback error show';
-      } else if (strength < 75) {
-        strengthBar.style.background = '#f59e0b';
-        feedbackText = 'Moderate password';
-        feedback.className = 'input-feedback warning show';
-      } else {
-        strengthBar.style.background = '#10b981';
-        feedbackText = 'Strong password';
-        feedback.className = 'input-feedback success show';
-      }
-      
-      feedback.textContent = feedbackText;
-    }
+  // Handle Login Logic
+  async function handleLogin(e) {
+    e.preventDefault(); // Prevent default form submission reload
+    
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const msg = document.getElementById("msg");
+    const btn = document.getElementById("submitBtn");
+    const spinner = document.getElementById("spinner");
+    const btnText = document.getElementById("btnText");
 
-    // ========== PASSWORD VISIBILITY ==========
-    function togglePassword() {
-      const passwordInput = document.getElementById("password");
-      const eyeIcon = document.getElementById("eyeIcon");
-      
-      if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-        eyeIcon.classList.replace("fa-eye", "fa-eye-slash");
-      } else {
-        passwordInput.type = "password";
-        eyeIcon.classList.replace("fa-eye-slash", "fa-eye");
-      }
-    }
+    // Reset UI
+    msg.className = "msg"; 
+    msg.textContent = "";
+    
+    // Loading State
+    btn.disabled = true;
+    spinner.style.display = "block";
+    btnText.textContent = "Signing in...";
 
-    // ========== CAPTCHA FUNCTIONS ==========
-    function generateCaptcha() {
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-      let captcha = "";
-      for (let i = 0; i < 5; i++) {
-        captcha += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      document.getElementById('captchaText').textContent = captcha;
-      document.getElementById('captchaInput').value = '';
-      captchaSolved = false;
-    }
-
-    function toggleCaptcha() {
-      const container = document.getElementById('captchaContainer');
-      const toggleBtn = document.getElementById('captchaToggle');
-      
-      if (container.classList.contains('show')) {
-        container.classList.remove('show');
-        toggleBtn.innerHTML = '<i class="fas fa-robot"></i> Verify I\'m human';
-      } else {
-        container.classList.add('show');
-        generateCaptcha();
-        toggleBtn.innerHTML = '<i class="fas fa-times"></i> Hide verification';
-      }
-    }
-
-    function validateCaptcha() {
-      if (!document.getElementById('captchaContainer').classList.contains('show')) {
-        return true;
-      }
-      
-      const input = document.getElementById('captchaInput').value.toUpperCase();
-      const captcha = document.getElementById('captchaText').textContent;
-      
-      if (input === captcha) {
-        captchaSolved = true;
-        return true;
-      }
-      
-      showMessage('Please enter the correct verification code', 'error');
-      document.getElementById('captchaContainer').classList.add('shake');
-      setTimeout(() => {
-        document.getElementById('captchaContainer').classList.remove('shake');
-      }, 500);
-      generateCaptcha();
-      return false;
-    }
-
-    // ========== STEP NAVIGATION ==========
-    function goToStep(step) {
-      // Validate before proceeding from step 1
-      if (currentStep === 1 && step === 2) {
-        if (!validateEmail() || !document.getElementById('password').value) {
-          showMessage('Please fill in all required fields correctly', 'error');
-          return;
-        }
-        
-        if (captchaRequired && !validateCaptcha()) {
-          return;
-        }
-      }
-      
-      // Update steps
-      document.querySelectorAll('.step').forEach((s, index) => {
-        s.classList.remove('active');
-        if (index + 1 < step) s.classList.add('completed');
-        if (index + 1 === step) s.classList.add('active');
+    try {
+      const res = await fetch("/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
       });
-      
-      // Show/hide content
-      document.getElementById('step1-content').style.display = step === 1 ? 'block' : 'none';
-      document.getElementById('step2-content').style.display = step === 2 ? 'block' : 'none';
-      
-      currentStep = step;
-      
-      // Update button text
-      if (step === 1) {
-        document.getElementById('btnText').textContent = 'Continue to Security';
-      }
-    }
 
-    // ========== MFA FUNCTIONS ==========
-    function selectMfaOption(option) {
-      selectedMfaOption = option;
-      document.querySelectorAll('.mfa-option').forEach(el => {
-        el.classList.remove('active');
-      });
-      event.currentTarget.classList.add('active');
-      
-      // Show appropriate instructions
-      const feedback = document.getElementById('mfaFeedback');
-      if (option === 'sms') {
-        feedback.textContent = 'A 6-digit code will be sent to your phone';
-        feedback.className = 'input-feedback success show';
-      } else {
-        feedback.textContent = 'Open your authenticator app to get the code';
-        feedback.className = 'input-feedback success show';
-      }
-    }
+      const data = await res.json().catch(() => ({})); // Handle empty JSON gracefully
 
-    function verifyMfa() {
-      const code = document.getElementById('mfaCode').value;
-      const btn = document.getElementById('verifyMfaBtn');
-      const originalText = btn.innerHTML;
-      
-      if (!/^\d{6}$/.test(code)) {
-        showMessage('Please enter a valid 6-digit code', 'error');
-        return;
-      }
-      
-      // Simulate verification
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
-      
-      setTimeout(() => {
-        // Simulate API call
-        const success = Math.random() > 0.2; // 80% success rate for demo
+      if (res.ok) {
+        msg.textContent = "Login successful. Redirecting...";
+        msg.classList.add("msg", "success", "visible");
         
-        if (success) {
-          showMessage('Verification successful! Logging in...', 'success');
-          goToStep(3);
-          
-          // Complete login
-          setTimeout(() => {
-            completeLogin();
-          }, 1500);
-        } else {
-          showMessage('Invalid verification code. Please try again.', 'error');
-          btn.disabled = false;
-          btn.innerHTML = originalText;
-        }
-      }, 1500);
-    }
-
-    // ========== LOGIN HANDLING ==========
-    async function handleLogin(e) {
-      e.preventDefault();
-      
-      // Increment login attempts
-      loginAttempts++;
-      
-      // Show CAPTCHA after 2 failed attempts
-      if (loginAttempts >= 2 && !captchaRequired) {
-        captchaRequired = true;
-        toggleCaptcha();
-        showMessage('Additional verification required', 'warning');
-        return;
-      }
-      
-      // Validate form
-      if (!validateEmail()) {
-        showMessage('Please enter a valid email address', 'error');
-        return;
-      }
-      
-      if (!document.getElementById('password').value) {
-        showMessage('Please enter your password', 'error');
-        return;
-      }
-      
-      if (captchaRequired && !validateCaptcha()) {
-        return;
-      }
-      
-      // Save email if "Remember me" is checked
-      if (document.getElementById('rememberMe').checked) {
-        localStorage.setItem('rememberedEmail', document.getElementById('email').value);
+        // Wait briefly for user to see success message
+        setTimeout(() => location.href = "/dashboard.html", 1000);
       } else {
-        localStorage.removeItem('rememberedEmail');
+        throw new Error(data.error || "Invalid credentials");
       }
+    } catch (err) {
+      msg.textContent = err.message || "Network error occurred";
+      msg.classList.add("msg", "error", "visible");
       
-      // Show MFA step (step 2)
-      goToStep(2);
+      // Reset Button State
+      btn.disabled = false;
+      spinner.style.display = "none";
+      btnText.textContent = "Sign in";
     }
-
-    function completeLogin() {
-      const email = document.getElementById('email').value;
-      const msg = document.getElementById('msg');
-      
-      showMessage(`Welcome back, ${email.split('@')[0]}! Redirecting to dashboard...`, 'success');
-      
-      // In a real app, you would:
-      // 1. Set authentication token
-      // 2. Redirect to dashboard
-      
-      setTimeout(() => {
-        window.location.href = '/dashboard.html';
-      }, 2000);
-    }
-
-    // ========== SOCIAL LOGIN ==========
-    function socialLogin(provider) {
-      showMessage(`Redirecting to ${provider} authentication...`, 'warning');
-      
-      // In a real app, you would redirect to OAuth endpoint
-      // window.location.href = `/auth/${provider}`;
-      
-      // For demo, simulate redirect
-      setTimeout(() => {
-        showMessage(`Successfully authenticated with ${provider}!`, 'success');
-        setTimeout(() => {
-          window.location.href = '/dashboard.html';
-        }, 1500);
-      }, 1000);
-    }
-
-    // ========== UTILITY FUNCTIONS ==========
-    function showMessage(text, type = 'info') {
-      const msg = document.getElementById('msg');
-      msg.textContent = text;
-      msg.className = `msg ${type} visible`;
-      
-      // Auto-hide after 5 seconds
-      setTimeout(() => {
-        msg.classList.remove('visible');
-      }, 5000);
-    }
-
-    // ========== KEYBOARD SHORTCUTS ==========
-    document.addEventListener('keydown', function(e) {
-      // Ctrl+Enter to submit form
-      if (e.ctrlKey && e.key === 'Enter') {
-        if (currentStep === 1) {
-          document.getElementById('submitBtn').click();
-        } else if (currentStep === 2) {
-          document.getElementById('verifyMfaBtn').click();
-        }
-      }
-      
-      // Escape to go back
-      if (e.key === 'Escape' && currentStep > 1) {
-        goToStep(currentStep - 1);
-      }
-    });
-
-    // ========== SECURITY FEATURES ==========
-    // Prevent paste on sensitive fields (optional)
-    document.getElementById('password').addEventListener('paste', function(e) {
-      showMessage('Pasting is disabled in the password field for security', 'warning');
-      e.preventDefault();
-    });
-
-    // Detect password manager autofill
-    document.getElementById('password').addEventListener('change', function() {
-      if (this.value) {
-        checkPasswordStrength();
-      }
-    });
-  </script>
+  }
+</script>
 </body>
 </html>
