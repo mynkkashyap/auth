@@ -22,14 +22,18 @@ export async function onRequest({ request, env }) {
     );
   }
 
+  // 🔑 INCLUDE provider HERE
   const user = await env.DB.prepare(
-    "SELECT email, name FROM users WHERE id = ?"
+    "SELECT email, name, provider FROM users WHERE id = ?"
   )
     .bind(session.user_id)
     .first();
 
   return new Response(
-    JSON.stringify({ loggedIn: true, user }),
+    JSON.stringify({
+      loggedIn: true,
+      user
+    }),
     { headers: { "Content-Type": "application/json" } }
   );
 }
