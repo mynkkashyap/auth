@@ -62,3 +62,45 @@ export async function onRequestPost({ request, env }) {
     { headers: { "Content-Type": "application/json" } }
   );
 }
+import { nanoid } from "nanoid";
+
+export async function onRequestPost({ request, env }) {
+  const { name, email, password } = await request.json();
+
+  const hash = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(password)
+  );
+  const password_hash = [...new Uint8Array(hash)]
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  const token = nanoid(32);
+
+  await env.DB.prepare(
+    `INSERT INTO users (id,name,email,password_hash,provider,verified,verify_token)
+     VALUES (?, ?, ?, ?, 'email', 0, ?)`
+  ).bind(crypto.randomUUID(), name, email, password_hash, token).run();
+
+  // 👉 send email (example using Resend)
+  await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      from: "Auth <no-reply@yourdomain.com>",
+      to: email,
+      subject: "Verify your account",
+      html: `
+        Click to verify:<br>
+        <a href="${env.BASE_URL}/auth/verify?token=${token}">
+          Verify email
+        </a>
+      `
+    })
+  });
+
+  return Response.json({ success: true });
+}
