@@ -178,28 +178,32 @@
   </div>
 
   <script>
-    async function login() {
-      msg.textContent = "";
-      msg.className = "msg";
+  async function login() {
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const msg = document.getElementById("msg");
 
-      const res = await fetch("/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.value.trim(),
-          password: password.value
-        })
-      });
+    msg.textContent = "";
+    msg.className = "msg";
 
-      if (res.ok) {
-        msg.textContent = "Login successful. Redirecting…";
-        msg.classList.add("success");
-        setTimeout(() => location.href = "/dashboard.html", 700);
-      } else {
-        msg.textContent = "Invalid email or password";
-        msg.classList.add("error");
-      }
+    const res = await fetch("/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: emailInput.value.trim(),
+        password: passwordInput.value
+      })
+    });
+
+    if (res.ok) {
+      msg.textContent = "Login successful. Redirecting…";
+      msg.classList.add("success");
+      setTimeout(() => location.href = "/dashboard.html", 700);
+    } else {
+      msg.textContent = "Invalid email or password";
+      msg.classList.add("error");
     }
-  </script>
+  }
+</script>
 </body>
 </html>
