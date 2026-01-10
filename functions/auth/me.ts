@@ -30,10 +30,15 @@ export async function onRequest({ request, env }) {
     .first();
 
   return new Response(
-    JSON.stringify({
-      loggedIn: true,
-      user
-    }),
-    { headers: { "Content-Type": "application/json" } }
-  );
+  JSON.stringify({
+    loggedIn: true,
+    user
+  }),
+  {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store"
+    }
+  }
+);
 }
