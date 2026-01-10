@@ -177,10 +177,10 @@
     </div>
   </div>
 
-  <script>
+<script>
 async function login() {
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
   const msg = document.getElementById("msg");
 
   msg.textContent = "";
@@ -191,36 +191,27 @@ async function login() {
     res = await fetch("/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: emailInput.value.trim(),
-        password: passwordInput.value
-      })
+      body: JSON.stringify({ email, password })
     });
   } catch {
-    msg.textContent = "Network error. Please try again.";
+    msg.textContent = "Network error";
     msg.classList.add("error");
     return;
   }
 
-  const contentType = res.headers.get("content-type") || "";
-  let data = null;
-
-  if (contentType.includes("application/json")) {
+  let data;
+  try {
     data = await res.json();
-  } else {
-    const text = await res.text();
-    msg.textContent = "Server error. Please try again.";
+  } catch {
+    msg.textContent = "Server error";
     msg.classList.add("error");
-    console.error("Non-JSON response:", text);
     return;
   }
 
   if (res.ok) {
     msg.textContent = "Login successful. Redirecting…";
     msg.classList.add("success");
-    setTimeout(() => {
-      window.location.href = "/dashboard.html";
-    }, 700);
+    setTimeout(() => location.href = "/dashboard.html", 700);
   } else {
     msg.textContent = data.error || "Login failed";
     msg.classList.add("error");
