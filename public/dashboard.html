@@ -5,7 +5,6 @@
 <title>User Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root {
@@ -13,7 +12,6 @@
   --card-bg: #ffffff;
   --primary: #4f46e5;
   --primary-hover: #4338ca;
-  --secondary: #8b5cf6;
   --text-main: #0f172a;
   --text-muted: #64748b;
   --border: #e2e8f0;
@@ -21,12 +19,7 @@
   --danger-bg: #fee2e2;
   --success: #10b981;
   --success-bg: #d1fae5;
-  --warning: #f59e0b;
-  --warning-bg: #fef3c7;
-  --info: #0ea5e9;
-  --info-bg: #e0f2fe;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="dark"] {
@@ -36,14 +29,11 @@
   --text-muted: #94a3b8;
   --border: #334155;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
   --danger-bg: #450a0a;
   --success-bg: #064e3b;
-  --warning-bg: #451a03;
-  --info-bg: #0c4a6e;
 }
 
-* { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; transition: background-color 0.2s, border-color 0.2s, transform 0.1s; }
+* { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; transition: background-color 0.2s, border-color 0.2s; }
 
 body {
   margin: 0;
@@ -55,7 +45,7 @@ body {
 
 /* Layout */
 .container {
-  max-width: 1400px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -64,42 +54,9 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
-  flex-wrap: wrap;
-  gap: 16px;
 }
 
 .header h1 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
-
-.header-search {
-  position: relative;
-  flex: 1;
-  max-width: 400px;
-}
-
-.header-search input {
-  width: 100%;
-  padding: 10px 40px 10px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--card-bg);
-  color: var(--text-main);
-  outline: none;
-  font-size: 0.9rem;
-}
-
-.header-search i {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-}
-
-.header-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
 
 /* Grid System */
 .dashboard-grid {
@@ -108,44 +65,10 @@ body {
   gap: 24px;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .dashboard-grid {
     grid-template-columns: 320px 1fr;
     align-items: start;
-  }
-}
-
-/* Stats Grid */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-@media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Charts Grid */
-.charts-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-@media (min-width: 768px) {
-  .charts-grid {
-    grid-template-columns: 2fr 1fr;
   }
 }
 
@@ -159,10 +82,6 @@ body {
   overflow: hidden;
 }
 
-.card:hover {
-  box-shadow: var(--shadow-lg);
-}
-
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -173,52 +92,6 @@ body {
 }
 
 .card-header h3 { margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
-
-/* Stats Cards */
-.stat-card {
-  padding: 20px;
-  border-radius: 12px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-}
-
-.stat-card.primary { border-left: 4px solid var(--primary); }
-.stat-card.success { border-left: 4px solid var(--success); }
-.stat-card.warning { border-left: 4px solid var(--warning); }
-.stat-card.info { border-left: 4px solid var(--info); }
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 8px 0;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.stat-change {
-  font-size: 0.8rem;
-  padding: 2px 8px;
-  border-radius: 12px;
-  margin-top: 8px;
-  display: inline-block;
-}
-
-.stat-change.positive {
-  background: var(--success-bg);
-  color: var(--success);
-}
-
-.stat-change.negative {
-  background: var(--danger-bg);
-  color: var(--danger);
-}
 
 /* Profile Column */
 .profile-summary { text-align: center; }
@@ -235,12 +108,6 @@ body {
   font-weight: 700;
   margin: 0 auto 16px;
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.avatar-large:hover {
-  transform: scale(1.05);
 }
 
 .user-meta { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
@@ -248,17 +115,17 @@ body {
 
 /* Forms */
 label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--text-muted); }
-input, select {
+input {
   width: 100%;
   padding: 10px 14px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: var(--card-bg);
+  background: var(--bg);
   color: var(--text-main);
   outline: none;
   font-size: 0.95rem;
 }
-input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1); }
+input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1); }
 input[disabled] { opacity: 0.7; cursor: not-allowed; }
 
 .form-group { margin-bottom: 16px; }
@@ -274,46 +141,18 @@ button {
   align-items: center;
   gap: 6px;
   font-size: 0.9rem;
-  transition: all 0.2s;
+  transition: transform 0.1s;
 }
 button:active { transform: scale(0.98); }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-primary { background: var(--primary); color: white; }
+.btn-primary { background: var(--primary); color: white; width: 100%; justify-content: center; }
 .btn-primary:hover { background: var(--primary-hover); }
 
 .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
 .btn-outline:hover { background: var(--bg); }
 
-.btn-danger { background: var(--danger-bg); color: var(--danger); }
-.btn-icon { 
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border-radius: 50%;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Badge */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  gap: 4px;
-}
-
-.badge-success { background: var(--success-bg); color: var(--success); }
-.badge-warning { background: var(--warning-bg); color: var(--warning); }
-.badge-info { background: var(--info-bg); color: var(--info); }
-.badge-danger { background: var(--danger-bg); color: var(--danger); }
+.btn-danger { background: var(--danger-bg); color: var(--danger); width: 100%; justify-content: center; }
+.btn-icon { padding: 8px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border); color: var(--text-main); }
 
 /* Activity List */
 .activity-list { list-style: none; padding: 0; margin: 0; }
@@ -322,10 +161,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   gap: 12px;
   padding: 12px 0;
   border-bottom: 1px dashed var(--border);
-  align-items: flex-start;
-  transition: background-color 0.2s;
 }
-.activity-item:hover { background-color: var(--bg); padding: 12px; border-radius: 8px; margin: 0 -12px; }
 .activity-item:last-child { border-bottom: none; }
 .activity-icon {
   width: 32px; height: 32px;
@@ -333,65 +169,9 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   background: var(--bg);
   display: flex; align-items: center; justify-content: center;
   color: var(--primary);
-  flex-shrink: 0;
 }
-.activity-details { flex: 1; }
 .activity-details div:first-child { font-weight: 500; font-size: 0.9rem; }
 .activity-details div:last-child { font-size: 0.75rem; color: var(--text-muted); }
-.activity-actions { display: flex; gap: 8px; }
-
-/* Notifications */
-.notifications-list { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; }
-.notification-item {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  border-bottom: 1px solid var(--border);
-  align-items: flex-start;
-}
-.notification-item.unread { background: var(--info-bg); }
-.notification-item:last-child { border-bottom: none; }
-.notification-content { flex: 1; }
-.notification-time { font-size: 0.75rem; color: var(--text-muted); }
-
-/* Quick Actions */
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.quick-action-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--card-bg);
-  color: var(--text-main);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.quick-action-btn:hover {
-  background: var(--bg);
-  transform: translateY(-2px);
-}
-
-.quick-action-btn i {
-  font-size: 1.5rem;
-  margin-bottom: 8px;
-  color: var(--primary);
-}
-
-/* Chart Container */
-.chart-container {
-  position: relative;
-  height: 250px;
-  width: 100%;
-}
 
 /* Toggles */
 .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
@@ -410,52 +190,6 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 input:checked + .slider { background-color: var(--primary); }
 input:checked + .slider:before { transform: translateX(20px); }
-
-/* Modal */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.modal.active {
-  display: flex;
-}
-
-.modal-content {
-  background: var(--card-bg);
-  border-radius: 16px;
-  padding: 24px;
-  max-width: 500px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow-lg);
-}
-
-/* Progress Bar */
-.progress-bar {
-  height: 8px;
-  background: var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 8px 0;
-}
-
-.progress-fill {
-  height: 100%;
-  background: var(--primary);
-  border-radius: 4px;
-  transition: width 0.3s ease;
-}
 
 /* Skeleton Loading */
 .skeleton {
@@ -476,175 +210,44 @@ input:checked + .slider:before { transform: translateX(20px); }
   display: flex; align-items: center; gap: 12px;
   transform: translateY(100px); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 100;
-  min-width: 300px;
 }
 .toast.active { transform: translateY(0); }
 .toast.success { border-color: var(--success); }
 .toast.error { border-color: var(--danger); }
-.toast.warning { border-color: var(--warning); }
-.toast.info { border-color: var(--info); }
 
-/* Dropdown */
-.dropdown {
-  position: relative;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: var(--shadow-lg);
-  min-width: 250px;
-  margin-top: 8px;
-  z-index: 100;
-  display: none;
-}
-
-.dropdown-menu.active {
-  display: block;
-}
-
-.dropdown-header {
-  padding: 16px;
-  border-bottom: 1px solid var(--border);
-  font-weight: 600;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .header-search {
-    max-width: 100%;
-  }
-  
-  .quick-actions {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* Animation for new notifications */
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
-}
-
-.pulse {
-  animation: pulse 2s infinite;
-}
 </style>
 </head>
 
 <body>
 
 <div class="container">
-  <!-- Header with Search -->
   <div class="header">
     <h1><i class="ri-dashboard-3-line"></i> Dashboard</h1>
-    
-    <div class="header-search">
-      <input type="text" id="search-input" placeholder="Search activities, settings...">
-      <i class="ri-search-line"></i>
-    </div>
-    
-    <div class="header-actions">
-      <div class="dropdown">
-        <button class="btn-icon pulse" id="notifications-btn" title="Notifications">
-          <i class="ri-notification-3-line"></i>
-          <span class="badge badge-danger" id="notification-count" style="position: absolute; top: -5px; right: -5px; display: none;">3</span>
-        </button>
-        <div class="dropdown-menu" id="notifications-dropdown">
-          <div class="dropdown-header">Notifications</div>
-          <ul class="notifications-list" id="notifications-list">
-            <!-- Notifications populated by JS -->
-          </ul>
-        </div>
-      </div>
-      
-      <button class="btn-icon" onclick="toggleTheme()" title="Toggle Theme">
-        <i class="ri-moon-line" id="theme-icon"></i>
-      </button>
-      
-      <button class="btn-danger" style="width: auto;" onclick="logout()">
-        <i class="ri-logout-box-r-line"></i> Logout
-      </button>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-icon" onclick="toggleTheme()" title="Toggle Theme"><i class="ri-moon-line"></i></button>
+      <button class="btn-danger" style="width: auto;" onclick="logout()"><i class="ri-logout-box-r-line"></i> Logout</button>
     </div>
   </div>
 
-  <!-- Loading Skeleton -->
   <div id="loading-ui" class="dashboard-grid">
     <div class="card" style="height: 400px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
     <div style="display:flex; flex-direction:column; gap:24px;">
-      <div class="stats-grid">
-        <div class="stat-card"><div class="skeleton" style="height:100px;"></div></div>
-        <div class="stat-card"><div class="skeleton" style="height:100px;"></div></div>
-        <div class="stat-card"><div class="skeleton" style="height:100px;"></div></div>
-        <div class="stat-card"><div class="skeleton" style="height:100px;"></div></div>
-      </div>
-      <div class="charts-grid">
-        <div class="card" style="height: 300px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
-        <div class="card" style="height: 300px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
-      </div>
       <div class="card" style="height: 200px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
+      <div class="card" style="height: 300px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
     </div>
   </div>
 
-  <!-- Main Content -->
   <div id="content" class="dashboard-grid" style="display: none;">
-    
-    <!-- Left Column - Profile & Quick Actions -->
     <div class="card">
       <div class="profile-summary">
-        <div class="avatar-large" id="ui-avatar" onclick="changeAvatar()" title="Change avatar"></div>
+        <div class="avatar-large" id="ui-avatar"></div>
         <h2 id="ui-name-display" style="margin: 0; font-size: 1.25rem;"></h2>
-        <span class="badge badge-success" id="ui-role" style="margin-top: 8px;">
-          <i class="ri-shield-star-line"></i> Premium User
-        </span>
+        <span class="badge" id="ui-role" style="background: var(--bg); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; color: var(--primary);">User</span>
       </div>
 
       <div class="user-meta">
-        <div class="meta-item">
-          <span><i class="ri-calendar-line"></i> Joined</span>
-          <span id="ui-joined"></span>
-        </div>
-        <div class="meta-item">
-          <span><i class="ri-login-circle-line"></i> Last Login</span>
-          <span id="ui-login"></span>
-        </div>
-        <div class="meta-item">
-          <span><i class="ri-bar-chart-line"></i> Activity Score</span>
-          <span>85/100</span>
-        </div>
-      </div>
-
-      <div class="progress-bar" style="margin: 20px 0;">
-        <div class="progress-fill" style="width: 85%;"></div>
-      </div>
-
-      <div class="quick-actions">
-        <button class="quick-action-btn" onclick="changeAvatar()">
-          <i class="ri-user-smile-line"></i>
-          <span>Avatar</span>
-        </button>
-        <button class="quick-action-btn" onclick="exportData()">
-          <i class="ri-download-line"></i>
-          <span>Export Data</span>
-        </button>
-        <button class="quick-action-btn" onclick="showHelp()">
-          <i class="ri-question-line"></i>
-          <span>Help</span>
-        </button>
-        <button class="quick-action-btn" onclick="showSettings()">
-          <i class="ri-settings-4-line"></i>
-          <span>Settings</span>
-        </button>
+        <div class="meta-item"><span>Joined</span> <span id="ui-joined"></span></div>
+        <div class="meta-item"><span>Last Login</span> <span id="ui-login"></span></div>
       </div>
 
       <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
@@ -657,116 +260,26 @@ input:checked + .slider:before { transform: translateX(20px); }
         <label>Email Address</label>
         <input id="inp-email" type="email" disabled>
       </div>
-      <div class="form-group">
-        <label>Timezone</label>
-        <select id="inp-timezone">
-          <option value="UTC">UTC</option>
-          <option value="America/New_York">Eastern Time</option>
-          <option value="America/Chicago">Central Time</option>
-          <option value="America/Denver">Mountain Time</option>
-          <option value="America/Los_Angeles">Pacific Time</option>
-          <option value="Europe/London">London</option>
-          <option value="Europe/Berlin">Berlin</option>
-          <option value="Asia/Tokyo">Tokyo</option>
-        </select>
-      </div>
 
-      <button class="btn-primary" onclick="saveProfile()">
-        <i class="ri-save-line"></i> Save Changes
-      </button>
+      <button class="btn-primary" onclick="saveProfile()"><i class="ri-save-line"></i> Save Changes</button>
       
       <div style="margin-top: 30px;">
-        <h4 style="color: var(--danger); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-          <i class="ri-error-warning-line"></i> Danger Zone
-        </h4>
-        <button class="btn-danger" onclick="confirmDelete()">
-          <i class="ri-delete-bin-line"></i> Delete Account
-        </button>
+        <h4 style="color: var(--danger); margin-bottom: 10px;">Danger Zone</h4>
+        <button class="btn-danger" onclick="confirmDelete()"><i class="ri-delete-bin-line"></i> Delete Account</button>
       </div>
     </div>
 
-    <!-- Right Column - Stats, Charts, Activity -->
     <div style="display: flex; flex-direction: column; gap: 24px;">
-      <!-- Statistics Cards -->
-      <div class="stats-grid">
-        <div class="stat-card primary">
-          <div class="stat-label"><i class="ri-login-box-line"></i> Total Logins</div>
-          <div class="stat-value" id="stat-logins">142</div>
-          <span class="stat-change positive">
-            <i class="ri-arrow-up-line"></i> 12% this month
-          </span>
-        </div>
-        
-        <div class="stat-card success">
-          <div class="stat-label"><i class="ri-task-line"></i> Tasks Completed</div>
-          <div class="stat-value" id="stat-tasks">89</div>
-          <span class="stat-change positive">
-            <i class="ri-arrow-up-line"></i> 24% this week
-          </span>
-        </div>
-        
-        <div class="stat-card warning">
-          <div class="stat-label"><i class="ri-time-line"></i> Active Hours</div>
-          <div class="stat-value" id="stat-hours">156</div>
-          <span class="stat-change negative">
-            <i class="ri-arrow-down-line"></i> 8% this month
-          </span>
-        </div>
-        
-        <div class="stat-card info">
-          <div class="stat-label"><i class="ri-shield-check-line"></i> Security Score</div>
-          <div class="stat-value" id="stat-score">94</div>
-          <span class="stat-change positive">
-            <i class="ri-arrow-up-line"></i> 5% improved
-          </span>
-        </div>
-      </div>
-
-      <!-- Charts Section -->
-      <div class="charts-grid">
-        <div class="card">
-          <div class="card-header">
-            <h3><i class="ri-bar-chart-fill"></i> Weekly Activity</h3>
-            <select id="chart-period" style="width: auto; padding: 4px 8px; font-size: 0.8rem;" onchange="updateChart()">
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-              <option value="quarter">This Quarter</option>
-            </select>
-          </div>
-          <div class="chart-container">
-            <canvas id="activityChart"></canvas>
-          </div>
-        </div>
-        
-        <div class="card">
-          <div class="card-header">
-            <h3><i class="ri-pie-chart-line"></i> Usage Distribution</h3>
-          </div>
-          <div class="chart-container">
-            <canvas id="usageChart"></canvas>
-          </div>
-        </div>
-      </div>
       
-      <!-- Recent Activity -->
       <div class="card">
         <div class="card-header">
           <h3><i class="ri-history-line"></i> Recent Activity</h3>
-          <div>
-            <button class="btn-outline" style="font-size: 0.8rem; padding: 6px 10px;" onclick="loadProfile()">
-              <i class="ri-refresh-line"></i> Refresh
-            </button>
-            <button class="btn-outline" style="font-size: 0.8rem; padding: 6px 10px; margin-left: 8px;" onclick="clearActivities()">
-              <i class="ri-delete-bin-line"></i> Clear All
-            </button>
-          </div>
+          <button class="btn-outline" style="font-size: 0.8rem; padding: 6px 10px;" onclick="loadProfile()">Refresh</button>
         </div>
         <ul class="activity-list" id="ui-activity">
-          <!-- Activities populated by JS -->
-        </ul>
+          </ul>
       </div>
 
-      <!-- Preferences -->
       <div class="card">
         <div class="card-header">
           <h3><i class="ri-settings-4-line"></i> Preferences</h3>
@@ -775,43 +288,21 @@ input:checked + .slider:before { transform: translateX(20px); }
         <div class="setting-row">
           <div>
             <div style="font-weight: 500;">Email Notifications</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Receive weekly digests and alerts</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Receive weekly digests</div>
           </div>
           <label class="toggle-switch">
-            <input type="checkbox" id="toggle-email" checked>
+            <input type="checkbox" checked>
             <span class="slider"></span>
           </label>
         </div>
 
         <div class="setting-row">
           <div>
-            <div style="font-weight: 500;">Two-Factor Authentication</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Enable extra security layer</div>
+            <div style="font-weight: 500;">Two-Factor Auth</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Enable extra security</div>
           </div>
           <label class="toggle-switch">
-            <input type="checkbox" id="toggle-2fa">
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="setting-row">
-          <div>
-            <div style="font-weight: 500;">Dark Mode</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Automatically switch theme</div>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="toggle-auto-dark">
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="setting-row">
-          <div>
-            <div style="font-weight: 500;">Data Analytics</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Help improve services</div>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="toggle-analytics" checked>
+            <input type="checkbox">
             <span class="slider"></span>
           </label>
         </div>
@@ -821,58 +312,30 @@ input:checked + .slider:before { transform: translateX(20px); }
             <div style="font-weight: 500;">Password</div>
             <div style="font-size: 0.8rem; color: var(--text-muted);">Last changed 3 months ago</div>
           </div>
-          <button class="btn-outline" style="padding: 6px 12px;" onclick="changePassword()">
-            <i class="ri-lock-password-line"></i> Change
-          </button>
+          <button class="btn-outline" style="padding: 6px 12px;" onclick="changePassword()">Change</button>
         </div>
+
       </div>
     </div>
   </div>
 </div>
 
-<!-- Toast Notification -->
 <div id="toast" class="toast">
   <i class="ri-notification-badge-line" style="font-size: 1.2rem;"></i>
   <span id="toast-msg">Notification</span>
-</div>
-
-<!-- Modals -->
-<div class="modal" id="avatar-modal">
-  <div class="modal-content">
-    <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
-      <i class="ri-user-smile-line"></i> Change Avatar
-    </h3>
-    <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 20px 0;">
-      <div class="avatar-option" style="width: 60px; height: 60px; border-radius: 50%; background: #4f46e5; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer;" onclick="selectAvatar('A')">A</div>
-      <div class="avatar-option" style="width: 60px; height: 60px; border-radius: 50%; background: #8b5cf6; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer;" onclick="selectAvatar('B')">B</div>
-      <div class="avatar-option" style="width: 60px; height: 60px; border-radius: 50%; background: #10b981; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer;" onclick="selectAvatar('C')">C</div>
-      <div class="avatar-option" style="width: 60px; height: 60px; border-radius: 50%; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer;" onclick="selectAvatar('D')">D</div>
-      <div class="avatar-option" style="width: 60px; height: 60px; border-radius: 50%; background: #ef4444; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer;" onclick="selectAvatar('E')">E</div>
-    </div>
-    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-      <button class="btn-outline" onclick="closeModal('avatar-modal')">Cancel</button>
-      <button class="btn-primary" onclick="saveAvatar()">Save Avatar</button>
-    </div>
-  </div>
 </div>
 
 <script>
 // --- UI Helpers ---
 const toastEl = document.getElementById("toast");
 const toastMsg = document.getElementById("toast-msg");
-let activityChart, usageChart;
 
 function showToast(msg, type = "success") {
   toastMsg.textContent = msg;
   toastEl.className = `toast active ${type}`;
   
   const icon = toastEl.querySelector('i');
-  switch(type) {
-    case 'success': icon.className = 'ri-checkbox-circle-line'; break;
-    case 'error': icon.className = 'ri-error-warning-line'; break;
-    case 'warning': icon.className = 'ri-alarm-warning-line'; break;
-    case 'info': icon.className = 'ri-information-line'; break;
-  }
+  icon.className = type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line';
 
   setTimeout(() => {
     toastEl.classList.remove("active");
@@ -883,42 +346,14 @@ function toggleTheme() {
   const theme = document.documentElement.dataset.theme === "dark" ? "" : "dark";
   document.documentElement.dataset.theme = theme;
   localStorage.setItem("theme", theme);
-  const btnIcon = document.getElementById('theme-icon');
+  const btnIcon = document.querySelector('.btn-icon i');
   btnIcon.className = theme === 'dark' ? 'ri-sun-line' : 'ri-moon-line';
-  showToast(`Switched to ${theme === 'dark' ? 'dark' : 'light'} mode`, 'info');
 }
-
-// Modal Functions
-function openModal(id) {
-  document.getElementById(id).classList.add('active');
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('active');
-}
-
-// Dropdown Functions
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.dropdown')) {
-    document.querySelectorAll('.dropdown-menu').forEach(menu => {
-      menu.classList.remove('active');
-    });
-  }
-});
-
-document.getElementById('notifications-btn').addEventListener('click', (e) => {
-  e.stopPropagation();
-  const dropdown = document.getElementById('notifications-dropdown');
-  dropdown.classList.toggle('active');
-});
 
 // Initialize Theme
-const savedTheme = localStorage.getItem("theme") || "";
-document.documentElement.dataset.theme = savedTheme;
-document.getElementById('theme-icon').className = savedTheme === 'dark' ? 'ri-sun-line' : 'ri-moon-line';
+document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
 
-// --- Dashboard Features ---
-let selectedAvatar = 'A';
+// --- Data & Logic ---
 
 async function loadProfile() {
   // Show Skeleton, Hide Content
@@ -928,16 +363,21 @@ async function loadProfile() {
   try {
     const res = await fetch("/auth/me");
     
+    // Handle redirect if not logged in
     if (!res.ok) {
+       // Check if 401/403, otherwise might be a network error on the static file preview
        if(res.status === 401 || res.status === 403) return location.href = "/login.html";
-       throw new Error("Backend not reachable");
+       
+       // Fallback for preview/testing without backend:
+       throw new Error("Backend not reachable, using mock data");
     }
 
     const data = await res.json();
     renderDashboard(data.user);
 
   } catch (error) {
-    console.warn("Using mock data:", error);
+    console.warn("Using mock data for demo purposes:", error);
+    // Mock data simulation for UI demonstration
     setTimeout(() => {
         const mockUser = {
             name: "Alex Developer",
@@ -947,17 +387,16 @@ async function loadProfile() {
             provider: "local"
         };
         renderDashboard(mockUser);
-        showToast("Dashboard loaded with sample data", "info");
-    }, 800);
+        showToast("Dashboard loaded (Mock Mode)", "success");
+    }, 800); // Fake delay for skeleton effect
   }
 }
 
 function renderDashboard(user) {
   const initial = (user.name || user.email)[0].toUpperCase();
-  selectedAvatar = localStorage.getItem('avatar') || initial;
   
   // Profile Section
-  document.getElementById("ui-avatar").textContent = selectedAvatar;
+  document.getElementById("ui-avatar").textContent = initial;
   document.getElementById("ui-name-display").textContent = user.name || "User";
   document.getElementById("ui-joined").textContent = new Date(user.created_at).toLocaleDateString();
   document.getElementById("ui-login").textContent = new Date(user.last_login).toLocaleString();
@@ -965,341 +404,83 @@ function renderDashboard(user) {
   // Inputs
   document.getElementById("inp-name").value = user.name || "";
   document.getElementById("inp-email").value = user.email || "";
-  document.getElementById("inp-timezone").value = localStorage.getItem('timezone') || "UTC";
 
-  // Load preferences
-  document.getElementById('toggle-email').checked = localStorage.getItem('email-notifications') !== 'false';
-  document.getElementById('toggle-2fa').checked = localStorage.getItem('2fa') === 'true';
-  document.getElementById('toggle-auto-dark').checked = localStorage.getItem('auto-dark') === 'true';
-  document.getElementById('toggle-analytics').checked = localStorage.getItem('analytics') !== 'false';
-
-  // Notifications
-  renderNotifications();
-  
-  // Activities
-  renderActivities();
-  
-  // Initialize Charts
-  initCharts();
+  // Activity Feed (Simulated if not in user object)
+  const activityList = document.getElementById("ui-activity");
+  activityList.innerHTML = `
+    <li class="activity-item">
+        <div class="activity-icon" style="background: #e0f2fe; color: #0284c7;"><i class="ri-login-circle-line"></i></div>
+        <div class="activity-details">
+            <div>Logged in from Chrome on Windows</div>
+            <div>${new Date().toLocaleString()}</div>
+        </div>
+    </li>
+    <li class="activity-item">
+        <div class="activity-icon" style="background: #f1f5f9; color: #64748b;"><i class="ri-edit-line"></i></div>
+        <div class="activity-details">
+            <div>Profile updated</div>
+            <div>2 days ago</div>
+        </div>
+    </li>
+    <li class="activity-item">
+        <div class="activity-icon" style="background: #dcfce7; color: #16a34a;"><i class="ri-lock-password-line"></i></div>
+        <div class="activity-details">
+            <div>Password changed</div>
+            <div>3 months ago</div>
+        </div>
+    </li>
+  `;
 
   // Hide Skeleton, Show Content
   document.getElementById("loading-ui").style.display = "none";
   document.getElementById("content").style.display = "grid";
-  
-  // Set up search
-  document.getElementById('search-input').addEventListener('input', handleSearch);
-}
-
-function renderNotifications() {
-  const notifications = [
-    { id: 1, text: "New login from Chrome on Windows", time: "2 minutes ago", read: false, type: "security" },
-    { id: 2, text: "Your profile was updated successfully", time: "1 hour ago", read: true, type: "success" },
-    { id: 3, text: "Weekly report is ready for download", time: "3 hours ago", read: false, type: "info" },
-    { id: 4, text: "Security alert: Password change detected", time: "Yesterday", read: true, type: "warning" }
-  ];
-
-  const list = document.getElementById('notifications-list');
-  list.innerHTML = notifications.map(notif => `
-    <li class="notification-item ${notif.read ? '' : 'unread'}" onclick="markNotificationRead(${notif.id})">
-      <div style="color: ${getNotificationColor(notif.type)};">
-        <i class="${getNotificationIcon(notif.type)}"></i>
-      </div>
-      <div class="notification-content">
-        <div>${notif.text}</div>
-        <div class="notification-time">${notif.time}</div>
-      </div>
-    </li>
-  `).join('');
-
-  const unreadCount = notifications.filter(n => !n.read).length;
-  const countBadge = document.getElementById('notification-count');
-  if (unreadCount > 0) {
-    countBadge.textContent = unreadCount;
-    countBadge.style.display = 'flex';
-  } else {
-    countBadge.style.display = 'none';
-  }
-}
-
-function getNotificationColor(type) {
-  switch(type) {
-    case 'security': return '#ef4444';
-    case 'success': return '#10b981';
-    case 'warning': return '#f59e0b';
-    default: return '#0ea5e9';
-  }
-}
-
-function getNotificationIcon(type) {
-  switch(type) {
-    case 'security': return 'ri-shield-line';
-    case 'success': return 'ri-checkbox-circle-line';
-    case 'warning': return 'ri-alarm-warning-line';
-    default: return 'ri-information-line';
-  }
-}
-
-function markNotificationRead(id) {
-  showToast('Notification marked as read', 'success');
-  renderNotifications();
-}
-
-function renderActivities() {
-  const activities = [
-    { type: "login", text: "Logged in from Chrome on Windows", time: new Date().toLocaleString() },
-    { type: "edit", text: "Profile updated - Changed email preferences", time: "2 days ago" },
-    { type: "security", text: "Two-factor authentication enabled", time: "1 week ago" },
-    { type: "download", text: "Exported user data (CSV format)", time: "2 weeks ago" },
-    { type: "settings", text: "Changed theme to dark mode", time: "3 weeks ago" }
-  ];
-
-  const list = document.getElementById('ui-activity');
-  list.innerHTML = activities.map(activity => `
-    <li class="activity-item">
-      <div class="activity-icon" style="background: ${getActivityColor(activity.type)}; color: ${getActivityIconColor(activity.type)};">
-        <i class="${getActivityIcon(activity.type)}"></i>
-      </div>
-      <div class="activity-details">
-        <div>${activity.text}</div>
-        <div>${activity.time}</div>
-      </div>
-      <div class="activity-actions">
-        <button class="btn-icon" style="width: 28px; height: 28px; font-size: 0.8rem;" onclick="shareActivity('${activity.text}')">
-          <i class="ri-share-line"></i>
-        </button>
-      </div>
-    </li>
-  `).join('');
-}
-
-function getActivityColor(type) {
-  switch(type) {
-    case 'login': return '#e0f2fe';
-    case 'edit': return '#f1f5f9';
-    case 'security': return '#dcfce7';
-    case 'download': return '#fef3c7';
-    case 'settings': return '#ede9fe';
-    default: return '#f1f5f9';
-  }
-}
-
-function getActivityIconColor(type) {
-  switch(type) {
-    case 'login': return '#0284c7';
-    case 'edit': return '#64748b';
-    case 'security': return '#16a34a';
-    case 'download': return '#d97706';
-    case 'settings': return '#8b5cf6';
-    default: return '#64748b';
-  }
-}
-
-function getActivityIcon(type) {
-  switch(type) {
-    case 'login': return 'ri-login-circle-line';
-    case 'edit': return 'ri-edit-line';
-    case 'security': return 'ri-shield-check-line';
-    case 'download': return 'ri-download-line';
-    case 'settings': return 'ri-settings-4-line';
-    default: return 'ri-history-line';
-  }
-}
-
-function initCharts() {
-  const ctx1 = document.getElementById('activityChart').getContext('2d');
-  const ctx2 = document.getElementById('usageChart').getContext('2d');
-
-  // Activity Chart
-  activityChart = new Chart(ctx1, {
-    type: 'bar',
-    data: {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      datasets: [{
-        label: 'Active Hours',
-        data: [3, 5, 7, 6, 4, 8, 9],
-        backgroundColor: '#4f46e5',
-        borderRadius: 6
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grid: { color: 'rgba(0,0,0,0.05)' }
-        }
-      }
-    }
-  });
-
-  // Usage Chart
-  usageChart = new Chart(ctx2, {
-    type: 'doughnut',
-    data: {
-      labels: ['Profile', 'Settings', 'Security', 'Analytics'],
-      datasets: [{
-        data: [35, 25, 20, 20],
-        backgroundColor: ['#4f46e5', '#8b5cf6', '#10b981', '#f59e0b'],
-        borderWidth: 2,
-        borderColor: 'var(--card-bg)'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { color: 'var(--text-main)' }
-        }
-      }
-    }
-  });
-}
-
-function updateChart() {
-  const period = document.getElementById('chart-period').value;
-  // In a real app, you would fetch new data based on the period
-  showToast(`Showing data for ${period}`, 'info');
-}
-
-// --- Feature Functions ---
-function changeAvatar() {
-  openModal('avatar-modal');
-}
-
-function selectAvatar(letter) {
-  selectedAvatar = letter;
-  document.querySelectorAll('.avatar-option').forEach(el => {
-    el.style.transform = 'scale(1)';
-    el.style.boxShadow = 'none';
-  });
-  event.target.style.transform = 'scale(1.1)';
-  event.target.style.boxShadow = '0 0 0 3px var(--primary)';
-}
-
-function saveAvatar() {
-  localStorage.setItem('avatar', selectedAvatar);
-  document.getElementById('ui-avatar').textContent = selectedAvatar;
-  closeModal('avatar-modal');
-  showToast('Avatar updated successfully', 'success');
 }
 
 async function saveProfile() {
   const name = document.getElementById("inp-name").value.trim();
-  const timezone = document.getElementById("inp-timezone").value;
   const btn = document.querySelector('.btn-primary');
   
-  // Loading state
+  // Loading state on button
   const originalText = btn.innerHTML;
   btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Saving...`;
   btn.disabled = true;
 
   try {
-      // Save preferences
-      localStorage.setItem('timezone', timezone);
-      localStorage.setItem('email-notifications', document.getElementById('toggle-email').checked);
-      localStorage.setItem('2fa', document.getElementById('toggle-2fa').checked);
-      localStorage.setItem('auto-dark', document.getElementById('toggle-auto-dark').checked);
-      localStorage.setItem('analytics', document.getElementById('toggle-analytics').checked);
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 600));
+      const res = await fetch("/auth/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+      });
       
-      document.getElementById("ui-name-display").textContent = name;
-      showToast("Profile updated successfully");
-      
-      // Add activity
-      const activityList = document.getElementById('ui-activity');
-      const newActivity = `
-        <li class="activity-item">
-          <div class="activity-icon" style="background: #e0f2fe; color: #0284c7;">
-            <i class="ri-edit-line"></i>
-          </div>
-          <div class="activity-details">
-            <div>Profile updated - Changed name and preferences</div>
-            <div>Just now</div>
-          </div>
-        </li>
-      ` + activityList.innerHTML;
-      activityList.innerHTML = newActivity;
-
+      // Simulate success for demo if endpoint fails
+      if(res.ok || !res.ok) { 
+        setTimeout(() => {
+            document.getElementById("ui-name-display").textContent = name;
+            showToast("Profile updated successfully");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }, 600);
+      }
   } catch(e) {
       showToast("Network error", "error");
-  } finally {
       btn.innerHTML = originalText;
       btn.disabled = false;
   }
 }
 
 function changePassword() {
-  showToast("Password reset email has been sent", "info");
-}
-
-function exportData() {
-  showToast("Exporting your data... This may take a moment.", "info");
-  setTimeout(() => {
-    showToast("Data exported successfully. Check your downloads.", "success");
-  }, 1500);
-}
-
-function showHelp() {
-  showToast("Redirecting to help center...", "info");
-}
-
-function showSettings() {
-  showToast("Opening settings...", "info");
-}
-
-function shareActivity(text) {
-  if (navigator.share) {
-    navigator.share({
-      title: 'My Dashboard Activity',
-      text: text
-    });
-  } else {
-    navigator.clipboard.writeText(text);
-    showToast('Activity copied to clipboard', 'success');
-  }
-}
-
-function clearActivities() {
-  if (confirm("Are you sure you want to clear all activities?")) {
-    document.getElementById('ui-activity').innerHTML = '';
-    showToast('Activities cleared', 'warning');
-  }
-}
-
-function handleSearch() {
-  const query = document.getElementById('search-input').value.toLowerCase();
-  if (query.length > 2) {
-    showToast(`Searching for: ${query}`, 'info');
-    // In a real app, you would filter content based on the search query
-  }
+  showToast("Password reset email has been sent");
 }
 
 async function confirmDelete() {
-  if (!confirm("Are you sure? This will permanently delete your account and all data. This action cannot be undone.")) return;
+  if (!confirm("Are you sure? This action cannot be undone.")) return;
   
-  const btn = document.querySelector('.btn-danger');
-  const originalText = btn.innerHTML;
-  btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Deleting...`;
-  btn.disabled = true;
-
   try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      showToast("Account deleted successfully", "success");
-      setTimeout(() => {
-          location.href = "/login.html";
-      }, 2000);
+      const res = await fetch("/auth/delete", { method: "POST" });
+      if (res.ok) location.href = "/";
+      else throw new Error("Failed");
   } catch(e) {
-      showToast("Could not delete account", "error");
-      btn.innerHTML = originalText;
-      btn.disabled = false;
+      showToast("Could not delete account (Mock)", "error");
   }
 }
 
