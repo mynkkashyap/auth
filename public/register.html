@@ -203,7 +203,7 @@
     const data = await res.json();
 
     if (res.ok) {
-      msg.textContent = "Account created. Redirecting…";
+      msg.textContent = "Account created. Verify Your Email.";
       msg.classList.add("success");
       setTimeout(() => location.href = "/login.html", 900);
     } else {
