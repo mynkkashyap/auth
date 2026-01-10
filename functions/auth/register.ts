@@ -1,4 +1,37 @@
-// GET request (browser visit)
+import { nanoid } from "nanoid";
+
+const enc = new TextEncoder();
+
+/* 🔐 PBKDF2 helper */
+async function pbkdf2Hash(password: string) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+
+  const bits = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt,
+      iterations: 100_000,
+      hash: "SHA-256"
+    },
+    key,
+    256
+  );
+
+  return {
+    hash: Buffer.from(bits).toString("hex"),
+    salt: Buffer.from(salt).toString("hex")
+  };
+}
+
+/* ❌ Block GET requests */
 export async function onRequestGet() {
   return new Response(
     "This endpoint only accepts POST requests",
@@ -6,83 +39,59 @@ export async function onRequestGet() {
   );
 }
 
-// POST request (actual registration)
+/* ✅ POST – Register user */
 export async function onRequestPost({ request, env }) {
   if (!env.DB) {
-    return new Response(
-      JSON.stringify({ error: "DB binding missing" }),
-      { status: 500 }
-    );
+    return Response.json({ error: "DB binding missing" }, { status: 500 });
   }
 
   let body;
   try {
     body = await request.json();
   } catch {
-    return new Response(
-      JSON.stringify({ error: "Invalid JSON" }),
-      { status: 400 }
-    );
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { email, password, name } = body;
+  const { name = "", email, password } = body;
 
   if (!email || !password) {
-    return new Response(
-      JSON.stringify({ error: "Missing email or password" }),
+    return Response.json(
+      { error: "Missing email or password" },
       { status: 400 }
     );
   }
 
-  // Hash password (Cloudflare-safe)
-  const enc = new TextEncoder();
-  const hashBuffer = await crypto.subtle.digest(
-    "SHA-256",
-    enc.encode(password)
-  );
-  const password_hash = [...new Uint8Array(hashBuffer)]
-    .map(b => b.toString(16).padStart(2, "0"))
-    .join("");
+  // 🔐 PBKDF2 hash
+  const { hash, salt } = await pbkdf2Hash(password);
+
+  // ✉️ Email verification token
+  const verifyToken = nanoid(32);
 
   try {
     await env.DB.prepare(
-      "INSERT INTO users (email, name, password_hash) VALUES (?, ?, ?)"
+      `
+      INSERT INTO users
+      (id, name, email, password_pbkdf2, password_salt, provider, verified, verify_token)
+      VALUES (?, ?, ?, ?, ?, 'email', 0, ?)
+      `
     )
-      .bind(email, name ?? "", password_hash)
+      .bind(
+        crypto.randomUUID(),
+        name,
+        email,
+        hash,
+        salt,
+        verifyToken
+      )
       .run();
-  } catch (e) {
-    return new Response(
-      JSON.stringify({ error: "Email already exists" }),
+  } catch {
+    return Response.json(
+      { error: "Email already exists" },
       { status: 409 }
     );
   }
 
-  return new Response(
-    JSON.stringify({ success: true }),
-    { headers: { "Content-Type": "application/json" } }
-  );
-}
-import { nanoid } from "nanoid";
-
-export async function onRequestPost({ request, env }) {
-  const { name, email, password } = await request.json();
-
-  const hash = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(password)
-  );
-  const password_hash = [...new Uint8Array(hash)]
-    .map(b => b.toString(16).padStart(2, "0"))
-    .join("");
-
-  const token = nanoid(32);
-
-  await env.DB.prepare(
-    `INSERT INTO users (id,name,email,password_hash,provider,verified,verify_token)
-     VALUES (?, ?, ?, ?, 'email', 0, ?)`
-  ).bind(crypto.randomUUID(), name, email, password_hash, token).run();
-
-  // 👉 send email (example using Resend)
+  /* 📧 Send verification email */
   await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -94,8 +103,8 @@ export async function onRequestPost({ request, env }) {
       to: email,
       subject: "Verify your account",
       html: `
-        Click to verify:<br>
-        <a href="${env.BASE_URL}/auth/verify?token=${token}">
+        <p>Click the link below to verify your account:</p>
+        <a href="${env.BASE_URL}/auth/verify?token=${verifyToken}">
           Verify email
         </a>
       `
