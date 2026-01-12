@@ -18,8 +18,7 @@
   --danger: #ef4444;
   --danger-bg: #fee2e2;
   --success: #10b981;
-  --success-bg: #d1fae5;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow: 0 4px 6px -1px rgba(0,0,0,.1);
 }
 
 [data-theme="dark"] {
@@ -28,25 +27,20 @@
   --text-main: #f1f5f9;
   --text-muted: #94a3b8;
   --border: #334155;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-  --danger-bg: #450a0a;
-  --success-bg: #064e3b;
 }
 
-* { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; transition: background-color 0.2s, border-color 0.2s; }
+* { box-sizing: border-box; font-family: Inter, system-ui, sans-serif; }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text-main);
-  min-height: 100vh;
   padding: 20px;
 }
 
-/* Layout */
 .container {
   max-width: 1000px;
-  margin: 0 auto;
+  margin: auto;
 }
 
 .header {
@@ -56,165 +50,102 @@ body {
   margin-bottom: 24px;
 }
 
-.header h1 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
-
-/* Grid System */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr;
   gap: 24px;
 }
 
 @media (min-width: 768px) {
   .dashboard-grid {
     grid-template-columns: 320px 1fr;
-    align-items: start;
   }
 }
 
-/* Cards */
 .card {
   background: var(--card-bg);
-  border-radius: 16px;
   border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+  border-radius: 16px;
   padding: 24px;
-  overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
 }
 
-.card-header h3 { margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
-
-/* Profile Column */
-.profile-summary { text-align: center; }
-.avatar-large {
+.avatar {
   width: 90px;
   height: 90px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary), #818cf8);
-  color: white;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin: 0 auto 16px;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  font-size: 2.4rem;
+  margin: auto;
 }
 
-.user-meta { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
-.meta-item { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); }
-
-/* Forms */
-label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--text-muted); }
 input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 10px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text-main);
-  outline: none;
-  font-size: 0.95rem;
 }
-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1); }
-input[disabled] { opacity: 0.7; cursor: not-allowed; }
 
-.form-group { margin-bottom: 16px; }
-
-/* Buttons */
 button {
   border: none;
   border-radius: 8px;
   padding: 10px 16px;
-  font-weight: 600;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
-  transition: transform 0.1s;
+  font-weight: 600;
 }
-button:active { transform: scale(0.98); }
 
-.btn-primary { background: var(--primary); color: white; width: 100%; justify-content: center; }
-.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  width: 100%;
+}
 
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
-.btn-outline:hover { background: var(--bg); }
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+}
 
-.btn-danger { background: var(--danger-bg); color: var(--danger); width: 100%; justify-content: center; }
-.btn-icon { padding: 8px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border); color: var(--text-main); }
+.btn-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+  width: 100%;
+}
 
-/* Activity List */
-.activity-list { list-style: none; padding: 0; margin: 0; }
 .activity-item {
   display: flex;
   gap: 12px;
   padding: 12px 0;
   border-bottom: 1px dashed var(--border);
 }
-.activity-item:last-child { border-bottom: none; }
-.activity-icon {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  background: var(--bg);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--primary);
-}
-.activity-details div:first-child { font-weight: 500; font-size: 0.9rem; }
-.activity-details div:last-child { font-size: 0.75rem; color: var(--text-muted); }
 
-/* Toggles */
-.setting-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
-.setting-row:last-child { border-bottom: none; }
-.toggle-switch {
-  position: relative; width: 44px; height: 24px;
-}
-.toggle-switch input { opacity: 0; width: 0; height: 0; }
-.slider {
-  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-  background-color: var(--border); transition: .4s; border-radius: 34px;
-}
-.slider:before {
-  position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-  background-color: white; transition: .4s; border-radius: 50%;
-}
-input:checked + .slider { background-color: var(--primary); }
-input:checked + .slider:before { transform: translateX(20px); }
-
-/* Skeleton Loading */
-.skeleton {
-  background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 6px;
-  color: transparent !important;
-}
-@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-/* Toast */
 .toast {
-  position: fixed; bottom: 24px; right: 24px;
-  background: var(--card-bg); border-left: 4px solid var(--primary);
-  padding: 16px 20px; border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  display: flex; align-items: center; gap: 12px;
-  transform: translateY(100px); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 100;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: var(--card-bg);
+  padding: 14px 18px;
+  border-left: 4px solid var(--primary);
+  border-radius: 8px;
+  transform: translateY(120px);
+  transition: .3s;
 }
-.toast.active { transform: translateY(0); }
-.toast.success { border-color: var(--success); }
-.toast.error { border-color: var(--danger); }
 
+.toast.active {
+  transform: translateY(0);
+}
 </style>
 </head>
 
@@ -222,345 +153,116 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <div class="container">
   <div class="header">
-    <h1><i class="ri-dashboard-3-line"></i> Dashboard</h1>
-    <div style="display: flex; gap: 10px;">
-      <button class="btn-icon" onclick="toggleTheme()" title="Toggle Theme"><i class="ri-moon-line"></i></button>
-      <button class="btn-danger" style="width: auto;" onclick="logout()"><i class="ri-logout-box-r-line"></i> Logout</button>
+    <h2><i class="ri-dashboard-3-line"></i> Dashboard</h2>
+    <div>
+      <button class="btn-outline" onclick="toggleTheme()"><i class="ri-moon-line"></i></button>
+      <button class="btn-danger" onclick="logout()">Logout</button>
     </div>
   </div>
 
-  <div id="loading-ui" class="dashboard-grid">
-    <div class="card" style="height: 400px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
-    <div style="display:flex; flex-direction:column; gap:24px;">
-      <div class="card" style="height: 200px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
-      <div class="card" style="height: 300px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
-    </div>
-  </div>
+  <div class="dashboard-grid" id="content" style="display:none">
 
-  <div id="content" class="dashboard-grid" style="display: none;">
+    <!-- Profile -->
     <div class="card">
-      <div class="profile-summary">
-        <div class="avatar-large" id="ui-avatar"></div>
-        <h2 id="ui-name-display" style="margin: 0; font-size: 1.25rem;"></h2>
-        <span class="badge" id="ui-role" style="background: var(--bg); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; color: var(--primary);">User</span>
-      </div>
+      <div class="avatar" id="avatar"></div>
+      <h3 id="name" style="text-align:center"></h3>
 
-      <div class="user-meta">
-        <div class="meta-item"><span>Joined</span> <span id="ui-joined"></span></div>
-        <div class="meta-item"><span>Last Login</span> <span id="ui-login"></span></div>
-      </div>
+      <label>Name</label>
+      <input id="inp-name">
 
-      <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+      <label>Email</label>
+      <input id="inp-email" disabled>
 
-      <div class="form-group">
-        <label>Full Name</label>
-        <input id="inp-name" type="text">
-      </div>
-      <div class="form-group">
-        <label>Email Address</label>
-        <input id="inp-email" type="email" disabled>
-      </div>
+      <br><br>
+      <button class="btn-primary" onclick="saveProfile()">Save</button>
 
-      <button class="btn-primary" onclick="saveProfile()"><i class="ri-save-line"></i> Save Changes</button>
-      
-      <div style="margin-top: 30px;">
-        <h4 style="color: var(--danger); margin-bottom: 10px;">Danger Zone</h4>
-        <button class="btn-danger" onclick="confirmDelete()"><i class="ri-delete-bin-line"></i> Delete Account</button>
-      </div>
+      <hr style="margin:20px 0">
+      <button class="btn-danger" onclick="deleteAccount()">Delete Account</button>
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: 24px;">
-      
+    <!-- Right -->
+    <div>
       <div class="card">
         <div class="card-header">
-          <h3><i class="ri-history-line"></i> Recent Activity</h3>
-          <button class="btn-outline" style="font-size: 0.8rem; padding: 6px 10px;" onclick="loadProfile()">Refresh</button>
+          <h3>Recent Activity</h3>
         </div>
-        <ul class="activity-list" id="ui-activity">
-          </ul>
+
+        <div class="activity-item">
+          <i class="ri-login-circle-line"></i>
+          <div>Logged in today</div>
+        </div>
+        <div class="activity-item">
+          <i class="ri-edit-line"></i>
+          <div>Profile updated</div>
+        </div>
       </div>
+
+      <br>
 
       <div class="card">
         <div class="card-header">
-          <h3><i class="ri-settings-4-line"></i> Preferences</h3>
+          <h3>Preferences</h3>
         </div>
-        
-        <div class="setting-row">
-          <div>
-            <div style="font-weight: 500;">Email Notifications</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Receive weekly digests</div>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" checked>
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="setting-row">
-          <div>
-            <div style="font-weight: 500;">Two-Factor Auth</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Enable extra security</div>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox">
-            <span class="slider"></span>
-          </label>
-        </div>
-        
-        <div class="setting-row">
-          <div>
-            <div style="font-weight: 500;">Password</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Last changed 3 months ago</div>
-          </div>
-          <button class="btn-outline" style="padding: 6px 12px;" onclick="changePassword()">Change</button>
-        </div>
-
+        <button class="btn-outline" onclick="changePassword()">Change Password</button>
       </div>
     </div>
+
   </div>
 </div>
 
-<div id="toast" class="toast">
-  <i class="ri-notification-badge-line" style="font-size: 1.2rem;"></i>
-  <span id="toast-msg">Notification</span>
-</div>
-  <div class="card">
-  <div class="card-header">
-    <h3><i class="ri-mail-send-line"></i> Contact Support</h3>
-  </div>
+<div class="toast" id="toast">Saved successfully</div>
 
-  <div class="form-group">
-    <label>Message</label>
-    <input
-      id="contact-message"
-      type="text"
-      placeholder="Describe your issue or feedback"
-    />
-  </div>
+<script>
+const toast = document.getElementById("toast");
 
-  <button class="btn-primary" onclick="submitContact()">
-    <i class="ri-send-plane-line"></i> Send Message
-  </button>
-  </div>
-
-
-  <script>
-
-async function submitContact() {
-  const message = document.getElementById("contact-message").value.trim();
-
-  if (!message) {
-    showToast("Message cannot be empty", "error");
-    return;
-  }
-
-  // Pull logged-in user data already loaded in dashboard
-  const name = document.getElementById("inp-name").value;
-  const email = document.getElementById("inp-email").value;
-
-  const btn = event.target;
-  const originalText = btn.innerHTML;
-  btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Sending...`;
-  btn.disabled = true;
-
-  try {
-    const res = await fetch("/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message,
-        name,
-        email
-      })
-    });
-
-    // Works even without backend
-    if (res.ok || !res.ok) {
-      setTimeout(() => {
-        showToast("Message sent successfully!");
-        document.getElementById("contact-message").value = "";
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }, 600);
-    }
-  } catch (err) {
-    showToast("Failed to send message", "error");
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-  }
-}
-
-
-    
-// --- UI Helpers ---
-const toastEl = document.getElementById("toast");
-const toastMsg = document.getElementById("toast-msg");
-
-function showToast(msg, type = "success") {
-  toastMsg.textContent = msg;
-  toastEl.className = `toast active ${type}`;
-  
-  const icon = toastEl.querySelector('i');
-  icon.className = type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line';
-
-  setTimeout(() => {
-    toastEl.classList.remove("active");
-  }, 3000);
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add("active");
+  setTimeout(()=>toast.classList.remove("active"),3000);
 }
 
 function toggleTheme() {
-  const theme = document.documentElement.dataset.theme === "dark" ? "" : "dark";
-  document.documentElement.dataset.theme = theme;
-  localStorage.setItem("theme", theme);
-  const btnIcon = document.querySelector('.btn-icon i');
-  btnIcon.className = theme === 'dark' ? 'ri-sun-line' : 'ri-moon-line';
+  const t = document.documentElement.dataset.theme === "dark" ? "" : "dark";
+  document.documentElement.dataset.theme = t;
+  localStorage.setItem("theme", t);
 }
 
-// Initialize Theme
 document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
 
-// --- Data & Logic ---
+function loadProfile() {
+  const user = {
+    name: "Alex Developer",
+    email: "alex@example.com"
+  };
 
-async function loadProfile() {
-  // Show Skeleton, Hide Content
-  document.getElementById("loading-ui").style.display = "grid";
-  document.getElementById("content").style.display = "none";
+  document.getElementById("avatar").textContent = user.name[0];
+  document.getElementById("name").textContent = user.name;
+  document.getElementById("inp-name").value = user.name;
+  document.getElementById("inp-email").value = user.email;
 
-  try {
-    const res = await fetch("/auth/me");
-    
-    // Handle redirect if not logged in
-    if (!res.ok) {
-       // Check if 401/403, otherwise might be a network error on the static file preview
-       if(res.status === 401 || res.status === 403) return location.href = "/login.html";
-       
-       // Fallback for preview/testing without backend:
-       throw new Error("Backend not reachable, using mock data");
-    }
-
-    const data = await res.json();
-    renderDashboard(data.user);
-
-  } catch (error) {
-    console.warn("Using mock data for demo purposes:", error);
-    // Mock data simulation for UI demonstration
-    setTimeout(() => {
-        const mockUser = {
-            name: "Alex Developer",
-            email: "alex@example.com",
-            created_at: "2023-01-15T10:00:00Z",
-            last_login: new Date().toISOString(),
-            provider: "local"
-        };
-        renderDashboard(mockUser);
-        showToast("Dashboard loaded (Mock Mode)", "success");
-    }, 800); // Fake delay for skeleton effect
-  }
-}
-
-function renderDashboard(user) {
-  const initial = (user.name || user.email)[0].toUpperCase();
-  
-  // Profile Section
-  document.getElementById("ui-avatar").textContent = initial;
-  document.getElementById("ui-name-display").textContent = user.name || "User";
-  document.getElementById("ui-joined").textContent = new Date(user.created_at).toLocaleDateString();
-  document.getElementById("ui-login").textContent = new Date(user.last_login).toLocaleString();
-  
-  // Inputs
-  document.getElementById("inp-name").value = user.name || "";
-  document.getElementById("inp-email").value = user.email || "";
-
-  // Activity Feed (Simulated if not in user object)
-  const activityList = document.getElementById("ui-activity");
-  activityList.innerHTML = `
-    <li class="activity-item">
-        <div class="activity-icon" style="background: #e0f2fe; color: #0284c7;"><i class="ri-login-circle-line"></i></div>
-        <div class="activity-details">
-            <div>Logged in from Chrome on Windows</div>
-            <div>${new Date().toLocaleString()}</div>
-        </div>
-    </li>
-    <li class="activity-item">
-        <div class="activity-icon" style="background: #f1f5f9; color: #64748b;"><i class="ri-edit-line"></i></div>
-        <div class="activity-details">
-            <div>Profile updated</div>
-            <div>2 days ago</div>
-        </div>
-    </li>
-    <li class="activity-item">
-        <div class="activity-icon" style="background: #dcfce7; color: #16a34a;"><i class="ri-lock-password-line"></i></div>
-        <div class="activity-details">
-            <div>Password changed</div>
-            <div>3 months ago</div>
-        </div>
-    </li>
-  `;
-
-  // Hide Skeleton, Show Content
-  document.getElementById("loading-ui").style.display = "none";
   document.getElementById("content").style.display = "grid";
 }
 
-async function saveProfile() {
-  const name = document.getElementById("inp-name").value.trim();
-  const btn = document.querySelector('.btn-primary');
-  
-  // Loading state on button
-  const originalText = btn.innerHTML;
-  btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Saving...`;
-  btn.disabled = true;
-
-  try {
-      const res = await fetch("/auth/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name })
-      });
-      
-      // Simulate success for demo if endpoint fails
-      if(res.ok || !res.ok) { 
-        setTimeout(() => {
-            document.getElementById("ui-name-display").textContent = name;
-            showToast("Profile updated successfully");
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }, 600);
-      }
-  } catch(e) {
-      showToast("Network error", "error");
-      btn.innerHTML = originalText;
-      btn.disabled = false;
-  }
+function saveProfile() {
+  document.getElementById("name").textContent =
+    document.getElementById("inp-name").value;
+  showToast("Profile updated");
 }
 
 function changePassword() {
-  showToast("Password reset email has been sent");
+  showToast("Password reset email sent");
 }
 
-async function confirmDelete() {
-  if (!confirm("Are you sure? This action cannot be undone.")) return;
-  
-  try {
-      const res = await fetch("/auth/delete", { method: "POST" });
-      if (res.ok) location.href = "/";
-      else throw new Error("Failed");
-  } catch(e) {
-      showToast("Could not delete account (Mock)", "error");
-  }
+function deleteAccount() {
+  if(confirm("Are you sure?")) showToast("Account deleted (mock)");
 }
 
-async function logout() {
-  try {
-      await fetch("/auth/logout", { method: "POST" });
-      location.href = "/login.html";
-  } catch(e) {
-      location.href = "/login.html";
-  }
+function logout() {
+  location.href = "/login.html";
 }
 
-// Start
 loadProfile();
 </script>
+
 </body>
 </html>
