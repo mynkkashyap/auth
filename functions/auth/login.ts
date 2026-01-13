@@ -82,7 +82,14 @@ export async function onRequestPost({ request, env }) {
         { status: 401, headers }
       );
     }
-
+if (user.provider === "google") {
+  return new Response(
+    JSON.stringify({
+      error: "This account uses Google login. Please sign in with Google."
+    }),
+    { status: 403, headers }
+  );
+}
     // 🔐 STRICT EMAIL VERIFICATION CHECK
     if (user.provider === "email" && user.verified !== 1) {
       return new Response(
