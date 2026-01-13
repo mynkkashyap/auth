@@ -108,6 +108,24 @@ body {
   font-weight: 700;
   margin: 0 auto 16px;
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: none;
+}
+
+.avatar-large.has-image .avatar-image {
+  display: block;
+}
+
+.avatar-large.has-image #ui-avatar-initial {
+  display: none;
 }
 
 .user-meta { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
@@ -115,7 +133,7 @@ body {
 
 /* Forms */
 label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--text-muted); }
-input {
+input, select, textarea {
   width: 100%;
   padding: 10px 14px;
   border-radius: 8px;
@@ -125,7 +143,7 @@ input {
   outline: none;
   font-size: 0.95rem;
 }
-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1); }
+input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1); }
 input[disabled] { opacity: 0.7; cursor: not-allowed; }
 
 .form-group { margin-bottom: 16px; }
@@ -215,6 +233,69 @@ input:checked + .slider:before { transform: translateX(20px); }
 .toast.success { border-color: var(--success); }
 .toast.error { border-color: var(--danger); }
 
+/* Social media inputs */
+.social-input-group {
+  position: relative;
+}
+
+.social-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.social-input {
+  padding-left: 40px;
+}
+
+/* Image upload */
+.image-upload-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+
+.avatar-upload-btn {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid var(--card-bg);
+  z-index: 2;
+}
+
+.avatar-upload-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* Bio textarea */
+textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+/* Section headers */
+.section-header {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 24px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 </style>
 </head>
 
@@ -240,7 +321,16 @@ input:checked + .slider:before { transform: translateX(20px); }
   <div id="content" class="dashboard-grid" style="display: none;">
     <div class="card">
       <div class="profile-summary">
-        <div class="avatar-large" id="ui-avatar"></div>
+        <div class="image-upload-container">
+          <div class="avatar-large" id="ui-avatar-container">
+            <span id="ui-avatar-initial"></span>
+            <img id="ui-avatar-image" class="avatar-image" alt="Profile picture">
+          </div>
+          <label for="avatar-upload" class="avatar-upload-btn" title="Upload photo">
+            <i class="ri-camera-line"></i>
+          </label>
+          <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+        </div>
         <h2 id="ui-name-display" style="margin: 0; font-size: 1.25rem;"></h2>
         <span class="badge" id="ui-role" style="background: var(--bg); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; color: var(--primary);">User</span>
       </div>
@@ -256,9 +346,56 @@ input:checked + .slider:before { transform: translateX(20px); }
         <label>Full Name</label>
         <input id="inp-name" type="text">
       </div>
+      
       <div class="form-group">
         <label>Email Address</label>
         <input id="inp-email" type="email" disabled>
+      </div>
+
+      <div class="section-header">About Me</div>
+      
+      <div class="form-group">
+        <label>Bio/About Myself</label>
+        <textarea id="inp-bio" placeholder="Tell us a little about yourself..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Gender</label>
+        <select id="inp-gender">
+          <option value="">Select gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+          <option value="prefer-not-to-say">Prefer not to say</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Age</label>
+        <input id="inp-age" type="number" min="1" max="120" placeholder="Enter your age">
+      </div>
+
+      <div class="form-group">
+        <label>Mobile Number</label>
+        <input id="inp-mobile" type="tel" placeholder="+1 (123) 456-7890">
+      </div>
+
+      <div class="section-header">Social Media</div>
+      
+      <div class="form-group">
+        <label>Instagram Username</label>
+        <div class="social-input-group">
+          <i class="ri-instagram-line social-icon"></i>
+          <input id="inp-instagram" type="text" class="social-input" placeholder="username">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Twitter/X Username</label>
+        <div class="social-input-group">
+          <i class="ri-twitter-x-line social-icon"></i>
+          <input id="inp-twitter" type="text" class="social-input" placeholder="username">
+        </div>
       </div>
 
       <button class="btn-primary" onclick="saveProfile()"><i class="ri-save-line"></i> Save Changes</button>
@@ -316,6 +453,26 @@ input:checked + .slider:before { transform: translateX(20px); }
         </div>
 
       </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="ri-mail-send-line"></i> Contact Support</h3>
+        </div>
+
+        <div class="form-group">
+          <label>Message</label>
+          <input
+            id="contact-message"
+            type="text"
+            placeholder="Describe your issue or feedback"
+          />
+        </div>
+
+        <button class="btn-primary" onclick="submitContact()">
+          <i class="ri-send-plane-line"></i> Send Message
+        </button>
+      </div>
+      
     </div>
   </div>
 </div>
@@ -324,72 +481,8 @@ input:checked + .slider:before { transform: translateX(20px); }
   <i class="ri-notification-badge-line" style="font-size: 1.2rem;"></i>
   <span id="toast-msg">Notification</span>
 </div>
-  <div class="card">
-  <div class="card-header">
-    <h3><i class="ri-mail-send-line"></i> Contact Support</h3>
-  </div>
 
-  <div class="form-group">
-    <label>Message</label>
-    <input
-      id="contact-message"
-      type="text"
-      placeholder="Describe your issue or feedback"
-    />
-  </div>
-
-  <button class="btn-primary" onclick="submitContact()">
-    <i class="ri-send-plane-line"></i> Send Message
-  </button>
-  </div>
-
-
-  <script>
-
-async function submitContact() {
-  const message = document.getElementById("contact-message").value.trim();
-
-  if (!message) {
-    showToast("Message cannot be empty", "error");
-    return;
-  }
-
-  // Pull logged-in user data already loaded in dashboard
-  const name = document.getElementById("inp-name").value;
-  const email = document.getElementById("inp-email").value;
-
-  const btn = event.target;
-  const originalText = btn.innerHTML;
-  btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Sending...`;
-  btn.disabled = true;
-
-  try {
-    const res = await fetch("/auth/message", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message
-      })
-    });
-
-    // Works even without backend
-    if (res.ok || !res.ok) {
-      setTimeout(() => {
-        showToast("Message sent successfully!");
-        document.getElementById("contact-message").value = "";
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }, 600);
-    }
-  } catch (err) {
-    showToast("Failed to send message", "error");
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-  }
-}
-
-
-    
+<script>
 // --- UI Helpers ---
 const toastEl = document.getElementById("toast");
 const toastMsg = document.getElementById("toast-msg");
@@ -416,6 +509,47 @@ function toggleTheme() {
 
 // Initialize Theme
 document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+
+// Image upload handler
+document.getElementById('avatar-upload').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  if (!file.type.match('image.*')) {
+    showToast('Please select an image file', 'error');
+    return;
+  }
+  
+  if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    showToast('Image size should be less than 5MB', 'error');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = document.getElementById('ui-avatar-image');
+    img.src = e.target.result;
+    document.getElementById('ui-avatar-container').classList.add('has-image');
+    
+    // Show loading state on save button
+    const saveBtn = document.querySelector('.btn-primary');
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Saving Image...`;
+    saveBtn.disabled = true;
+    
+    // Simulate upload
+    setTimeout(() => {
+      showToast('Profile image updated successfully');
+      saveBtn.innerHTML = originalText;
+      saveBtn.disabled = false;
+      
+      // In a real app, you would upload to server here
+      // uploadImageToServer(e.target.result);
+    }, 1000);
+  };
+  
+  reader.readAsDataURL(file);
+});
 
 // --- Data & Logic ---
 
@@ -448,7 +582,14 @@ async function loadProfile() {
             email: "alex@example.com",
             created_at: "2023-01-15T10:00:00Z",
             last_login: new Date().toISOString(),
-            provider: "local"
+            provider: "local",
+            bio: "Full stack developer passionate about creating beautiful user experiences. Love hiking and photography.",
+            gender: "male",
+            age: 28,
+            mobile: "+1 (555) 123-4567",
+            instagram: "alexdev",
+            twitter: "alex_dev",
+            avatar: null // In real app, this would be a URL
         };
         renderDashboard(mockUser);
         showToast("Dashboard loaded (Mock Mode)", "success");
@@ -460,7 +601,7 @@ function renderDashboard(user) {
   const initial = (user.name || user.email)[0].toUpperCase();
   
   // Profile Section
-  document.getElementById("ui-avatar").textContent = initial;
+  document.getElementById("ui-avatar-initial").textContent = initial;
   document.getElementById("ui-name-display").textContent = user.name || "User";
   document.getElementById("ui-joined").textContent = new Date(user.created_at).toLocaleDateString();
   document.getElementById("ui-login").textContent = new Date(user.last_login).toLocaleString();
@@ -468,6 +609,18 @@ function renderDashboard(user) {
   // Inputs
   document.getElementById("inp-name").value = user.name || "";
   document.getElementById("inp-email").value = user.email || "";
+  document.getElementById("inp-bio").value = user.bio || "";
+  document.getElementById("inp-gender").value = user.gender || "";
+  document.getElementById("inp-age").value = user.age || "";
+  document.getElementById("inp-mobile").value = user.mobile || "";
+  document.getElementById("inp-instagram").value = user.instagram || "";
+  document.getElementById("inp-twitter").value = user.twitter || "";
+  
+  // Avatar image
+  if (user.avatar) {
+    document.getElementById('ui-avatar-image').src = user.avatar;
+    document.getElementById('ui-avatar-container').classList.add('has-image');
+  }
 
   // Activity Feed (Simulated if not in user object)
   const activityList = document.getElementById("ui-activity");
@@ -502,6 +655,13 @@ function renderDashboard(user) {
 
 async function saveProfile() {
   const name = document.getElementById("inp-name").value.trim();
+  const bio = document.getElementById("inp-bio").value.trim();
+  const gender = document.getElementById("inp-gender").value;
+  const age = document.getElementById("inp-age").value;
+  const mobile = document.getElementById("inp-mobile").value.trim();
+  const instagram = document.getElementById("inp-instagram").value.trim();
+  const twitter = document.getElementById("inp-twitter").value.trim();
+  
   const btn = document.querySelector('.btn-primary');
   
   // Loading state on button
@@ -513,7 +673,15 @@ async function saveProfile() {
       const res = await fetch("/auth/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name })
+        body: JSON.stringify({ 
+          name, 
+          bio, 
+          gender, 
+          age: age ? parseInt(age) : null,
+          mobile,
+          instagram,
+          twitter
+        })
       });
       
       // Simulate success for demo if endpoint fails
@@ -523,12 +691,63 @@ async function saveProfile() {
             showToast("Profile updated successfully");
             btn.innerHTML = originalText;
             btn.disabled = false;
+            
+            // Update activity feed
+            const activityList = document.getElementById("ui-activity");
+            const newActivity = `
+              <li class="activity-item" style="animation: fadeIn 0.3s;">
+                  <div class="activity-icon" style="background: #f1f5f9; color: #64748b;"><i class="ri-edit-line"></i></div>
+                  <div class="activity-details">
+                      <div>Profile information updated</div>
+                      <div>Just now</div>
+                  </div>
+              </li>
+            ` + activityList.innerHTML;
+            activityList.innerHTML = newActivity;
         }, 600);
       }
   } catch(e) {
       showToast("Network error", "error");
       btn.innerHTML = originalText;
       btn.disabled = false;
+  }
+}
+
+async function submitContact() {
+  const message = document.getElementById("contact-message").value.trim();
+
+  if (!message) {
+    showToast("Message cannot be empty", "error");
+    return;
+  }
+
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Sending...`;
+  btn.disabled = true;
+
+  try {
+    const res = await fetch("/auth/message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message
+      })
+    });
+
+    // Works even without backend
+    if (res.ok || !res.ok) {
+      setTimeout(() => {
+        showToast("Message sent successfully!");
+        document.getElementById("contact-message").value = "";
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 600);
+    }
+  } catch (err) {
+    showToast("Failed to send message", "error");
+    btn.innerHTML = originalText;
+    btn.disabled = false;
   }
 }
 
@@ -556,6 +775,16 @@ async function logout() {
       location.href = "/login.html";
   }
 }
+
+// Add fadeIn animation for new activities
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
+document.head.appendChild(style);
 
 // Start
 loadProfile();
