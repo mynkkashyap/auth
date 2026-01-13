@@ -22,36 +22,23 @@ export async function onRequest({ request, env }) {
     );
   }
 
-  const user = await env.DB.prepare(`
-    SELECT
-      id,
-      email,
-      name,
-      provider,
-      bio,
-      gender,
-      age,
-      mobile,
-      instagram,
-      twitter,
-      
-      
-    FROM users
-    WHERE id = ?
-  `)
+  // 🔑 INCLUDE provider HERE
+  const user = await env.DB.prepare(
+    "SELECT email, name, provider FROM users WHERE id = ?"
+  )
     .bind(session.user_id)
     .first();
 
   return new Response(
-    JSON.stringify({
-      loggedIn: true,
-      user
-    }),
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store"
-      }
+  JSON.stringify({
+    loggedIn: true,
+    user
+  }),
+  {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store"
     }
-  );
+  }
+);
 }
