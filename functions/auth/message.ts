@@ -9,8 +9,8 @@ export async function onRequestPost({ request, env }) {
 
   if (!session) return new Response("Invalid session", { status: 401 });
 
-  const { name } = await request.json();
-  if (!name) return new Response("Empty name", { status: 400 });
+  const { message } = await request.json();
+  if (!message) return new Response("Empty name", { status: 400 });
 
   const result = await env.DB.prepare(
     "UPDATE users SET message = ? WHERE id = ?"
