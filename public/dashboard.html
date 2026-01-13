@@ -673,9 +673,7 @@ async function saveProfile() {
       const res = await fetch("/auth/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          created_at,
-          updated_at,
+        body: JSON.stringify({       
           name, 
           bio, 
           gender, 
