@@ -19,12 +19,16 @@ async function pbkdf2Hash(password: string) {
   );
 
   return {
-    hash: [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, "0")).join(""),
-    salt: [...salt].map(b => b.toString(16).padStart(2, "0")).join("")
+    hash: [...new Uint8Array(bits)]
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join(""),
+    salt: [...salt]
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("")
   };
 }
 
-/* 🔑 Token */
+/* 🔑 Email verification token */
 function generateToken() {
   return crypto.randomUUID().replace(/-/g, "");
 }
@@ -54,9 +58,21 @@ export async function onRequestPost({ request, env }) {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    /* 🔍 CHECK EXISTING USER */
+    /* 🚫 BLOCK if Google account already exists */
+    const googleUser = await env.DB.prepare(
+      "SELECT id FROM users WHERE email = ? AND provider = 'google'"
+    ).bind(normalizedEmail).first();
+
+    if (googleUser) {
+      return new Response(
+        JSON.stringify({ error: "Use Google Sign-In for this email" }),
+        { status: 409, headers }
+      );
+    }
+
+    /* 🔍 CHECK EXISTING EMAIL USER ONLY */
     const existing = await env.DB.prepare(
-      "SELECT verified, verify_token FROM users WHERE email = ?"
+      "SELECT verified, verify_token FROM users WHERE email = ? AND provider = 'email'"
     ).bind(normalizedEmail).first();
 
     /* 🔁 EXISTS BUT NOT VERIFIED → RESEND */
@@ -75,13 +91,21 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
-    /* 🆕 CREATE USER */
+    /* 🆕 CREATE EMAIL USER */
     const { hash, salt } = await pbkdf2Hash(password);
     const verifyToken = generateToken();
 
     await env.DB.prepare(`
-      INSERT INTO users
-      (id, name, email, password_pbkdf2, password_salt, provider, verified, verify_token)
+      INSERT INTO users (
+        id,
+        name,
+        email,
+        password_pbkdf2,
+        password_salt,
+        provider,
+        verified,
+        verify_token
+      )
       VALUES (?, ?, ?, ?, ?, 'email', 0, ?)
     `).bind(
       crypto.randomUUID(),
@@ -92,12 +116,15 @@ export async function onRequestPost({ request, env }) {
       verifyToken
     ).run();
 
-    /* 📧 SEND EMAIL (BEST-EFFORT) */
+    /* 📧 SEND VERIFICATION EMAIL (BEST-EFFORT) */
     await sendVerificationEmail(env, normalizedEmail, verifyToken);
 
-    return new Response(JSON.stringify({ success: true }), { headers });
+    return new Response(
+      JSON.stringify({ success: true }),
+      { headers }
+    );
 
-  } catch (err: any) {
+  } catch (err) {
     console.error("REGISTER ERROR:", err);
     return new Response(
       JSON.stringify({ error: "Internal server error" }),
@@ -106,10 +133,10 @@ export async function onRequestPost({ request, env }) {
   }
 }
 
-/* 📧 SAFE EMAIL SENDER (NEVER FAILS REGISTER) */
+/* 📧 EMAIL SENDER (FAIL-SAFE) */
 async function sendVerificationEmail(env: any, email: string, token: string) {
   try {
-    const res = await fetch("https://api.resend.com/emails", {
+    await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${env.RESEND_API_KEY}`,
@@ -127,10 +154,6 @@ async function sendVerificationEmail(env: any, email: string, token: string) {
         `
       })
     });
-
-    const text = await res.text();
-    console.log("RESEND:", res.status, text);
-
   } catch (e) {
     console.error("EMAIL ERROR (ignored):", e);
   }
