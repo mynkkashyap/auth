@@ -34,6 +34,8 @@ export async function onRequestPost({ request, env }) {
   const result = await env.DB.prepare(`
     UPDATE users
     SET
+    updated_at = ?,
+    created_at = ?,
       name = ?,
       bio = ?,
       gender = ?,
@@ -43,6 +45,8 @@ export async function onRequestPost({ request, env }) {
       twitter = ?
     WHERE id = ?
   `).bind(
+    updated_at || null,
+    created_at || null,
     name,
     bio || null,
     gender || null,
