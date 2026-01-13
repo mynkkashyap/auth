@@ -76,12 +76,11 @@ export async function onRequestPost({ request, env }) {
 
     /* ---------- GOOGLE LOGIN (SHORT-CIRCUIT) ---------- */
     if (user.provider === "google") {
-      // Google users are always trusted
-      if (user.verified !== 1) {
-        await env.DB.prepare(
-          "UPDATE users SET verified = 1 WHERE id = ?"
-        ).bind(user.id).run();
-      }
+  return new Response(
+    JSON.stringify({ error: "Use Google Sign-In" }),
+    { status: 409, headers }
+  );
+}
 
       const sessionId = crypto.randomUUID();
       await env.DB.prepare(
