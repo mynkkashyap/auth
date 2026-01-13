@@ -674,6 +674,8 @@ async function saveProfile() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
+          created_at,
+          updated_at,
           name, 
           bio, 
           gender, 
