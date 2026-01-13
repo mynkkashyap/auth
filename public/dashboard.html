@@ -378,41 +378,6 @@ async function submitContact() {
   }
 }
 
-  // Pull logged-in user data already loaded in dashboard
-  const name = document.getElementById("inp-name").value;
-  const email = document.getElementById("inp-email").value;
-
-  const btn = event.target;
-  const originalText = btn.innerHTML;
-  btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Sending...`;
-  btn.disabled = true;
-
-  try {
-    const res = await fetch("/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message,
-        name,
-        email
-      })
-    });
-
-    // Works even without backend
-    if (res.ok || !res.ok) {
-      setTimeout(() => {
-        showToast("Message sent successfully!");
-        document.getElementById("contact-message").value = "";
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }, 600);
-    }
-  } catch (err) {
-    showToast("Failed to send message", "error");
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-  }
-}
 
 
     
