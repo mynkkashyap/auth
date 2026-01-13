@@ -61,16 +61,22 @@ export async function onRequest({ request, env }) {
 
   // Create user if not exists
   if (!user) {
-    const result = await env.DB.prepare(
-      `
-      INSERT INTO users (email, name, provider, verified)
-      VALUES (?, ?, 'google', 1)
-      `
-    )
-      .bind(userInfo.email, userInfo.name ?? "")
-      .run();
+    const userId = crypto.randomUUID();
 
-    user = { id: result.meta.last_row_id };
+await env.DB.prepare(
+  `
+  INSERT INTO users (id, email, name, provider, verified)
+  VALUES (?, ?, ?, 'google', 1)
+  `
+)
+  .bind(
+    userId,
+    userInfo.email,
+    userInfo.name ?? ""
+  )
+  .run();
+
+user = { id: userId, provider: "google" };
   }
 
   // Absolute safety check
