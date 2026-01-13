@@ -14,7 +14,7 @@ export async function onRequestPost({ request, env }) {
 
   const result = await env.DB.prepare(
     "UPDATE users SET message = ? WHERE id = ?"
-  ).bind(name, session.user_id).run();
+  ).bind(message, session.user_id).run();
 
   return new Response(
     JSON.stringify({ updated: result.meta.changes }),
