@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Users</title>
+</head>
+<body>
+
+<h2>Users List</h2>
+<ul id="userList"></ul>
+
+<script>
+async function loadUsers() {
+  const res = await fetch('/users');
+  const users = await res.json();
+
+  const list = document.getElementById('userList');
+  list.innerHTML = "";
+
+  users.forEach(user => {
+    const li = document.createElement('li');
+    li.textContent = `${user.name} (${user.email})`;
+    list.appendChild(li);
+  });
+}
+
+loadUsers();
+</script>
+
+</body>
+</html>
