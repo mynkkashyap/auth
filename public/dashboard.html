@@ -553,49 +553,7 @@ document.getElementById('avatar-upload').addEventListener('change', function(e) 
 
 // --- Data & Logic ---
 
-async function loadProfile() {
-  // Show Skeleton, Hide Content
-  document.getElementById("loading-ui").style.display = "grid";
-  document.getElementById("content").style.display = "none";
 
-  try {
-    const res = await fetch("/auth/me");
-    
-    // Handle redirect if not logged in
-    if (!res.ok) {
-       // Check if 401/403, otherwise might be a network error on the static file preview
-       if(res.status === 401 || res.status === 403) return location.href = "/login.html";
-       
-       // Fallback for preview/testing without backend:
-       throw new Error("Backend not reachable, using mock data");
-    }
-
-    const data = await res.json();
-    renderDashboard(data.user);
-
-  } catch (error) {
-    console.warn("Using mock data for demo purposes:", error);
-    // Mock data simulation for UI demonstration
-    setTimeout(() => {
-        const mockUser = {
-            name: "Alex Developer",
-            email: "alex@example.com",
-            created_at: "2023-01-15T10:00:00Z",
-            last_login: new Date().toISOString(),
-            provider: "local",
-            bio: "Full stack developer passionate about creating beautiful user experiences. Love hiking and photography.",
-            gender: "male",
-            age: 28,
-            mobile: "+1 (555) 123-4567",
-            instagram: "alexdev",
-            twitter: "alex_dev",
-            avatar: null // In real app, this would be a URL
-        };
-        renderDashboard(mockUser);
-        showToast("Dashboard loaded (Mock Mode)", "success");
-    }, 800); // Fake delay for skeleton effect
-  }
-}
 
 function renderDashboard(user) {
   const initial = (user.name || user.email)[0].toUpperCase();
@@ -604,7 +562,26 @@ function renderDashboard(user) {
   document.getElementById("ui-avatar-initial").textContent = initial;
   document.getElementById("ui-name-display").textContent = user.name || "User";
   document.getElementById("ui-joined").textContent = new Date(user.created_at).toLocaleDateString();
-  document.getElementById("ui-login").textContent = new Date(user.last_login).toLocaleString();
+  document.getElementById("async function loadProfile() {
+  document.getElementById("loading-ui").style.display = "grid";
+  document.getElementById("content").style.display = "none";
+
+  try {
+    const res = await fetch("/auth/me", { cache: "no-store" });
+    const data = await res.json();
+
+    if (!res.ok || !data.loggedIn) {
+      return location.href = "/login.html";
+    }
+
+    renderDashboard(data.user);
+
+  } catch (error) {
+    console.error(error);
+    showToast("Unable to load profile", "error");
+  }
+}
+  ui-login").textContent = new Date(user.last_login).toLocaleString();
   
   // Inputs
   document.getElementById("inp-name").value = user.name || "";
