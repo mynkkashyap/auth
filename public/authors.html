@@ -10,7 +10,7 @@
 
 <script>
 async function loadUsers() {
-  const res = await fetch('/users');
+  const res = await fetch('/auth/authors');
   const users = await res.json();
 
   const list = document.getElementById('userList');
