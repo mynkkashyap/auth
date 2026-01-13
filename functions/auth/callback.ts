@@ -61,28 +61,57 @@ export async function onRequest({ request, env }) {
 
   // Create user if not exists
   if (!user) {
-    const userId = crypto.randomUUID();
-
-await env.DB.prepare(
+  let user = await env.DB.prepare(
   `
-  INSERT INTO users (id, email, name, provider, verified)
-  VALUES (?, ?, ?, 'google', 1)
+  SELECT id, provider, verified, google_linked
+  FROM users
+  WHERE email = ?
   `
 )
-  .bind(
-    userId,
-    userInfo.email,
-    userInfo.name ?? ""
+  .bind(userInfo.email)
+  .first();
+
+/* 🆕 CASE 1: BRAND NEW USER (GOOGLE FIRST) */
+if (!user) {
+  const userId = crypto.randomUUID();
+
+  await env.DB.prepare(
+    `
+    INSERT INTO users (
+      id, email, name, provider, verified, google_linked
+    )
+    VALUES (?, ?, ?, 'google', 1, 1)
+    `
   )
-  .run();
+    .bind(
+      userId,
+      userInfo.email,
+      userInfo.name ?? ""
+    )
+    .run();
 
-user = { id: userId, provider: "google" };
+  user = { id: userId };
+}
+
+/* 🔁 CASE 2: EMAIL USER → LINK GOOGLE */
+else if (user.provider === "email") {
+  if (user.verified !== 1) {
+    return new Response(
+      "Verify email before using Google Sign-In",
+      { status: 403 }
+    );
   }
 
-  // Absolute safety check
-  if (!user || !user.id) {
-    return new Response("User creation failed", { status: 500 });
+  if (!user.google_linked) {
+    await env.DB.prepare(
+      "UPDATE users SET google_linked = 1 WHERE id = ?"
+    )
+      .bind(user.id)
+      .run();
   }
+}
+
+/* ❌ CASE 3: GOOGLE USER (ALREADY LINKED) → OK */
 
   /* ------------------ 5. Create session ------------------ */
   const sessionId = crypto.randomUUID();
