@@ -34,8 +34,8 @@ export async function onRequest({ request, env }) {
       mobile,
       instagram,
       twitter,
-      created_at,
-      last_login
+      
+      
     FROM users
     WHERE id = ?
   `)
