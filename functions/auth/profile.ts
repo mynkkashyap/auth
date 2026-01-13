@@ -14,6 +14,8 @@ export async function onRequestPost({ request, env }) {
   }
 
   const {
+    updated_at,
+    created_at,
     name,
     bio,
     gender,
