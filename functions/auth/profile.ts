@@ -1,6 +1,7 @@
 export async function onRequestPost({ request, env }) {
   const cookie = request.headers.get("Cookie") || "";
   const sessionId = cookie.match(/session=([^;]+)/)?.[1];
+
   if (!sessionId) {
     return new Response("No session", { status: 401 });
   }
@@ -23,11 +24,18 @@ export async function onRequestPost({ request, env }) {
     twitter
   } = await request.json();
 
-  if (!name) {
+  if (!name || !name.trim()) {
     return new Response("Empty name", { status: 400 });
   }
 
-  const parsedAge = age ? parseInt(age, 10) : null;
+  const parsedAge =
+    age !== undefined && age !== null && age !== ""
+      ? Number.isInteger(Number(age)) ? Number(age) : null
+      : null;
+
+  if (parsedAge !== null && (parsedAge < 1 || parsedAge > 120)) {
+    return new Response("Invalid age", { status: 400 });
+  }
 
   const result = await env.DB.prepare(`
     UPDATE users
@@ -38,23 +46,23 @@ export async function onRequestPost({ request, env }) {
       age = ?,
       mobile = ?,
       instagram = ?,
-      twitter = ?
+      twitter = ?,
+      updated_at = ?
     WHERE id = ?
   `).bind(
-    name,
+    name.trim(),
     bio || null,
     gender || null,
     parsedAge,
     mobile || null,
     instagram || null,
     twitter || null,
+    Math.floor(Date.now() / 1000),
     session.user_id
   ).run();
 
   return new Response(
     JSON.stringify({ updated: result.meta.changes }),
-    {
-      headers: { "Content-Type": "application/json" }
-    }
+    { headers: { "Content-Type": "application/json" } }
   );
 }
