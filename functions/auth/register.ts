@@ -147,11 +147,54 @@ async function sendVerificationEmail(env: any, email: string, token: string) {
         to: email,
         subject: "Verify your account",
         html: `
-          <p>Verify your account:</p>
-          <a href="${env.BASE_URL}/auth/verify?token=${token}">
-            Verify Email
-          </a>
-        `
+          <div style="max-width:520px;margin:0 auto;padding:24px;
+            font-family:Arial,Helvetica,sans-serif;
+            background:#ffffff;border-radius:10px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.08);
+            border:1px solid #e5e7eb;">
+
+  <h2 style="margin:0 0 12px 0;
+             color:#111827;
+             font-size:22px;
+             font-weight:600;">
+    Verify Your Email Address
+  </h2>
+
+  <p style="margin:0 0 20px 0;
+            color:#4b5563;
+            font-size:15px;
+            line-height:1.6;">
+    Thank you for signing up! Please confirm your email address by clicking the button below.
+  </p>
+
+  <div style="text-align:center;margin:28px 0;">
+    <a href="${env.BASE_URL}/auth/verify?token=${token}"
+       style="display:inline-block;
+              padding:12px 26px;
+              background:#2563eb;
+              color:#ffffff;
+              text-decoration:none;
+              font-size:15px;
+              font-weight:600;
+              border-radius:6px;">
+      Verify Email
+    </a>
+  </div>
+
+  <p style="margin:20px 0 0 0;
+            color:#6b7280;
+            font-size:13px;
+            line-height:1.5;">
+    If you didn’t create an account, you can safely ignore this email.
+  </p>
+
+  <p style="margin:12px 0 0 0;
+            color:#9ca3af;
+            font-size:12px;">
+    This link will expire for security reasons.
+  </p>
+
+</div>`
       })
     });
   } catch (e) {
