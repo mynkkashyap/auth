@@ -11,17 +11,19 @@ export async function onRequest({ request, env }) {
     return new Response("Missing code", { status: 400 });
   }
 
-  // 🔄 Exchange code for token
+  // 🔄 Exchange code for token (FIXED)
   const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
       code,
       client_id: env.GOOGLE_CLIENT_ID,
       client_secret: env.GOOGLE_CLIENT_SECRET,
       redirect_uri: env.BASE_URL + "/auth/callback",
-      grant_type: "authorization_code"
-    })
+      grant_type: "authorization_code",
+    }),
   });
 
   const token = await tokenRes.json();
@@ -34,18 +36,26 @@ export async function onRequest({ request, env }) {
   }
 
   // 👤 Fetch Google user info
-  const userInfo = await fetch(
+  const userInfoRes = await fetch(
     "https://www.googleapis.com/oauth2/v2/userinfo",
     {
       headers: {
-        Authorization: `Bearer ${token.access_token}`
-      }
+        Authorization: `Bearer ${token.access_token}`,
+      },
     }
-  ).then(r => r.json());
+  );
 
-  // 🧾 Insert user if not exists
+  const userInfo = await userInfoRes.json();
+
+  // 🧾 Insert user (auto-verified)
   await env.DB.prepare(
-    "INSERT OR IGNORE INTO users (email, name, provider) VALUES (?, ?, 'google')"
+    `
+    INSERT INTO users (email, name, provider, verified)
+    VALUES (?, ?, 'google', 1)
+    ON CONFLICT(email) DO UPDATE SET
+      provider = 'google',
+      verified = 1
+    `
   )
     .bind(userInfo.email, userInfo.name)
     .run();
@@ -61,7 +71,7 @@ export async function onRequest({ request, env }) {
     return new Response("User creation failed", { status: 500 });
   }
 
-  // 🔐 CREATE SESSION (MATCH LOGIN FLOW)
+  // 🔐 Create session
   const sessionId = crypto.randomUUID();
   const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
 
@@ -71,13 +81,13 @@ export async function onRequest({ request, env }) {
     .bind(sessionId, user.id, expiresAt)
     .run();
 
-  // 🍪 SET COOKIE + REDIRECT
+  // 🍪 Cookie + redirect
   return new Response(null, {
     status: 302,
     headers: {
       "Set-Cookie": `session=${sessionId}; HttpOnly; Secure; Path=/; SameSite=Lax`,
-      "Location": env.BASE_URL + "/dashboard.html",
-      "Cache-Control": "no-store"
-    }
+      Location: env.BASE_URL + "/dashboard.html",
+      "Cache-Control": "no-store",
+    },
   });
 }
