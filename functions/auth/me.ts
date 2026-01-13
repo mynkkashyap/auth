@@ -24,7 +24,7 @@ export async function onRequest({ request, env }) {
 
   // 🔑 INCLUDE provider HERE
   const user = await env.DB.prepare(
-    "SELECT email, name, bio, gender, message, instagram, mobile, twitter, provider FROM users WHERE id = ?"
+    "SELECT email, name, bio, gender, age, instagram, mobile, twitter, provider FROM users WHERE id = ?"
   )
     .bind(session.user_id)
     .first();
