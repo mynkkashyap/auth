@@ -43,7 +43,6 @@ body {
   padding: 20px;
 }
 
-/* Layout */
 .container {
   max-width: 1000px;
   margin: 0 auto;
@@ -58,7 +57,6 @@ body {
 
 .header h1 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
 
-/* Grid System */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -72,7 +70,6 @@ body {
   }
 }
 
-/* Cards */
 .card {
   background: var(--card-bg);
   border-radius: 16px;
@@ -93,7 +90,6 @@ body {
 
 .card-header h3 { margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
 
-/* Profile Column */
 .profile-summary { text-align: center; }
 .avatar-large {
   width: 90px;
@@ -131,7 +127,6 @@ body {
 .user-meta { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
 .meta-item { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); }
 
-/* Forms */
 label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--text-muted); }
 input, select, textarea {
   width: 100%;
@@ -148,7 +143,6 @@ input[disabled] { opacity: 0.7; cursor: not-allowed; }
 
 .form-group { margin-bottom: 16px; }
 
-/* Buttons */
 button {
   border: none;
   border-radius: 8px;
@@ -172,7 +166,6 @@ button:active { transform: scale(0.98); }
 .btn-danger { background: var(--danger-bg); color: var(--danger); width: 100%; justify-content: center; }
 .btn-icon { padding: 8px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border); color: var(--text-main); }
 
-/* Activity List */
 .activity-list { list-style: none; padding: 0; margin: 0; }
 .activity-item {
   display: flex;
@@ -191,7 +184,6 @@ button:active { transform: scale(0.98); }
 .activity-details div:first-child { font-weight: 500; font-size: 0.9rem; }
 .activity-details div:last-child { font-size: 0.75rem; color: var(--text-muted); }
 
-/* Toggles */
 .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
 .setting-row:last-child { border-bottom: none; }
 .toggle-switch {
@@ -209,7 +201,6 @@ button:active { transform: scale(0.98); }
 input:checked + .slider { background-color: var(--primary); }
 input:checked + .slider:before { transform: translateX(20px); }
 
-/* Skeleton Loading */
 .skeleton {
   background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
   background-size: 200% 100%;
@@ -219,7 +210,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-/* Toast */
 .toast {
   position: fixed; bottom: 24px; right: 24px;
   background: var(--card-bg); border-left: 4px solid var(--primary);
@@ -233,7 +223,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 .toast.success { border-color: var(--success); }
 .toast.error { border-color: var(--danger); }
 
-/* Social media inputs */
 .social-input-group {
   position: relative;
 }
@@ -250,7 +239,6 @@ input:checked + .slider:before { transform: translateX(20px); }
   padding-left: 40px;
 }
 
-/* Image upload */
 .image-upload-container {
   position: relative;
   display: inline-block;
@@ -278,14 +266,12 @@ input:checked + .slider:before { transform: translateX(20px); }
   background: var(--primary-hover);
 }
 
-/* Bio textarea */
 textarea {
   min-height: 80px;
   resize: vertical;
   font-family: inherit;
 }
 
-/* Section headers */
 .section-header {
   font-size: 0.9rem;
   font-weight: 600;
@@ -332,7 +318,6 @@ textarea {
           <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
         </div>
         <h2 id="ui-name-display" style="margin: 0; font-size: 1.25rem;"></h2>
-        <span class="badge" id="ui-role" style="background: var(--bg); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; color: var(--primary);">User</span>
       </div>
 
       <div class="user-meta">
@@ -483,7 +468,6 @@ textarea {
 </div>
 
 <script>
-// --- UI Helpers ---
 const toastEl = document.getElementById("toast");
 const toastMsg = document.getElementById("toast-msg");
 
@@ -507,10 +491,8 @@ function toggleTheme() {
   btnIcon.className = theme === 'dark' ? 'ri-sun-line' : 'ri-moon-line';
 }
 
-// Initialize Theme
 document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
 
-// Image upload handler
 document.getElementById('avatar-upload').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -520,7 +502,7 @@ document.getElementById('avatar-upload').addEventListener('change', function(e) 
     return;
   }
   
-  if (file.size > 5 * 1024 * 1024) { // 5MB limit
+  if (file.size > 5 * 1024 * 1024) {
     showToast('Image size should be less than 5MB', 'error');
     return;
   }
@@ -531,42 +513,30 @@ document.getElementById('avatar-upload').addEventListener('change', function(e) 
     img.src = e.target.result;
     document.getElementById('ui-avatar-container').classList.add('has-image');
     
-    // Show loading state on save button
     const saveBtn = document.querySelector('.btn-primary');
     const originalText = saveBtn.innerHTML;
     saveBtn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Saving Image...`;
     saveBtn.disabled = true;
     
-    // Simulate upload
     setTimeout(() => {
       showToast('Profile image updated successfully');
       saveBtn.innerHTML = originalText;
       saveBtn.disabled = false;
-      
-      // In a real app, you would upload to server here
-      // uploadImageToServer(e.target.result);
     }, 1000);
   };
   
   reader.readAsDataURL(file);
 });
 
-// --- Data & Logic ---
-
 async function loadProfile() {
-  // Show Skeleton, Hide Content
   document.getElementById("loading-ui").style.display = "grid";
   document.getElementById("content").style.display = "none";
 
   try {
     const res = await fetch("/auth/me");
     
-    // Handle redirect if not logged in
     if (!res.ok) {
-       // Check if 401/403, otherwise might be a network error on the static file preview
        if(res.status === 401 || res.status === 403) return location.href = "/login.html";
-       
-       // Fallback for preview/testing without backend:
        throw new Error("Backend not reachable, using mock data");
     }
 
@@ -575,38 +545,34 @@ async function loadProfile() {
 
   } catch (error) {
     console.warn("Using mock data for demo purposes:", error);
-    // Mock data simulation for UI demonstration
     setTimeout(() => {
         const mockUser = {
             name: "Alex Developer",
             email: "alex@example.com",
             created_at: "2023-01-15T10:00:00Z",
             last_login: new Date().toISOString(),
-            provider: "local",
             bio: "Full stack developer passionate about creating beautiful user experiences. Love hiking and photography.",
             gender: "male",
             age: 28,
             mobile: "+1 (555) 123-4567",
             instagram: "alexdev",
             twitter: "alex_dev",
-            avatar: null // In real app, this would be a URL
+            avatar: null
         };
         renderDashboard(mockUser);
         showToast("Dashboard loaded (Mock Mode)", "success");
-    }, 800); // Fake delay for skeleton effect
+    }, 800);
   }
 }
 
 function renderDashboard(user) {
   const initial = (user.name || user.email)[0].toUpperCase();
   
-  // Profile Section
   document.getElementById("ui-avatar-initial").textContent = initial;
   document.getElementById("ui-name-display").textContent = user.name || "User";
   document.getElementById("ui-joined").textContent = new Date(user.created_at).toLocaleDateString();
   document.getElementById("ui-login").textContent = new Date(user.last_login).toLocaleString();
   
-  // Inputs
   document.getElementById("inp-name").value = user.name || "";
   document.getElementById("inp-email").value = user.email || "";
   document.getElementById("inp-bio").value = user.bio || "";
@@ -616,13 +582,11 @@ function renderDashboard(user) {
   document.getElementById("inp-instagram").value = user.instagram || "";
   document.getElementById("inp-twitter").value = user.twitter || "";
   
-  // Avatar image
   if (user.avatar) {
     document.getElementById('ui-avatar-image').src = user.avatar;
     document.getElementById('ui-avatar-container').classList.add('has-image');
   }
 
-  // Activity Feed (Simulated if not in user object)
   const activityList = document.getElementById("ui-activity");
   activityList.innerHTML = `
     <li class="activity-item">
@@ -648,7 +612,6 @@ function renderDashboard(user) {
     </li>
   `;
 
-  // Hide Skeleton, Show Content
   document.getElementById("loading-ui").style.display = "none";
   document.getElementById("content").style.display = "grid";
 }
@@ -664,7 +627,6 @@ async function saveProfile() {
   
   const btn = document.querySelector('.btn-primary');
   
-  // Loading state on button
   const originalText = btn.innerHTML;
   btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Saving...`;
   btn.disabled = true;
@@ -684,28 +646,24 @@ async function saveProfile() {
         })
       });
       
-      // Simulate success for demo if endpoint fails
-      if(res.ok || !res.ok) { 
-        setTimeout(() => {
-            document.getElementById("ui-name-display").textContent = name;
-            showToast("Profile updated successfully");
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-            
-            // Update activity feed
-            const activityList = document.getElementById("ui-activity");
-            const newActivity = `
-              <li class="activity-item" style="animation: fadeIn 0.3s;">
-                  <div class="activity-icon" style="background: #f1f5f9; color: #64748b;"><i class="ri-edit-line"></i></div>
-                  <div class="activity-details">
-                      <div>Profile information updated</div>
-                      <div>Just now</div>
-                  </div>
-              </li>
-            ` + activityList.innerHTML;
-            activityList.innerHTML = newActivity;
-        }, 600);
-      }
+      setTimeout(() => {
+          document.getElementById("ui-name-display").textContent = name;
+          showToast("Profile updated successfully");
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          
+          const activityList = document.getElementById("ui-activity");
+          const newActivity = `
+            <li class="activity-item" style="animation: fadeIn 0.3s;">
+                <div class="activity-icon" style="background: #f1f5f9; color: #64748b;"><i class="ri-edit-line"></i></div>
+                <div class="activity-details">
+                    <div>Profile information updated</div>
+                    <div>Just now</div>
+                </div>
+            </li>
+          ` + activityList.innerHTML;
+          activityList.innerHTML = newActivity;
+      }, 600);
   } catch(e) {
       showToast("Network error", "error");
       btn.innerHTML = originalText;
@@ -735,15 +693,12 @@ async function submitContact() {
       })
     });
 
-    // Works even without backend
-    if (res.ok || !res.ok) {
-      setTimeout(() => {
-        showToast("Message sent successfully!");
-        document.getElementById("contact-message").value = "";
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }, 600);
-    }
+    setTimeout(() => {
+      showToast("Message sent successfully!");
+      document.getElementById("contact-message").value = "";
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }, 600);
   } catch (err) {
     showToast("Failed to send message", "error");
     btn.innerHTML = originalText;
@@ -776,7 +731,6 @@ async function logout() {
   }
 }
 
-// Add fadeIn animation for new activities
 const style = document.createElement('style');
 style.textContent = `
   @keyframes fadeIn {
@@ -786,7 +740,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Start
 loadProfile();
 </script>
 </body>
