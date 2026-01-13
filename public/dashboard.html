@@ -364,7 +364,7 @@ async function submitContact() {
   btn.disabled = true;
 
   try {
-    const res = await fetch("auth/message", {
+    const res = await fetch("/auth/message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
