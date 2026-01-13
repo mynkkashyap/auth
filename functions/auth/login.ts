@@ -85,7 +85,7 @@ export async function onRequestPost({ request, env }) {
 
       const sessionId = crypto.randomUUID();
       await env.DB.prepare(
-        "INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)"
+        "INSERT INTO users (id, user_id, expires_at) VALUES (?, ?, ?)"
       ).bind(
         sessionId,
         user.id,
