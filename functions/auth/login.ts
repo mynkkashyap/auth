@@ -1,3 +1,52 @@
+const enc = new TextEncoder();
+
+/* 🔐 SHA-256 (legacy) */
+async function sha256(password: string) {
+  const hash = await crypto.subtle.digest("SHA-256", enc.encode(password));
+  return [...new Uint8Array(hash)]
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+/* 🔐 PBKDF2 */
+async function pbkdf2Hash(password: string, salt?: Uint8Array) {
+  salt = salt || crypto.getRandomValues(new Uint8Array(16));
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", salt, iterations: 100_000, hash: "SHA-256" },
+    key,
+    256
+  );
+
+  return {
+    hash: [...new Uint8Array(bits)]
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join(""),
+    salt: [...salt]
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("")
+  };
+}
+
+async function pbkdf2Verify(
+  password: string,
+  hash: string,
+  saltHex: string
+) {
+  const salt = Uint8Array.from(
+    saltHex.match(/.{1,2}/g)!.map(b => parseInt(b, 16))
+  );
+  const { hash: verify } = await pbkdf2Hash(password, salt);
+  return verify === hash;
+}
 export async function onRequestPost({ request, env }) {
   const headers = {
     "Content-Type": "application/json",
