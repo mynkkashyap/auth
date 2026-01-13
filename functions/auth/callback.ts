@@ -52,70 +52,60 @@ export async function onRequest({ request, env }) {
     return new Response("Google account has no email", { status: 400 });
   }
 
-  /* ------------------ 4. Ensure user exists ------------------ */
+  /* ------------------ 4. Ensure user exists / link account ------------------ */
   let user = await env.DB.prepare(
-    "SELECT id, provider FROM users WHERE email = ?"
+    `
+    SELECT id, provider, verified, google_linked
+    FROM users
+    WHERE email = ?
+    `
   )
     .bind(userInfo.email)
     .first();
 
-  // Create user if not exists
+  /* 🆕 Case 1: Brand-new Google user */
   if (!user) {
-  let user = await env.DB.prepare(
-  `
-  SELECT id, provider, verified, google_linked
-  FROM users
-  WHERE email = ?
-  `
-)
-  .bind(userInfo.email)
-  .first();
+    const userId = crypto.randomUUID();
 
-/* 🆕 CASE 1: BRAND NEW USER (GOOGLE FIRST) */
-if (!user) {
-  const userId = crypto.randomUUID();
-
-  await env.DB.prepare(
-    `
-    INSERT INTO users (
-      id, email, name, provider, verified, google_linked
-    )
-    VALUES (?, ?, ?, 'google', 1, 1)
-    `
-  )
-    .bind(
-      userId,
-      userInfo.email,
-      userInfo.name ?? ""
-    )
-    .run();
-
-  user = { id: userId };
-}
-
-/* 🔁 CASE 2: EMAIL USER → LINK GOOGLE */
-else if (user.provider === "email") {
-  if (user.verified !== 1) {
-    return new Response(
-      "Verify email before using Google Sign-In",
-      { status: 403 }
-    );
-  }
-
-  if (!user.google_linked) {
     await env.DB.prepare(
-      "UPDATE users SET google_linked = 1 WHERE id = ?"
+      `
+      INSERT INTO users (
+        id, email, name, provider, verified, google_linked
+      )
+      VALUES (?, ?, ?, 'google', 1, 1)
+      `
     )
-      .bind(user.id)
+      .bind(
+        userId,
+        userInfo.email,
+        userInfo.name ?? ""
+      )
       .run();
-  }
-}
 
-/* ❌ CASE 3: GOOGLE USER (ALREADY LINKED) → OK */
+    user = { id: userId };
+  }
+
+  /* 🔁 Case 2: Existing email user → link Google */
+  else if (user.provider === "email") {
+    if (user.verified !== 1) {
+      return new Response(
+        "Verify email before using Google Sign-In",
+        { status: 403 }
+      );
+    }
+
+    if (!user.google_linked) {
+      await env.DB.prepare(
+        "UPDATE users SET google_linked = 1 WHERE id = ?"
+      )
+        .bind(user.id)
+        .run();
+    }
+  }
 
   /* ------------------ 5. Create session ------------------ */
   const sessionId = crypto.randomUUID();
-  const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
 
   await env.DB.prepare(
     "INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)"
