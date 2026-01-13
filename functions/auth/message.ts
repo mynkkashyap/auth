@@ -13,7 +13,7 @@ export async function onRequestPost({ request, env }) {
   if (!name) return new Response("Empty name", { status: 400 });
 
   const result = await env.DB.prepare(
-    "UPDATE users SET name = ? WHERE id = ?"
+    "UPDATE users SET message = ? WHERE id = ?"
   ).bind(name, session.user_id).run();
 
   return new Response(
