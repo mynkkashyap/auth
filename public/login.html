@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://www.google.com/recaptcha/api.js?render=YOUR_SITE_KEY"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6LdPGEosAAAAAMGxuszOMJdR8bJ1yk4jO4sa85pW"></script>
   
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -361,7 +361,7 @@ function togglePassword() {
 function getRecaptchaToken() {
   return new Promise((resolve, reject) => {
     grecaptcha.ready(() => {
-      grecaptcha.execute("YOUR_SITE_KEY", { action: "login" })
+      grecaptcha.execute("6LdPGEosAAAAAMGxuszOMJdR8bJ1yk4jO4sa85pW", { action: "login" })
         .then(resolve)
         .catch(reject);
     });
