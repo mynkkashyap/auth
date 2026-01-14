@@ -1,13 +1,22 @@
+import { sha256, pbkdf2Hash, pbkdf2Verify } from './auth-utils'; // Move these to a separate file
+
 export async function onRequestPost({ request, env }) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Cache-Control": "no-store",
+  };
+
   try {
     const body = await request.json();
-    const recaptchaToken =
-      body.recaptchaToken || request.headers.get("X-Recaptcha-Token");
-
-    if (!recaptchaToken) {
+    const { email, password, recaptchaToken } = body;
+    
+    // Get reCAPTCHA token from body or header
+    const token = recaptchaToken || request.headers.get("X-Recaptcha-Token");
+    
+    if (!token) {
       return new Response(
         JSON.stringify({ error: "Missing reCAPTCHA token" }),
-        { status: 400 }
+        { status: 400, headers }
       );
     }
 
@@ -21,7 +30,7 @@ export async function onRequestPost({ request, env }) {
         },
         body: new URLSearchParams({
           secret: env.RECAPTCHA_SECRET,
-          response: recaptchaToken,
+          response: token,
         }),
       }
     );
@@ -31,96 +40,11 @@ export async function onRequestPost({ request, env }) {
     if (!captcha.success || captcha.score < 0.5 || captcha.action !== "login") {
       return new Response(
         JSON.stringify({ error: "reCAPTCHA failed" }),
-        { status: 403 }
+        { status: 403, headers }
       );
     }
 
     /* ------------------ Authenticate user ------------------ */
-    const { email, password } = body;
-
-    // 🔐 Replace with D1 / DB lookup
-    if (email !== "test@example.com" || password !== "password123") {
-      return new Response(
-        JSON.stringify({ error: "Invalid credentials" }),
-        { status: 401 }
-      );
-    }
-
-    return new Response(
-      JSON.stringify({
-        message: "Login successful",
-        redirectUrl: "/dashboard.html",
-      }),
-      { headers: { "Content-Type": "application/json" } }
-    );
-  } catch (err) {
-    return new Response(
-      JSON.stringify({ error: "Server error" }),
-      { status: 500 }
-    );
-  }
-}
-
-
-
-const enc = new TextEncoder();
-
-/* 🔐 SHA-256 (legacy) */
-async function sha256(password: string) {
-  const hash = await crypto.subtle.digest("SHA-256", enc.encode(password));
-  return [...new Uint8Array(hash)]
-    .map(b => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-/* 🔐 PBKDF2 */
-async function pbkdf2Hash(password: string, salt?: Uint8Array) {
-  salt = salt || crypto.getRandomValues(new Uint8Array(16));
-
-  const key = await crypto.subtle.importKey(
-    "raw",
-    enc.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveBits"]
-  );
-
-  const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", salt, iterations: 100_000, hash: "SHA-256" },
-    key,
-    256
-  );
-
-  return {
-    hash: [...new Uint8Array(bits)]
-      .map(b => b.toString(16).padStart(2, "0"))
-      .join(""),
-    salt: [...salt]
-      .map(b => b.toString(16).padStart(2, "0"))
-      .join("")
-  };
-}
-
-async function pbkdf2Verify(
-  password: string,
-  hash: string,
-  saltHex: string
-) {
-  const salt = Uint8Array.from(
-    saltHex.match(/.{1,2}/g)!.map(b => parseInt(b, 16))
-  );
-  const { hash: verify } = await pbkdf2Hash(password, salt);
-  return verify === hash;
-}
-export async function onRequestPost({ request, env }) {
-  const headers = {
-    "Content-Type": "application/json",
-    "Cache-Control": "no-store",
-  };
-
-  try {
-    const { email, password } = await request.json();
-
     if (!email) {
       return new Response(
         JSON.stringify({ error: "Missing email" }),
@@ -181,6 +105,7 @@ export async function onRequestPost({ request, env }) {
         user.password_salt
       );
     } else if (user.password_hash) {
+      // Migrate from SHA-256 to PBKDF2
       ok = (await sha256(password)) === user.password_hash;
 
       if (ok) {
@@ -200,22 +125,29 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
+    // Create session
     const sessionId = crypto.randomUUID();
+    const expiresAt = Date.now() + 7 * 86400 * 1000; // 7 days
 
     await env.DB.prepare(
       "INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)"
     ).bind(
       sessionId,
       user.id,
-      Date.now() + 7 * 864e5
+      expiresAt
     ).run();
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ 
+        success: true,
+        message: "Login successful",
+        redirectUrl: "/dashboard.html"
+      }),
       {
+        status: 200,
         headers: {
           ...headers,
-          "Set-Cookie": `session=${sessionId}; HttpOnly; Secure; Path=/; SameSite=Lax`,
+          "Set-Cookie": `session=${sessionId}; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=${7 * 86400}`,
         },
       }
     );
