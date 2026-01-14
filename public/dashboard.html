@@ -19,10 +19,7 @@
   --danger-bg: #fee2e2;
   --success: #10b981;
   --success-bg: #d1fae5;
-  --warning: #f59e0b;
-  --warning-bg: #fef3c7;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="dark"] {
@@ -34,10 +31,9 @@
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
   --danger-bg: #450a0a;
   --success-bg: #064e3b;
-  --warning-bg: #451a03;
 }
 
-* { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; transition: background-color 0.2s, border-color 0.2s, transform 0.1s; }
+* { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; transition: background-color 0.2s, border-color 0.2s; }
 
 body {
   margin: 0;
@@ -48,7 +44,7 @@ body {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -56,29 +52,20 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
 }
 
-.header h1 { 
-  margin: 0; 
-  font-size: 1.75rem; 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-  font-weight: 700;
-}
+.header h1 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
 
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 32px;
+  gap: 24px;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .dashboard-grid {
-    grid-template-columns: 380px 1fr;
+    grid-template-columns: 320px 1fr;
     align-items: start;
   }
 }
@@ -88,53 +75,37 @@ body {
   border-radius: 16px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
-  padding: 28px;
+  padding: 24px;
   overflow: hidden;
-  transition: box-shadow 0.3s ease;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-lg);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
 }
 
-.card-header h3 { 
-  margin: 0; 
-  font-size: 1.2rem; 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-  font-weight: 600;
-}
+.card-header h3 { margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
 
-.profile-summary { 
-  text-align: center; 
-  margin-bottom: 24px;
-}
+.profile-summary { text-align: center; }
 .avatar-large {
-  width: 120px;
-  height: 120px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary), #818cf8);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  margin: 0 auto 20px;
-  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+  margin: 0 auto 16px;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
   position: relative;
   overflow: hidden;
-  border: 4px solid var(--card-bg);
 }
 
 .avatar-image {
@@ -153,175 +124,104 @@ body {
   display: none;
 }
 
-.user-meta { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 12px; 
-  margin-top: 24px;
-}
+.user-meta { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+.meta-item { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); }
 
-label { 
-  display: block; 
-  font-size: 0.9rem; 
-  font-weight: 500; 
-  margin-bottom: 8px; 
-  color: var(--text-muted); 
-}
+label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--text-muted); }
 input, select, textarea {
   width: 100%;
-  padding: 12px 16px;
-  border-radius: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
   border: 1px solid var(--border);
-  background: var(--card-bg);
+  background: var(--bg);
   color: var(--text-main);
   outline: none;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
-input:focus, select:focus, textarea:focus { 
-  border-color: var(--primary); 
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); 
-}
-input[disabled] { 
-  background: var(--bg); 
-  opacity: 0.7; 
-  cursor: not-allowed; 
-}
+input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1); }
+input[disabled] { opacity: 0.7; cursor: not-allowed; }
 
-.form-group { 
-  margin-bottom: 20px; 
-}
+.form-group { margin-bottom: 16px; }
 
 button {
   border: none;
-  border-radius: 10px;
-  padding: 12px 20px;
+  border-radius: 8px;
+  padding: 10px 16px;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-  transition: all 0.2s;
+  gap: 6px;
+  font-size: 0.9rem;
+  transition: transform 0.1s;
 }
-button:hover {
-  transform: translateY(-2px);
-}
-button:active { 
-  transform: scale(0.98); 
-}
+button:active { transform: scale(0.98); }
 
-.btn-primary { 
-  background: var(--primary); 
-  color: white; 
-  width: 100%; 
-  justify-content: center; 
-}
-.btn-primary:hover { 
-  background: var(--primary-hover); 
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-}
+.btn-primary { background: var(--primary); color: white; width: 100%; justify-content: center; }
+.btn-primary:hover { background: var(--primary-hover); }
 
-.btn-outline { 
-  background: transparent; 
-  border: 1px solid var(--border); 
-  color: var(--text-main); 
-}
-.btn-outline:hover { 
-  background: var(--bg); 
-  border-color: var(--primary);
-}
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+.btn-outline:hover { background: var(--bg); }
 
-.btn-danger { 
-  background: var(--danger-bg); 
-  color: var(--danger); 
-  width: 100%; 
-  justify-content: center; 
-}
-.btn-danger:hover {
-  background: #fecaca;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-}
+.btn-danger { background: var(--danger-bg); color: var(--danger); width: 100%; justify-content: center; }
+.btn-icon { padding: 8px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border); color: var(--text-main); }
 
-[data-theme="dark"] .btn-danger:hover {
-  background: #7f1d1d;
+.activity-list { list-style: none; padding: 0; margin: 0; }
+.activity-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border);
 }
-
-.btn-icon { 
-  padding: 10px; 
-  border-radius: 50%; 
-  background: var(--card-bg); 
-  border: 1px solid var(--border); 
-  color: var(--text-main); 
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.stat-card {
+.activity-item:last-child { border-bottom: none; }
+.activity-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
   background: var(--bg);
-  border-radius: 12px;
-  padding: 16px;
-  text-align: center;
-  border: 1px solid var(--border);
-}
-
-.stat-value {
-  font-size: 1.8rem;
-  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
   color: var(--primary);
-  margin: 8px 0 4px;
 }
+.activity-details div:first-child { font-weight: 500; font-size: 0.9rem; }
+.activity-details div:last-child { font-size: 0.75rem; color: var(--text-muted); }
 
-.stat-label {
-  font-size: 0.85rem;
-  color: var(--text-muted);
+.setting-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.setting-row:last-child { border-bottom: none; }
+.toggle-switch {
+  position: relative; width: 44px; height: 24px;
 }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--border); transition: .4s; border-radius: 34px;
+}
+.slider:before {
+  position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+  background-color: white; transition: .4s; border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--primary); }
+input:checked + .slider:before { transform: translateX(20px); }
 
 .skeleton {
   background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: 8px;
+  border-radius: 6px;
   color: transparent !important;
 }
-@keyframes shimmer { 
-  0% { background-position: 200% 0; } 
-  100% { background-position: -200% 0; } 
-}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 .toast {
-  position: fixed; 
-  bottom: 24px; 
-  right: 24px;
-  background: var(--card-bg); 
-  border-left: 4px solid var(--primary);
-  padding: 16px 20px; 
-  border-radius: 10px;
-  box-shadow: var(--shadow-lg);
-  display: flex; 
-  align-items: center; 
-  gap: 12px;
-  transform: translateY(100px); 
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--card-bg); border-left: 4px solid var(--primary);
+  padding: 16px 20px; border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: flex; align-items: center; gap: 12px;
+  transform: translateY(100px); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 100;
-  max-width: 400px;
 }
-.toast.active { 
-  transform: translateY(0); 
-}
-.toast.success { 
-  border-color: var(--success); 
-}
-.toast.error { 
-  border-color: var(--danger); 
-}
-.toast.warning { 
-  border-color: var(--warning); 
-}
+.toast.active { transform: translateY(0); }
+.toast.success { border-color: var(--success); }
+.toast.error { border-color: var(--danger); }
 
 .social-input-group {
   position: relative;
@@ -329,15 +229,14 @@ button:active {
 
 .social-icon {
   position: absolute;
-  left: 16px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
-  font-size: 1.1rem;
 }
 
 .social-input {
-  padding-left: 48px;
+  padding-left: 40px;
 }
 
 .image-upload-container {
@@ -348,137 +247,41 @@ button:active {
 
 .avatar-upload-btn {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: -5px;
+  right: -5px;
   background: var(--primary);
   color: white;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border: 3px solid var(--card-bg);
+  border: 2px solid var(--card-bg);
   z-index: 2;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .avatar-upload-btn:hover {
   background: var(--primary-hover);
-  transform: scale(1.1);
 }
 
 textarea {
-  min-height: 100px;
+  min-height: 80px;
   resize: vertical;
   font-family: inherit;
-  line-height: 1.5;
 }
 
 .section-header {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-muted);
-  margin-top: 28px;
-  margin-bottom: 16px;
+  margin-top: 24px;
+  margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
-.divider {
-  height: 1px;
-  background: var(--border);
-  margin: 24px 0;
-  border: none;
-}
-
-.feature-highlight {
-  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(129, 140, 248, 0.1));
-  border-radius: 12px;
-  padding: 20px;
-  margin: 24px 0;
-  border: 1px solid rgba(79, 70, 229, 0.2);
-}
-
-.feature-highlight h4 {
-  margin-top: 0;
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.quick-action-btn {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.quick-action-btn:hover {
-  background: var(--primary);
-  color: white;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-}
-
-.quick-action-btn i {
-  font-size: 1.5rem;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-left: 10px;
-}
-
-.status-online {
-  background: var(--success-bg);
-  color: var(--success);
-}
-
-.status-offline {
-  background: var(--danger-bg);
-  color: var(--danger);
-}
-
-.profile-completion {
-  margin: 20px 0;
-}
-
-.progress-bar {
-  height: 8px;
-  background: var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-.progress-fill {
-  height: 100%;
-  background: var(--primary);
-  border-radius: 4px;
-  transition: width 0.5s ease;
-}
 </style>
 </head>
 
@@ -486,33 +289,22 @@ textarea {
 
 <div class="container">
   <div class="header">
-    <h1><i class="ri-dashboard-3-line"></i> My Dashboard</h1>
-    <div style="display: flex; gap: 12px;">
-      <button class="btn-icon" onclick="toggleTheme()" title="Toggle Theme" id="theme-toggle">
-        <i class="ri-moon-line"></i>
-      </button>
-      <button class="btn-danger" style="width: auto; padding: 10px 20px;" onclick="logout()">
-        <i class="ri-logout-box-r-line"></i> Logout
-      </button>
+    <h1><i class="ri-dashboard-3-line"></i> Dashboard</h1>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-icon" onclick="toggleTheme()" title="Toggle Theme"><i class="ri-moon-line"></i></button>
+      <button class="btn-danger" style="width: auto;" onclick="logout()"><i class="ri-logout-box-r-line"></i> Logout</button>
     </div>
   </div>
 
   <div id="loading-ui" class="dashboard-grid">
-    <div class="card" style="height: 500px;">
-      <div class="skeleton" style="width:100%; height:100%;"></div>
-    </div>
-    <div style="display:flex; flex-direction:column; gap:32px;">
-      <div class="card" style="height: 250px;">
-        <div class="skeleton" style="width:100%; height:100%;"></div>
-      </div>
-      <div class="card" style="height: 350px;">
-        <div class="skeleton" style="width:100%; height:100%;"></div>
-      </div>
+    <div class="card" style="height: 400px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
+    <div style="display:flex; flex-direction:column; gap:24px;">
+      <div class="card" style="height: 200px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
+      <div class="card" style="height: 300px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
     </div>
   </div>
 
   <div id="content" class="dashboard-grid" style="display: none;">
-    <!-- Left Column: Profile Section -->
     <div class="card">
       <div class="profile-summary">
         <div class="image-upload-container">
@@ -525,62 +317,35 @@ textarea {
           </label>
           <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
         </div>
-        <h2 id="ui-name-display" style="margin: 0; font-size: 1.5rem; font-weight: 700;"></h2>
-        <p id="ui-email-display" style="margin: 8px 0 0; color: var(--text-muted); font-size: 0.95rem;"></p>
-        <div class="status-badge status-online" id="ui-status">Online</div>
+        <h2 id="ui-name-display" style="margin: 0; font-size: 1.25rem;"></h2>
       </div>
 
-      <div class="profile-completion">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-          <span style="font-weight: 500;">Profile Completion</span>
-          <span id="completion-percent">0%</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="completion-bar" style="width: 0%;"></div>
-        </div>
+      <div class="user-meta">
+        <div class="meta-item"><span>Joined</span> <span id="ui-joined"></span></div>
+        <div class="meta-item"><span>Last Login</span> <span id="ui-login"></span></div>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-card">
-          <i class="ri-user-star-line" style="color: var(--primary); font-size: 1.5rem;"></i>
-          <div class="stat-value" id="stat-followers">0</div>
-          <div class="stat-label">Followers</div>
-        </div>
-        <div class="stat-card">
-          <i class="ri-heart-3-line" style="color: #ef4444; font-size: 1.5rem;"></i>
-          <div class="stat-value" id="stat-likes">0</div>
-          <div class="stat-label">Likes</div>
-        </div>
-        <div class="stat-card">
-          <i class="ri-calendar-event-line" style="color: #10b981; font-size: 1.5rem;"></i>
-          <div class="stat-value" id="stat-events">0</div>
-          <div class="stat-label">Events</div>
-        </div>
-      </div>
-
-      <hr class="divider">
+      <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
 
       <div class="form-group">
-        <label><i class="ri-user-line"></i> Full Name</label>
-        <input id="inp-name" type="text" placeholder="Enter your full name">
+        <label>Full Name</label>
+        <input id="inp-name" type="text">
       </div>
       
       <div class="form-group">
-        <label><i class="ri-mail-line"></i> Email Address</label>
+        <label>Email Address</label>
         <input id="inp-email" type="email" disabled>
       </div>
 
-      <div class="section-header">
-        <i class="ri-information-line"></i> About Me
-      </div>
+      <div class="section-header">About Me</div>
       
       <div class="form-group">
-        <label>Bio / About Myself</label>
-        <textarea id="inp-bio" placeholder="Tell us about yourself, your interests, and what you do..."></textarea>
+        <label>Bio/About Myself</label>
+        <textarea id="inp-bio" placeholder="Tell us a little about yourself..."></textarea>
       </div>
 
       <div class="form-group">
-        <label><i class="ri-user-3-line"></i> Gender</label>
+        <label>Gender</label>
         <select id="inp-gender">
           <option value="">Select gender</option>
           <option value="male">Male</option>
@@ -591,18 +356,16 @@ textarea {
       </div>
 
       <div class="form-group">
-        <label><i class="ri-calendar-line"></i> Age</label>
+        <label>Age</label>
         <input id="inp-age" type="number" min="1" max="120" placeholder="Enter your age">
       </div>
 
       <div class="form-group">
-        <label><i class="ri-phone-line"></i> Mobile Number</label>
+        <label>Mobile Number</label>
         <input id="inp-mobile" type="tel" placeholder="+1 (123) 456-7890">
       </div>
 
-      <div class="section-header">
-        <i class="ri-share-circle-line"></i> Social Media
-      </div>
+      <div class="section-header">Social Media</div>
       
       <div class="form-group">
         <label>Instagram Username</label>
@@ -620,138 +383,79 @@ textarea {
         </div>
       </div>
 
-      <button class="btn-primary" onclick="saveProfile()" id="save-btn">
-        <i class="ri-save-line"></i> Save All Changes
-      </button>
-      
-      <div class="feature-highlight">
-        <h4><i class="ri-shield-keyhole-line"></i> Account Security</h4>
-        <p style="margin-bottom: 16px; font-size: 0.9rem;">Keep your account secure with these quick actions:</p>
-        <div class="quick-actions">
-          <div class="quick-action-btn" onclick="changePassword()">
-            <i class="ri-lock-password-line"></i>
-            <div>Change Password</div>
-          </div>
-          <div class="quick-action-btn" onclick="enable2FA()">
-            <i class="ri-shield-check-line"></i>
-            <div>Enable 2FA</div>
-          </div>
-          <div class="quick-action-btn" onclick="viewSessions()">
-            <i class="ri-device-line"></i>
-            <div>Active Sessions</div>
-          </div>
-        </div>
-      </div>
+      <button class="btn-primary" onclick="saveProfile()"><i class="ri-save-line"></i> Save Changes</button>
       
       <div style="margin-top: 30px;">
-        <h4 style="color: var(--danger); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-          <i class="ri-alert-line"></i> Danger Zone
-        </h4>
-        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
-          Once you delete your account, there is no going back. Please be certain.
-        </p>
-        <button class="btn-danger" onclick="confirmDelete()">
-          <i class="ri-delete-bin-line"></i> Delete Account Permanently
-        </button>
+        <h4 style="color: var(--danger); margin-bottom: 10px;">Danger Zone</h4>
+        <button class="btn-danger" onclick="confirmDelete()"><i class="ri-delete-bin-line"></i> Delete Account</button>
       </div>
     </div>
 
-    <!-- Right Column: Additional Features -->
-    <div style="display: flex; flex-direction: column; gap: 32px;">
+    <div style="display: flex; flex-direction: column; gap: 24px;">
       
       <div class="card">
         <div class="card-header">
-          <h3><i class="ri-rocket-line"></i> Quick Start</h3>
+          <h3><i class="ri-history-line"></i> Recent Activity</h3>
+          <button class="btn-outline" style="font-size: 0.8rem; padding: 6px 10px;" onclick="loadProfile()">Refresh</button>
         </div>
-        
-        <div class="quick-actions">
-          <div class="quick-action-btn" onclick="createNewProject()">
-            <i class="ri-add-circle-line"></i>
-            <div>New Project</div>
-          </div>
-          <div class="quick-action-btn" onclick="uploadFile()">
-            <i class="ri-upload-cloud-line"></i>
-            <div>Upload File</div>
-          </div>
-          <div class="quick-action-btn" onclick="inviteFriends()">
-            <i class="ri-user-add-line"></i>
-            <div>Invite Friends</div>
-          </div>
-          <div class="quick-action-btn" onclick="viewAnalytics()">
-            <i class="ri-bar-chart-line"></i>
-            <div>View Analytics</div>
-          </div>
-        </div>
+        <ul class="activity-list" id="ui-activity">
+          </ul>
       </div>
 
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="ri-settings-4-line"></i> Preferences</h3>
+        </div>
+        
+        <div class="setting-row">
+          <div>
+            <div style="font-weight: 500;">Email Notifications</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Receive weekly digests</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <div style="font-weight: 500;">Two-Factor Auth</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Enable extra security</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+        
+        <div class="setting-row">
+          <div>
+            <div style="font-weight: 500;">Password</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Last changed 3 months ago</div>
+          </div>
+          <button class="btn-outline" style="padding: 6px 12px;" onclick="changePassword()">Change</button>
+        </div>
+
+      </div>
+      
       <div class="card">
         <div class="card-header">
           <h3><i class="ri-mail-send-line"></i> Contact Support</h3>
         </div>
 
-        <p style="margin-bottom: 20px; color: var(--text-muted);">
-          Have questions or need assistance? Our support team is here to help you 24/7.
-        </p>
-
         <div class="form-group">
-          <label>Subject</label>
+          <label>Message</label>
           <input
-            id="contact-subject"
+            id="contact-message"
             type="text"
-            placeholder="What do you need help with?"
+            placeholder="Describe your issue or feedback"
           />
         </div>
 
-        <div class="form-group">
-          <label>Message</label>
-          <textarea
-            id="contact-message"
-            placeholder="Describe your issue or feedback in detail..."
-            rows="4"
-          ></textarea>
-        </div>
-
         <button class="btn-primary" onclick="submitContact()">
-          <i class="ri-send-plane-line"></i> Send Message to Support
+          <i class="ri-send-plane-line"></i> Send Message
         </button>
-      </div>
-      
-      <div class="card">
-        <div class="card-header">
-          <h3><i class="ri-award-line"></i> Achievements</h3>
-          <span style="font-size: 0.9rem; color: var(--primary); font-weight: 600;">3/10 Unlocked</span>
-        </div>
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 16px;">
-          <div style="background: var(--success-bg); padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 10px;">
-            <i class="ri-checkbox-circle-line" style="color: var(--success);"></i>
-            <div>
-              <div style="font-weight: 500;">Profile Complete</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Completed your profile</div>
-            </div>
-          </div>
-          <div style="background: var(--success-bg); padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 10px;">
-            <i class="ri-upload-cloud-line" style="color: var(--success);"></i>
-            <div>
-              <div style="font-weight: 500;">First Upload</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Uploaded first file</div>
-            </div>
-          </div>
-          <div style="background: var(--success-bg); padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 10px;">
-            <i class="ri-group-line" style="color: var(--success);"></i>
-            <div>
-              <div style="font-weight: 500;">Social Connect</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Connected social media</div>
-            </div>
-          </div>
-          <div style="background: var(--bg); padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 10px; opacity: 0.6;">
-            <i class="ri-star-line" style="color: var(--text-muted);"></i>
-            <div>
-              <div style="font-weight: 500;">Power User</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Use platform for 30 days</div>
-            </div>
-          </div>
-        </div>
       </div>
       
     </div>
@@ -759,7 +463,7 @@ textarea {
 </div>
 
 <div id="toast" class="toast">
-  <i class="ri-notification-badge-line" style="font-size: 1.3rem;"></i>
+  <i class="ri-notification-badge-line" style="font-size: 1.2rem;"></i>
   <span id="toast-msg">Notification</span>
 </div>
 
@@ -772,22 +476,19 @@ function showToast(msg, type = "success") {
   toastEl.className = `toast active ${type}`;
   
   const icon = toastEl.querySelector('i');
-  icon.className = type === 'success' ? 'ri-checkbox-circle-line' : 
-                   type === 'error' ? 'ri-error-warning-line' : 
-                   'ri-information-line';
+  icon.className = type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line';
 
   setTimeout(() => {
     toastEl.classList.remove("active");
-  }, 4000);
+  }, 3000);
 }
 
 function toggleTheme() {
   const theme = document.documentElement.dataset.theme === "dark" ? "" : "dark";
   document.documentElement.dataset.theme = theme;
   localStorage.setItem("theme", theme);
-  const btnIcon = document.querySelector('#theme-toggle i');
+  const btnIcon = document.querySelector('.btn-icon i');
   btnIcon.className = theme === 'dark' ? 'ri-sun-line' : 'ri-moon-line';
-  showToast(`Theme changed to ${theme === 'dark' ? 'dark' : 'light'} mode`, "success");
 }
 
 document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
@@ -812,48 +513,20 @@ document.getElementById('avatar-upload').addEventListener('change', function(e) 
     img.src = e.target.result;
     document.getElementById('ui-avatar-container').classList.add('has-image');
     
-    const saveBtn = document.getElementById('save-btn');
+    const saveBtn = document.querySelector('.btn-primary');
     const originalText = saveBtn.innerHTML;
     saveBtn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Saving Image...`;
     saveBtn.disabled = true;
     
     setTimeout(() => {
-      showToast('Profile image updated successfully!');
+      showToast('Profile image updated successfully');
       saveBtn.innerHTML = originalText;
       saveBtn.disabled = false;
-      updateProfileCompletion();
     }, 1000);
   };
   
   reader.readAsDataURL(file);
 });
-
-function updateProfileCompletion() {
-  let completion = 0;
-  const fields = [
-    { id: 'inp-name', weight: 20 },
-    { id: 'inp-bio', weight: 15 },
-    { id: 'inp-gender', weight: 10 },
-    { id: 'inp-age', weight: 10 },
-    { id: 'inp-mobile', weight: 15 },
-    { id: 'inp-instagram', weight: 10 },
-    { id: 'inp-twitter', weight: 10 }
-  ];
-  
-  const avatar = document.getElementById('ui-avatar-container').classList.contains('has-image');
-  if (avatar) completion += 10;
-  
-  fields.forEach(field => {
-    const element = document.getElementById(field.id);
-    if (element && element.value && element.value.trim() !== '') {
-      completion += field.weight;
-    }
-  });
-  
-  completion = Math.min(100, completion);
-  document.getElementById('completion-percent').textContent = `${completion}%`;
-  document.getElementById('completion-bar').style.width = `${completion}%`;
-}
 
 async function loadProfile() {
   document.getElementById("loading-ui").style.display = "grid";
@@ -876,19 +549,18 @@ async function loadProfile() {
         const mockUser = {
             name: "Alex Developer",
             email: "alex@example.com",
+            created_at: "2023-01-15T10:00:00Z",
+            last_login: new Date().toISOString(),
             bio: "Full stack developer passionate about creating beautiful user experiences. Love hiking and photography.",
             gender: "male",
             age: 28,
             mobile: "+1 (555) 123-4567",
             instagram: "alexdev",
             twitter: "alex_dev",
-            avatar: null,
-            followers: 142,
-            likes: 856,
-            events: 7
+            avatar: null
         };
         renderDashboard(mockUser);
-        showToast("Dashboard loaded successfully!", "success");
+        showToast("Dashboard loaded (Mock Mode)", "success");
     }, 800);
   }
 }
@@ -898,7 +570,8 @@ function renderDashboard(user) {
   
   document.getElementById("ui-avatar-initial").textContent = initial;
   document.getElementById("ui-name-display").textContent = user.name || "User";
-  document.getElementById("ui-email-display").textContent = user.email || "";
+  document.getElementById("ui-joined").textContent = new Date(user.created_at).toLocaleDateString();
+  document.getElementById("ui-login").textContent = new Date(user.last_login).toLocaleString();
   
   document.getElementById("inp-name").value = user.name || "";
   document.getElementById("inp-email").value = user.email || "";
@@ -909,19 +582,38 @@ function renderDashboard(user) {
   document.getElementById("inp-instagram").value = user.instagram || "";
   document.getElementById("inp-twitter").value = user.twitter || "";
   
-  document.getElementById("stat-followers").textContent = user.followers || 0;
-  document.getElementById("stat-likes").textContent = user.likes || 0;
-  document.getElementById("stat-events").textContent = user.events || 0;
-  
   if (user.avatar) {
     document.getElementById('ui-avatar-image').src = user.avatar;
     document.getElementById('ui-avatar-container').classList.add('has-image');
   }
 
+  const activityList = document.getElementById("ui-activity");
+  activityList.innerHTML = `
+    <li class="activity-item">
+        <div class="activity-icon" style="background: #e0f2fe; color: #0284c7;"><i class="ri-login-circle-line"></i></div>
+        <div class="activity-details">
+            <div>Logged in from Chrome on Windows</div>
+            <div>${new Date().toLocaleString()}</div>
+        </div>
+    </li>
+    <li class="activity-item">
+        <div class="activity-icon" style="background: #f1f5f9; color: #64748b;"><i class="ri-edit-line"></i></div>
+        <div class="activity-details">
+            <div>Profile updated</div>
+            <div>2 days ago</div>
+        </div>
+    </li>
+    <li class="activity-item">
+        <div class="activity-icon" style="background: #dcfce7; color: #16a34a;"><i class="ri-lock-password-line"></i></div>
+        <div class="activity-details">
+            <div>Password changed</div>
+            <div>3 months ago</div>
+        </div>
+    </li>
+  `;
+
   document.getElementById("loading-ui").style.display = "none";
   document.getElementById("content").style.display = "grid";
-  
-  setTimeout(updateProfileCompletion, 100);
 }
 
 async function saveProfile() {
@@ -933,7 +625,8 @@ async function saveProfile() {
   const instagram = document.getElementById("inp-instagram").value.trim();
   const twitter = document.getElementById("inp-twitter").value.trim();
   
-  const btn = document.getElementById('save-btn');
+  const btn = document.querySelector('.btn-primary');
+  
   const originalText = btn.innerHTML;
   btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Saving...`;
   btn.disabled = true;
@@ -955,25 +648,34 @@ async function saveProfile() {
       
       setTimeout(() => {
           document.getElementById("ui-name-display").textContent = name;
-          showToast("Profile updated successfully!");
+          showToast("Profile updated successfully");
           btn.innerHTML = originalText;
           btn.disabled = false;
-          updateProfileCompletion();
+          
+          const activityList = document.getElementById("ui-activity");
+          const newActivity = `
+            <li class="activity-item" style="animation: fadeIn 0.3s;">
+                <div class="activity-icon" style="background: #f1f5f9; color: #64748b;"><i class="ri-edit-line"></i></div>
+                <div class="activity-details">
+                    <div>Profile information updated</div>
+                    <div>Just now</div>
+                </div>
+            </li>
+          ` + activityList.innerHTML;
+          activityList.innerHTML = newActivity;
       }, 600);
   } catch(e) {
-      showToast("Network error - changes saved locally", "error");
+      showToast("Network error", "error");
       btn.innerHTML = originalText;
       btn.disabled = false;
-      updateProfileCompletion();
   }
 }
 
 async function submitContact() {
-  const subject = document.getElementById("contact-subject").value.trim();
   const message = document.getElementById("contact-message").value.trim();
 
-  if (!subject || !message) {
-    showToast("Please fill in both subject and message", "error");
+  if (!message) {
+    showToast("Message cannot be empty", "error");
     return;
   }
 
@@ -987,14 +689,12 @@ async function submitContact() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        subject,
         message
       })
     });
 
     setTimeout(() => {
-      showToast("Message sent successfully! We'll get back to you soon.");
-      document.getElementById("contact-subject").value = "";
+      showToast("Message sent successfully!");
       document.getElementById("contact-message").value = "";
       btn.innerHTML = originalText;
       btn.disabled = false;
@@ -1007,56 +707,18 @@ async function submitContact() {
 }
 
 function changePassword() {
-  showToast("Password reset email has been sent to your inbox");
-}
-
-function enable2FA() {
-  showToast("Two-factor authentication setup initiated", "success");
-}
-
-function viewSessions() {
-  showToast("Opening active sessions panel...");
-}
-
-function createNewProject() {
-  showToast("Redirecting to project creation...");
-}
-
-function uploadFile() {
-  showToast("Opening file upload dialog...");
-}
-
-function inviteFriends() {
-  showToast("Shareable invite link copied to clipboard!");
-  navigator.clipboard.writeText(`${window.location.origin}/invite/${Date.now()}`);
-}
-
-function viewAnalytics() {
-  showToast("Loading analytics dashboard...");
+  showToast("Password reset email has been sent");
 }
 
 async function confirmDelete() {
-  const confirmed = confirm("⚠️ ARE YOU ABSOLUTELY SURE?\n\nThis action cannot be undone. This will permanently delete your account and remove all your data from our servers.");
-  
-  if (!confirmed) return;
-  
-  const finalConfirm = prompt("To confirm deletion, please type 'DELETE MY ACCOUNT' in the box below:");
-  
-  if (finalConfirm !== "DELETE MY ACCOUNT") {
-    showToast("Account deletion cancelled", "error");
-    return;
-  }
+  if (!confirm("Are you sure? This action cannot be undone.")) return;
   
   try {
       const res = await fetch("/auth/delete", { method: "POST" });
-      if (res.ok) {
-        showToast("Account deleted successfully. Redirecting...");
-        setTimeout(() => location.href = "/", 2000);
-      } else {
-        throw new Error("Failed");
-      }
+      if (res.ok) location.href = "/";
+      else throw new Error("Failed");
   } catch(e) {
-      showToast("Could not delete account - please try again later", "error");
+      showToast("Could not delete account (Mock)", "error");
   }
 }
 
