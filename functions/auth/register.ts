@@ -33,6 +33,35 @@ function generateToken() {
   return crypto.randomUUID().replace(/-/g, "");
 }
 
+/* 🔒 Google reCAPTCHA validation */
+async function verifyRecaptcha(token: string, env: any): Promise<boolean> {
+  try {
+    const secretKey = env.RECAPTCHA_SECRET_KEY; // You need to add this to your env vars
+    
+    if (!secretKey) {
+      console.warn("RECAPTCHA_SECRET_KEY not set, skipping validation");
+      return true; // Or false depending on your requirements
+    }
+
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`
+    });
+
+    const data = await response.json();
+    
+    // Check if reCAPTCHA verification was successful
+    // You can also check data.score for a threshold (e.g., > 0.5)
+    return data.success === true && data.score > 0.5; // Adjust threshold as needed
+  } catch (error) {
+    console.error('reCAPTCHA verification failed:', error);
+    return false;
+  }
+}
+
 /* ❌ Block GET */
 export async function onRequestGet() {
   return new Response("POST only", { status: 405 });
@@ -47,13 +76,36 @@ export async function onRequestPost({ request, env }) {
       throw new Error("Missing env vars");
     }
 
-    const { name = "", email, password } = await request.json();
+    const { name = "", email, password, recaptchaToken } = await request.json();
+
+    // Get token from header as fallback
+    const tokenFromHeader = request.headers.get("X-Recaptcha-Token");
+    const recaptchaTokenToVerify = recaptchaToken || tokenFromHeader;
 
     if (!email || !password) {
       return new Response(
         JSON.stringify({ error: "Missing email or password" }),
         { status: 400, headers }
       );
+    }
+
+    // Validate reCAPTCHA
+    if (recaptchaTokenToVerify) {
+      const isRecaptchaValid = await verifyRecaptcha(recaptchaTokenToVerify, env);
+      if (!isRecaptchaValid) {
+        return new Response(
+          JSON.stringify({ error: "Failed reCAPTCHA verification. Please try again." }),
+          { status: 400, headers }
+        );
+      }
+    } else {
+      // Optional: Decide if reCAPTCHA is required
+      // For production, you might want to make it required
+      console.warn("No reCAPTCHA token provided");
+      // return new Response(
+      //   JSON.stringify({ error: "reCAPTCHA token required" }),
+      //   { status: 400, headers }
+      // );
     }
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -80,7 +132,11 @@ export async function onRequestPost({ request, env }) {
       if (existing.verified === 0) {
         await sendVerificationEmail(env, normalizedEmail, existing.verify_token);
         return new Response(
-          JSON.stringify({ success: true, message: "Verification email resent" }),
+          JSON.stringify({ 
+            success: true, 
+            message: "Verification email resent",
+            redirectUrl: "/verify-pending.html"
+          }),
           { headers }
         );
       }
@@ -104,9 +160,10 @@ export async function onRequestPost({ request, env }) {
         password_salt,
         provider,
         verified,
-        verify_token
+        verify_token,
+        created_at
       )
-      VALUES (?, ?, ?, ?, ?, 'email', 0, ?)
+      VALUES (?, ?, ?, ?, ?, 'email', 0, ?, datetime('now'))
     `).bind(
       crypto.randomUUID(),
       name,
@@ -120,7 +177,11 @@ export async function onRequestPost({ request, env }) {
     await sendVerificationEmail(env, normalizedEmail, verifyToken);
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ 
+        success: true,
+        message: "Account created! Please check your email to verify your account.",
+        redirectUrl: "/verify-pending.html"
+      }),
       { headers }
     );
 
@@ -185,7 +246,7 @@ async function sendVerificationEmail(env: any, email: string, token: string) {
             color:#6b7280;
             font-size:13px;
             line-height:1.5;">
-    If you didn’t create an account, you can safely ignore this email.
+    If you didn't create an account, you can safely ignore this email.
   </p>
 
   <p style="margin:12px 0 0 0;
