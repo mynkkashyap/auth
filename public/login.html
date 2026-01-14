@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- CORRECT: Use your actual reCAPTCHA site key -->
-  <script src="https://www.google.com/recaptcha/api.js?render=YOUR_RECAPTCHA_SITE_KEY"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6LfZHUosAAAAADxJnNrOps_IP7kAFQsssDaA9Yr6"></script>
   
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -348,7 +348,7 @@
         }
         
         grecaptcha.ready(() => {
-          grecaptcha.execute('YOUR_RECAPTCHA_SITE_KEY', { action: 'login' })
+          grecaptcha.execute('6LfZHUosAAAAADxJnNrOps_IP7kAFQsssDaA9Yr6', { action: 'login' })
             .then(token => {
               console.log('reCAPTCHA token obtained:', token.substring(0, 20) + '...');
               resolve(token);
