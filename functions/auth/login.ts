@@ -1,3 +1,68 @@
+export async function onRequestPost({ request, env }) {
+  try {
+    const body = await request.json();
+    const recaptchaToken =
+      body.recaptchaToken || request.headers.get("X-Recaptcha-Token");
+
+    if (!recaptchaToken) {
+      return new Response(
+        JSON.stringify({ error: "Missing reCAPTCHA token" }),
+        { status: 400 }
+      );
+    }
+
+    /* ------------------ Verify reCAPTCHA ------------------ */
+    const googleRes = await fetch(
+      "https://www.google.com/recaptcha/api/siteverify",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          secret: env.RECAPTCHA_SECRET,
+          response: recaptchaToken,
+        }),
+      }
+    );
+
+    const captcha = await googleRes.json();
+
+    if (!captcha.success || captcha.score < 0.5 || captcha.action !== "login") {
+      return new Response(
+        JSON.stringify({ error: "reCAPTCHA failed" }),
+        { status: 403 }
+      );
+    }
+
+    /* ------------------ Authenticate user ------------------ */
+    const { email, password } = body;
+
+    // 🔐 Replace with D1 / DB lookup
+    if (email !== "test@example.com" || password !== "password123") {
+      return new Response(
+        JSON.stringify({ error: "Invalid credentials" }),
+        { status: 401 }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        message: "Login successful",
+        redirectUrl: "/dashboard.html",
+      }),
+      { headers: { "Content-Type": "application/json" } }
+    );
+  } catch (err) {
+    return new Response(
+      JSON.stringify({ error: "Server error" }),
+      { status: 500 }
+    );
+  }
+}
+
+
+
 const enc = new TextEncoder();
 
 /* 🔐 SHA-256 (legacy) */
