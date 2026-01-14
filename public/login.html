@@ -8,7 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://www.google.com/recaptcha/api.js?render=6LfZHUosAAAAADxJnNrOps_IP7kAFQsssDaA9Yr6"></script>
+  
+  <!-- CORRECT: Use your actual reCAPTCHA site key -->
+  <script src="https://www.google.com/recaptcha/api.js?render=YOUR_RECAPTCHA_SITE_KEY"></script>
   
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -252,7 +254,7 @@
     <h1>Welcome back</h1>
     <p class="subtitle">Please enter your details to sign in</p>
 
-    <form id="loginForm" onsubmit="handleLogin(event)">
+    <form id="loginForm">
       
       <div class="input-group">
         <label for="email">Email address</label>
@@ -289,9 +291,6 @@
         <span class="spinner" id="spinner"></span>
         <span id="btnText">Sign in</span>
       </button>
-
-      <!-- Google reCAPTCHA badge will appear here automatically -->
-      <div class="g-recaptcha" data-sitekey="6LfZHUosAAAAADxJnNrOps_IP7kAFQsssDaA9Yr6" data-size="invisible"></div>
     </form>
 
     <div class="divider"><span>OR</span></div>
@@ -315,100 +314,248 @@
   </div>
 
   <script>
-    // 🔐 Password toggle
-    function togglePassword() {
-      const input = document.getElementById("password");
-      const icon = document.getElementById("eyeIcon");
+    // DOM Elements
+    const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btnText');
+    const messageDiv = document.getElementById('msg');
 
-      input.type = input.type === "password" ? "text" : "password";
-      icon.classList.toggle("ph-eye-slash");
+    // 🔐 Toggle password visibility
+    function togglePassword() {
+      const passwordField = document.getElementById('password');
+      const eyeIcon = document.getElementById('eyeIcon');
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        eyeIcon.classList.remove('ph-eye');
+        eyeIcon.classList.add('ph-eye-slash');
+      } else {
+        passwordField.type = 'password';
+        eyeIcon.classList.remove('ph-eye-slash');
+        eyeIcon.classList.add('ph-eye');
+      }
     }
 
     // 🔐 Get reCAPTCHA token
-    function getRecaptchaToken() {
+    async function getRecaptchaToken() {
       return new Promise((resolve, reject) => {
+        if (typeof grecaptcha === 'undefined') {
+          reject(new Error('reCAPTCHA not loaded'));
+          return;
+        }
+        
         grecaptcha.ready(() => {
-          grecaptcha.execute("6LfZHUosAAAAADxJnNrOps_IP7kAFQsssDaA9Yr6", { action: "login" })
-            .then(resolve)
-            .catch(reject);
+          grecaptcha.execute('YOUR_RECAPTCHA_SITE_KEY', { action: 'login' })
+            .then(token => {
+              console.log('reCAPTCHA token obtained:', token.substring(0, 20) + '...');
+              resolve(token);
+            })
+            .catch(error => {
+              console.error('reCAPTCHA error:', error);
+              reject(new Error('Security check failed. Please refresh and try again.'));
+            });
         });
       });
     }
 
-    // 🚀 Handle Login Logic with reCAPTCHA
-    async function handleLogin(e) {
-      e.preventDefault(); 
+    // 🎯 Show message
+    function showMessage(text, type = 'error') {
+      messageDiv.textContent = text;
+      messageDiv.className = `msg visible ${type}`;
       
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const msg = document.getElementById("msg");
-      const btn = document.getElementById("submitBtn");
-      const spinner = document.getElementById("spinner");
-      const btnText = document.getElementById("btnText");
+      // Auto-hide success messages
+      if (type === 'success') {
+        setTimeout(() => {
+          messageDiv.className = 'msg';
+        }, 5000);
+      }
+    }
 
-      // Reset UI
-      msg.className = "msg"; 
-      msg.textContent = "";
+    // 🎯 Set button state
+    function setButtonState(isLoading) {
+      submitBtn.disabled = isLoading;
+      spinner.style.display = isLoading ? 'block' : 'none';
+      btnText.textContent = isLoading ? 'Signing in...' : 'Sign in';
+    }
 
-      // Basic validation
-      if (!email || !password) {
-        msg.textContent = "Please fill in all fields";
-        msg.classList.add("msg", "error", "visible");
+    // 🎯 Validate form
+    function validateForm() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      // Reset any previous error states
+      emailInput.style.borderColor = '';
+      passwordInput.style.borderColor = '';
+
+      if (!email) {
+        showMessage('Email is required');
+        emailInput.style.borderColor = 'var(--error)';
+        emailInput.focus();
+        return false;
+      }
+
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showMessage('Please enter a valid email address');
+        emailInput.style.borderColor = 'var(--error)';
+        emailInput.focus();
+        return false;
+      }
+
+      if (!password) {
+        showMessage('Password is required');
+        passwordInput.style.borderColor = 'var(--error)';
+        passwordInput.focus();
+        return false;
+      }
+
+      if (password.length < 6) {
+        showMessage('Password must be at least 6 characters');
+        passwordInput.style.borderColor = 'var(--error)';
+        passwordInput.focus();
+        return false;
+      }
+
+      return true;
+    }
+
+    // 🚀 Handle login submission
+    async function handleLogin(e) {
+      e.preventDefault();
+      
+      // Clear any previous messages
+      messageDiv.className = 'msg';
+      messageDiv.textContent = '';
+
+      // Validate form
+      if (!validateForm()) {
         return;
       }
 
-      // Loading State
-      btn.disabled = true;
-      spinner.style.display = "block";
-      btnText.textContent = "Signing in...";
-
       try {
+        // Set loading state
+        setButtonState(true);
+
         // Get reCAPTCHA token
         const recaptchaToken = await getRecaptchaToken();
         
-        // Send login request with reCAPTCHA token
-        const res = await fetch("/auth/login", {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "X-Recaptcha-Token": recaptchaToken
+        // Prepare request data
+        const requestData = {
+          email: emailInput.value.trim(),
+          password: passwordInput.value,
+          recaptchaToken: recaptchaToken
+        };
+
+        console.log('Sending login request...');
+        
+        // Send login request
+        const response = await fetch('/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Recaptcha-Token': recaptchaToken // Include in header as well
           },
-          body: JSON.stringify({ 
-            email, 
-            password,
-            recaptchaToken // Also include in body if your backend expects it there
-          })
+          body: JSON.stringify(requestData)
         });
 
-        const data = await res.json().catch(() => ({})); 
-
-        if (res.ok) {
-          msg.textContent = data.message || "Login successful. Redirecting...";
-          msg.classList.add("msg", "success", "visible");
-          
-          // Redirect to dashboard or stored URL
-          setTimeout(() => {
-            window.location.href = data.redirectUrl || "/dashboard.html";
-          }, 1500);
-        } else {
-          throw new Error(data.error || "Invalid credentials");
-        }
-      } catch (err) {
-        msg.textContent = err.message || "Network error occurred. Please try again.";
-        msg.classList.add("msg", "error", "visible");
+        // Parse response
+        const data = await response.json();
         
-        // Reset Button State
-        btn.disabled = false;
-        spinner.style.display = "none";
-        btnText.textContent = "Sign in";
+        if (response.ok) {
+          showMessage(data.message || 'Login successful! Redirecting...', 'success');
+          
+          // Store user data if needed
+          if (data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+          }
+          
+          // Redirect after short delay
+          setTimeout(() => {
+            window.location.href = data.redirectUrl || '/dashboard.html';
+          }, 1500);
+          
+        } else {
+          // Handle specific error cases
+          if (response.status === 409 && data.provider === 'google') {
+            showMessage('This account uses Google Sign-In. Please use the Google button above.', 'error');
+          } else if (response.status === 403 && data.needsVerification) {
+            showMessage('Please verify your email before logging in. Check your inbox.', 'error');
+          } else {
+            showMessage(data.error || 'Login failed. Please check your credentials.', 'error');
+          }
+          
+          // Reset button state on error
+          setButtonState(false);
+        }
+        
+      } catch (error) {
+        console.error('Login error:', error);
+        
+        // Network error or other issues
+        if (error.message.includes('reCAPTCHA') || error.message.includes('Security check')) {
+          showMessage('Security check failed. Please refresh the page and try again.', 'error');
+        } else if (error.message.includes('Network')) {
+          showMessage('Network error. Please check your connection and try again.', 'error');
+        } else {
+          showMessage('An unexpected error occurred. Please try again.', 'error');
+        }
+        
+        setButtonState(false);
       }
     }
 
-    // Initialize reCAPTCHA
-    document.addEventListener('DOMContentLoaded', function() {
-      grecaptcha.ready(function() {
-        console.log('reCAPTCHA v3 loaded');
+    // 📝 Initialize form
+    function initForm() {
+      // Set up form submission
+      loginForm.addEventListener('submit', handleLogin);
+      
+      // Clear error states when user starts typing
+      emailInput.addEventListener('input', () => {
+        emailInput.style.borderColor = '';
       });
+      
+      passwordInput.addEventListener('input', () => {
+        passwordInput.style.borderColor = '';
+      });
+      
+      // Allow submitting with Enter key (but not in textareas)
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.target.matches('textarea, [contenteditable]')) {
+          if (!submitBtn.disabled && document.activeElement !== submitBtn) {
+            submitBtn.click();
+          }
+        }
+      });
+      
+      console.log('Login form initialized');
+    }
+
+    // 🏁 Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if already logged in (optional)
+      const sessionToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('session='));
+      
+      if (sessionToken) {
+        console.log('User already has a session');
+        // You could redirect immediately or show a message
+      }
+      
+      initForm();
+      
+      // Initialize reCAPTCHA
+      if (typeof grecaptcha !== 'undefined') {
+        grecaptcha.ready(() => {
+          console.log('reCAPTCHA v3 loaded successfully');
+        });
+      } else {
+        console.error('reCAPTCHA script failed to load');
+      }
     });
   </script>
 </body>
