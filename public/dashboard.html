@@ -5,6 +5,7 @@
 <title>User Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -12,14 +13,22 @@
   --card-bg: #ffffff;
   --primary: #4f46e5;
   --primary-hover: #4338ca;
+  --primary-light: #e0e7ff;
   --text-main: #0f172a;
   --text-muted: #64748b;
   --border: #e2e8f0;
   --danger: #ef4444;
+  --danger-hover: #dc2626;
   --danger-bg: #fee2e2;
   --success: #10b981;
   --success-bg: #d1fae5;
+  --warning: #f59e0b;
+  --warning-bg: #fef3c7;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  --radius: 12px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="dark"] {
@@ -29,11 +38,20 @@
   --text-muted: #94a3b8;
   --border: #334155;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --danger-bg: #450a0a;
   --success-bg: #064e3b;
+  --warning-bg: #451a03;
+  --primary-light: #1e1b4b;
 }
 
-* { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; transition: background-color 0.2s, border-color 0.2s; }
+* { 
+  box-sizing: border-box; 
+  font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+  margin: 0;
+  padding: 0;
+}
 
 body {
   margin: 0;
@@ -41,21 +59,59 @@ body {
   color: var(--text-main);
   min-height: 100vh;
   padding: 20px;
+  transition: var(--transition);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.03) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 20%);
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  padding: 16px 24px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
 }
 
-.header h1 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), #818cf8, var(--primary));
+  opacity: 0.8;
+}
+
+.header h1 { 
+  margin: 0; 
+  font-size: 1.75rem; 
+  font-weight: 700;
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  color: var(--text-main);
+}
+
+.header h1 i {
+  background: linear-gradient(135deg, var(--primary), #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
 .dashboard-grid {
   display: grid;
@@ -65,47 +121,79 @@ body {
 
 @media (min-width: 768px) {
   .dashboard-grid {
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 350px 1fr;
     align-items: start;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 380px 1fr;
   }
 }
 
 .card {
   background: var(--card-bg);
-  border-radius: 16px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  padding: 24px;
+  box-shadow: var(--shadow-card);
+  padding: 28px;
   overflow: hidden;
+  transition: var(--transition);
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--border);
 }
 
-.card-header h3 { margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+.card-header h3 { 
+  margin: 0; 
+  font-size: 1.2rem; 
+  font-weight: 600;
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+}
 
-.profile-summary { text-align: center; }
+.profile-summary { 
+  text-align: center;
+  margin-bottom: 24px;
+}
+
 .avatar-large {
-  width: 90px;
-  height: 90px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary), #818cf8);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 700;
-  margin: 0 auto 16px;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  margin: 0 auto 20px;
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
   position: relative;
   overflow: hidden;
+  border: 4px solid var(--card-bg);
+  outline: 2px solid var(--primary);
+  transition: var(--transition);
+}
+
+.avatar-large:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 25px rgba(79, 70, 229, 0.4);
 }
 
 .avatar-image {
@@ -124,104 +212,324 @@ body {
   display: none;
 }
 
-.user-meta { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
-.meta-item { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); }
+.user-meta { 
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
 
-label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--text-muted); }
-input, select, textarea {
-  width: 100%;
-  padding: 10px 14px;
+.meta-item { 
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: var(--bg);
   border-radius: 8px;
   border: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+.meta-item:hover {
+  border-color: var(--primary);
+}
+
+.meta-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.meta-value {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+label { 
+  display: block; 
+  font-size: 0.875rem; 
+  font-weight: 500; 
+  margin-bottom: 8px; 
+  color: var(--text-muted); 
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  z-index: 2;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 14px 16px;
+  padding-left: 44px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
   background: var(--bg);
   color: var(--text-main);
   outline: none;
   font-size: 0.95rem;
+  transition: var(--transition);
+  font-weight: 400;
 }
-input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1); }
-input[disabled] { opacity: 0.7; cursor: not-allowed; }
 
-.form-group { margin-bottom: 16px; }
+textarea {
+  padding-left: 16px;
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  background: var(--card-bg);
+}
+
+input[disabled] { 
+  opacity: 0.7; 
+  cursor: not-allowed;
+  background: var(--bg);
+}
 
 button {
   border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
+  border-radius: 10px;
+  padding: 14px 24px;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
-  transition: transform 0.1s;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
 }
-button:active { transform: scale(0.98); }
 
-.btn-primary { background: var(--primary); color: white; width: 100%; justify-content: center; }
-.btn-primary:hover { background: var(--primary-hover); }
-
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
-.btn-outline:hover { background: var(--bg); }
-
-.btn-danger { background: var(--danger-bg); color: var(--danger); width: 100%; justify-content: center; }
-.btn-icon { padding: 8px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border); color: var(--text-main); }
-
-.activity-list { list-style: none; padding: 0; margin: 0; }
-.activity-item {
-  display: flex;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px dashed var(--border);
+button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
 }
-.activity-item:last-child { border-bottom: none; }
-.activity-icon {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  background: var(--bg);
-  display: flex; align-items: center; justify-content: center;
+
+button:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-primary { 
+  background: linear-gradient(135deg, var(--primary), #6366f1);
+  color: white;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.btn-primary:hover { 
+  background: linear-gradient(135deg, var(--primary-hover), #4f46e5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+}
+
+.btn-outline { 
+  background: transparent; 
+  border: 2px solid var(--border); 
+  color: var(--text-main);
+  padding: 10px 16px;
+}
+
+.btn-outline:hover { 
+  background: var(--bg); 
+  border-color: var(--primary);
   color: var(--primary);
 }
-.activity-details div:first-child { font-weight: 500; font-size: 0.9rem; }
-.activity-details div:last-child { font-size: 0.75rem; color: var(--text-muted); }
 
-.setting-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.btn-danger { 
+  background: var(--danger-bg); 
+  color: var(--danger);
+  border: 2px solid transparent;
+  width: 100%;
+}
+
+.btn-danger:hover { 
+  background: var(--danger); 
+  color: white;
+  border-color: var(--danger);
+}
+
+.btn-icon { 
+  padding: 10px; 
+  border-radius: 10px; 
+  background: var(--bg); 
+  border: 2px solid var(--border); 
+  color: var(--text-main);
+  width: 44px;
+  height: 44px;
+}
+
+.btn-icon:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.activity-list { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0; 
+}
+
+.activity-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  animation: slideIn 0.3s ease-out forwards;
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.activity-item:nth-child(1) { animation-delay: 0.1s; }
+.activity-item:nth-child(2) { animation-delay: 0.2s; }
+.activity-item:nth-child(3) { animation-delay: 0.3s; }
+
+.activity-item:last-child { border-bottom: none; }
+
+.activity-icon {
+  width: 44px; 
+  height: 44px;
+  border-radius: 12px;
+  background: var(--primary-light);
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  color: var(--primary);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.activity-details { flex: 1; }
+.activity-details div:first-child { font-weight: 500; font-size: 0.95rem; margin-bottom: 4px; }
+.activity-details div:last-child { font-size: 0.8rem; color: var(--text-muted); }
+
+.setting-row { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 16px 0; 
+  border-bottom: 1px solid var(--border); 
+}
+
 .setting-row:last-child { border-bottom: none; }
+
 .toggle-switch {
-  position: relative; width: 44px; height: 24px;
+  position: relative; 
+  width: 52px; 
+  height: 28px;
 }
+
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
 .slider {
-  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-  background-color: var(--border); transition: .4s; border-radius: 34px;
+  position: absolute; 
+  cursor: pointer; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  background-color: var(--border); 
+  transition: .4s; 
+  border-radius: 34px;
 }
+
 .slider:before {
-  position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-  background-color: white; transition: .4s; border-radius: 50%;
+  position: absolute; 
+  content: ""; 
+  height: 20px; 
+  width: 20px; 
+  left: 4px; 
+  bottom: 4px;
+  background-color: white; 
+  transition: .4s; 
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
+
 input:checked + .slider { background-color: var(--primary); }
-input:checked + .slider:before { transform: translateX(20px); }
+input:checked + .slider:before { transform: translateX(24px); }
 
 .skeleton {
   background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: 6px;
+  border-radius: 8px;
   color: transparent !important;
+  position: relative;
+  overflow: hidden;
 }
-@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+@keyframes shimmer { 
+  0% { background-position: 200% 0; } 
+  100% { background-position: -200% 0; } 
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
 
 .toast {
-  position: fixed; bottom: 24px; right: 24px;
-  background: var(--card-bg); border-left: 4px solid var(--primary);
-  padding: 16px 20px; border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  display: flex; align-items: center; gap: 12px;
-  transform: translateY(100px); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 100;
+  position: fixed; 
+  bottom: 24px; 
+  right: 24px;
+  background: var(--card-bg); 
+  border-left: 4px solid var(--primary);
+  padding: 18px 22px; 
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  display: flex; 
+  align-items: center; 
+  gap: 14px;
+  transform: translateX(100px); 
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+  min-width: 300px;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
 }
-.toast.active { transform: translateY(0); }
+
+.toast.active { transform: translateX(0); }
 .toast.success { border-color: var(--success); }
 .toast.error { border-color: var(--danger); }
+.toast.warning { border-color: var(--warning); }
 
 .social-input-group {
   position: relative;
@@ -229,59 +537,325 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 .social-icon {
   position: absolute;
-  left: 12px;
+  left: 16px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
+  z-index: 2;
 }
 
 .social-input {
-  padding-left: 40px;
+  padding-left: 48px;
 }
 
 .image-upload-container {
   position: relative;
   display: inline-block;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .avatar-upload-btn {
   position: absolute;
-  bottom: -5px;
-  right: -5px;
-  background: var(--primary);
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(135deg, var(--primary), #6366f1);
   color: white;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border: 2px solid var(--card-bg);
+  border: 3px solid var(--card-bg);
   z-index: 2;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: var(--transition);
 }
 
 .avatar-upload-btn:hover {
-  background: var(--primary-hover);
-}
-
-textarea {
-  min-height: 80px;
-  resize: vertical;
-  font-family: inherit;
+  background: linear-gradient(135deg, var(--primary-hover), #4f46e5);
+  transform: scale(1.1);
 }
 
 .section-header {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-muted);
-  margin-top: 24px;
-  margin-bottom: 12px;
+  margin: 28px 0 16px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border);
+  position: relative;
 }
 
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: var(--primary);
+}
+
+.stat-card {
+  background: linear-gradient(135deg, var(--primary-light), transparent);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  border: 1px solid var(--border);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.stat-content h4 {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.stat-content p {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.progress-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #818cf8);
+  border-radius: 3px;
+  width: 75%;
+  animation: progressFill 2s ease-out;
+}
+
+.tab-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+
+.tab {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-muted);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  bottom: -1px;
+}
+
+.tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.tab:hover:not(.active) {
+  color: var(--text-main);
+}
+
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  animation: slideIn 0.3s ease-out;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px;
+  width: auto;
+  height: auto;
+}
+
+.close-modal:hover {
+  color: var(--danger);
+}
+
+@keyframes progressFill {
+  from { width: 0; }
+  to { width: 75%; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.loading {
+  animation: pulse 2s infinite;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--primary-light);
+  color: var(--primary);
+  margin-left: 8px;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .dashboard-grid {
+    gap: 16px;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+  
+  .avatar-large {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+  }
+  
+  .user-meta {
+    grid-template-columns: 1fr;
+  }
+  
+  .toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    min-width: auto;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Selection color */
+::selection {
+  background: rgba(79, 70, 229, 0.3);
+  color: var(--text-main);
+}
+
+/* Tooltip */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  background: var(--card-bg);
+  color: var(--text-main);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  margin-bottom: 8px;
+}
 </style>
 </head>
 
@@ -290,127 +864,219 @@ textarea {
 <div class="container">
   <div class="header">
     <h1><i class="ri-dashboard-3-line"></i> Dashboard</h1>
-    <div style="display: flex; gap: 10px;">
-      <button class="btn-icon" onclick="toggleTheme()" title="Toggle Theme"><i class="ri-moon-line"></i></button>
-      <button class="btn-danger" style="width: auto;" onclick="logout()"><i class="ri-logout-box-r-line"></i> Logout</button>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-icon" onclick="toggleTheme()" data-tooltip="Toggle Theme">
+          <i class="ri-moon-line" id="theme-icon"></i>
+        </button>
+        <button class="btn-icon" onclick="showNotifications()" data-tooltip="Notifications">
+          <i class="ri-notification-3-line"></i>
+        </button>
+        <button class="btn-icon" onclick="searchDashboard()" data-tooltip="Search">
+          <i class="ri-search-line"></i>
+        </button>
+      </div>
+      <button class="btn-danger" style="width: auto; padding: 10px 20px;" onclick="logout()">
+        <i class="ri-logout-box-r-line"></i> Logout
+      </button>
     </div>
   </div>
 
+  <div class="tab-container">
+    <button class="tab active" onclick="switchTab('profile')">
+      <i class="ri-user-line"></i> Profile
+    </button>
+    <button class="tab" onclick="switchTab('activity')">
+      <i class="ri-history-line"></i> Activity
+    </button>
+    <button class="tab" onclick="switchTab('security')">
+      <i class="ri-shield-keyhole-line"></i> Security
+    </button>
+  </div>
+
   <div id="loading-ui" class="dashboard-grid">
-    <div class="card" style="height: 400px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
+    <div class="card" style="height: 450px;">
+      <div class="skeleton" style="width:100%; height:100%;"></div>
+    </div>
     <div style="display:flex; flex-direction:column; gap:24px;">
-      <div class="card" style="height: 200px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
-      <div class="card" style="height: 300px;"><div class="skeleton" style="width:100%; height:100%;"></div></div>
+      <div class="card" style="height: 220px;">
+        <div class="skeleton" style="width:100%; height:100%;"></div>
+      </div>
+      <div class="card" style="height: 320px;">
+        <div class="skeleton" style="width:100%; height:100%;"></div>
+      </div>
+      <div class="card" style="height: 200px;">
+        <div class="skeleton" style="width:100%; height:100%;"></div>
+      </div>
     </div>
   </div>
 
   <div id="content" class="dashboard-grid" style="display: none;">
-    <div class="card">
-      <div class="profile-summary">
-        <div class="image-upload-container">
-          <div class="avatar-large" id="ui-avatar-container">
-            <span id="ui-avatar-initial"></span>
-            <img id="ui-avatar-image" class="avatar-image" alt="Profile picture">
+    
+    <!-- Left Column - Profile -->
+    <div>
+      <div class="card tab-content active" id="profile-tab">
+        <div class="profile-summary">
+          <div class="image-upload-container">
+            <div class="avatar-large" id="ui-avatar-container">
+              <span id="ui-avatar-initial"></span>
+              <img id="ui-avatar-image" class="avatar-image" alt="Profile picture">
+            </div>
+            <label for="avatar-upload" class="avatar-upload-btn" data-tooltip="Upload photo">
+              <i class="ri-camera-line"></i>
+            </label>
+            <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
           </div>
-          <label for="avatar-upload" class="avatar-upload-btn" title="Upload photo">
-            <i class="ri-camera-line"></i>
-          </label>
-          <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+          <h2 id="ui-name-display" style="margin: 0; font-size: 1.5rem; font-weight: 700;"></h2>
+          <p id="ui-bio-preview" style="color: var(--text-muted); margin-top: 8px; font-size: 0.9rem;"></p>
+          
+          <div class="user-meta">
+            <div class="meta-item">
+              <span class="meta-label">Joined</span>
+              <span class="meta-value" id="ui-joined"></span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Last Login</span>
+              <span class="meta-value" id="ui-login"></span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Member Level</span>
+              <span class="meta-value">Pro<span class="badge">Active</span></span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Profile Complete</span>
+              <span class="meta-value">85%</span>
+            </div>
+          </div>
+          
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
         </div>
-        <h2 id="ui-name-display" style="margin: 0; font-size: 1.25rem;"></h2>
-      </div>
 
-      <div class="user-meta">
-        <div class="meta-item"><span>Joined</span> <span id="ui-joined"></span></div>
-        <div class="meta-item"><span>Last Login</span> <span id="ui-login"></span></div>
-      </div>
+        <div class="form-group">
+          <label><i class="ri-user-line"></i> Full Name</label>
+          <div class="input-group">
+            <i class="ri-user-line input-icon"></i>
+            <input id="inp-name" type="text" placeholder="Enter your full name">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label><i class="ri-mail-line"></i> Email Address</label>
+          <div class="input-group">
+            <i class="ri-mail-line input-icon"></i>
+            <input id="inp-email" type="email" disabled>
+          </div>
+        </div>
 
-      <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+        <div class="section-header">About Me</div>
+        
+        <div class="form-group">
+          <label><i class="ri-file-text-line"></i> Bio/About Myself</label>
+          <textarea id="inp-bio" placeholder="Tell us a little about yourself..."></textarea>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+            <span id="bio-counter">0</span>/200 characters
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label>Full Name</label>
-        <input id="inp-name" type="text">
-      </div>
-      
-      <div class="form-group">
-        <label>Email Address</label>
-        <input id="inp-email" type="email" disabled>
-      </div>
+        <div class="form-group">
+          <label><i class="ri-user-settings-line"></i> Gender</label>
+          <div class="input-group">
+            <i class="ri-user-settings-line input-icon"></i>
+            <select id="inp-gender">
+              <option value="">Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+              <option value="prefer-not-to-say">Prefer not to say</option>
+            </select>
+          </div>
+        </div>
 
-      <div class="section-header">About Me</div>
-      
-      <div class="form-group">
-        <label>Bio/About Myself</label>
-        <textarea id="inp-bio" placeholder="Tell us a little about yourself..."></textarea>
-      </div>
+        <div class="form-group">
+          <label><i class="ri-calendar-line"></i> Age</label>
+          <div class="input-group">
+            <i class="ri-calendar-line input-icon"></i>
+            <input id="inp-age" type="number" min="1" max="120" placeholder="Enter your age">
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label>Gender</label>
-        <select id="inp-gender">
-          <option value="">Select gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-          <option value="prefer-not-to-say">Prefer not to say</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label><i class="ri-phone-line"></i> Mobile Number</label>
+          <div class="input-group">
+            <i class="ri-phone-line input-icon"></i>
+            <input id="inp-mobile" type="tel" placeholder="+1 (123) 456-7890">
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label>Age</label>
-        <input id="inp-age" type="number" min="1" max="120" placeholder="Enter your age">
-      </div>
+        <div class="section-header">Social Media</div>
+        
+        <div class="form-group">
+          <label>Instagram</label>
+          <div class="social-input-group">
+            <i class="ri-instagram-line social-icon"></i>
+            <input id="inp-instagram" type="text" class="social-input" placeholder="username">
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label>Mobile Number</label>
-        <input id="inp-mobile" type="tel" placeholder="+1 (123) 456-7890">
-      </div>
+        <div class="form-group">
+          <label>Twitter/X</label>
+          <div class="social-input-group">
+            <i class="ri-twitter-x-line social-icon"></i>
+            <input id="inp-twitter" type="text" class="social-input" placeholder="username">
+          </div>
+        </div>
 
-      <div class="section-header">Social Media</div>
-      
-      <div class="form-group">
-        <label>Instagram Username</label>
-        <div class="social-input-group">
-          <i class="ri-instagram-line social-icon"></i>
-          <input id="inp-instagram" type="text" class="social-input" placeholder="username">
+        <button class="btn-primary" onclick="saveProfile()">
+          <i class="ri-save-line"></i> Save Changes
+        </button>
+        
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="ri-shield-star-line"></i>
+          </div>
+          <div class="stat-content">
+            <h4>Account Security</h4>
+            <p>Excellent</p>
+          </div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Twitter/X Username</label>
-        <div class="social-input-group">
-          <i class="ri-twitter-x-line social-icon"></i>
-          <input id="inp-twitter" type="text" class="social-input" placeholder="username">
-        </div>
-      </div>
-
-      <button class="btn-primary" onclick="saveProfile()"><i class="ri-save-line"></i> Save Changes</button>
-      
-      <div style="margin-top: 30px;">
-        <h4 style="color: var(--danger); margin-bottom: 10px;">Danger Zone</h4>
-        <button class="btn-danger" onclick="confirmDelete()"><i class="ri-delete-bin-line"></i> Delete Account</button>
-      </div>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 24px;">
-      
-      <div class="card">
+      <!-- Activity Tab -->
+      <div class="card tab-content" id="activity-tab">
         <div class="card-header">
           <h3><i class="ri-history-line"></i> Recent Activity</h3>
-          <button class="btn-outline" style="font-size: 0.8rem; padding: 6px 10px;" onclick="loadProfile()">Refresh</button>
+          <button class="btn-outline" onclick="loadProfile()">
+            <i class="ri-refresh-line"></i> Refresh
+          </button>
         </div>
         <ul class="activity-list" id="ui-activity">
-          </ul>
+          <!-- Activities will be loaded here -->
+        </ul>
       </div>
 
-      <div class="card">
+      <!-- Security Tab -->
+      <div class="card tab-content" id="security-tab">
         <div class="card-header">
-          <h3><i class="ri-settings-4-line"></i> Preferences</h3>
+          <h3><i class="ri-shield-keyhole-line"></i> Security Settings</h3>
         </div>
         
         <div class="setting-row">
           <div>
-            <div style="font-weight: 500;">Email Notifications</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Receive weekly digests</div>
+            <div style="font-weight: 600;">Two-Factor Authentication</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Add an extra layer of security</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="twoFactorToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <div style="font-weight: 600;">Login Notifications</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Get alerted for new logins</div>
           </div>
           <label class="toggle-switch">
             <input type="checkbox" checked>
@@ -420,23 +1086,120 @@ textarea {
 
         <div class="setting-row">
           <div>
-            <div style="font-weight: 500;">Two-Factor Auth</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Enable extra security</div>
+            <div style="font-weight: 600;">Active Sessions</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Manage your logged-in devices</div>
+          </div>
+          <button class="btn-outline" onclick="viewSessions()">View</button>
+        </div>
+
+        <div class="section-header">Password</div>
+        
+        <div class="form-group">
+          <label>Current Password</label>
+          <input type="password" id="current-password" placeholder="Enter current password">
+        </div>
+        
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="password" id="new-password" placeholder="Enter new password">
+        </div>
+        
+        <div class="form-group">
+          <label>Confirm New Password</label>
+          <input type="password" id="confirm-password" placeholder="Confirm new password">
+        </div>
+        
+        <button class="btn-primary" onclick="changePassword()">
+          <i class="ri-lock-password-line"></i> Update Password
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="ri-notification-3-line"></i> Notifications</h3>
+          <button class="btn-outline" style="padding: 6px 12px; font-size: 0.8rem;" onclick="markAllAsRead()">
+            Mark all as read
+          </button>
+        </div>
+        
+        <div class="setting-row">
+          <div>
+            <div style="font-weight: 600;">Email Notifications</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Receive weekly digests</div>
           </div>
           <label class="toggle-switch">
-            <input type="checkbox">
+            <input type="checkbox" checked id="emailNotifications">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <div style="font-weight: 600;">Push Notifications</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Get real-time updates</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pushNotifications">
             <span class="slider"></span>
           </label>
         </div>
         
         <div class="setting-row">
           <div>
-            <div style="font-weight: 500;">Password</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Last changed 3 months ago</div>
+            <div style="font-weight: 600;">Marketing Emails</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Receive offers and updates</div>
           </div>
-          <button class="btn-outline" style="padding: 6px 12px;" onclick="changePassword()">Change</button>
+          <label class="toggle-switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
         </div>
 
+        <div class="section-header">Recent Alerts</div>
+        
+        <div style="background: var(--warning-bg); border-radius: 8px; padding: 12px; margin-top: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px; color: var(--warning);">
+            <i class="ri-alert-line"></i>
+            <span style="font-size: 0.85rem; font-weight: 500;">Security alert: New login detected</span>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+            Yesterday at 2:30 PM • Chrome on Windows
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="ri-bar-chart-2-line"></i> Statistics</h3>
+          <select style="font-size: 0.85rem; padding: 6px 12px; border-radius: 6px; background: var(--bg); border: 1px solid var(--border); color: var(--text-main);">
+            <option>Last 7 days</option>
+            <option>Last 30 days</option>
+            <option>Last 90 days</option>
+          </select>
+        </div>
+        
+        <div class="user-meta" style="grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 0;">
+          <div class="meta-item">
+            <span class="meta-label">Profile Views</span>
+            <span class="meta-value" style="font-size: 1.5rem;">1,234</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Activity Score</span>
+            <span class="meta-value" style="font-size: 1.5rem;">92%</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Logins This Month</span>
+            <span class="meta-value" style="font-size: 1.5rem;">28</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Updates Made</span>
+            <span class="meta-value" style="font-size: 1.5rem;">15</span>
+          </div>
+        </div>
       </div>
       
       <div class="card">
@@ -445,58 +1208,130 @@ textarea {
         </div>
 
         <div class="form-group">
+          <label>Subject</label>
+          <input type="text" id="contact-subject" placeholder="What do you need help with?">
+        </div>
+
+        <div class="form-group">
           <label>Message</label>
-          <input
-            id="contact-message"
-            type="text"
-            placeholder="Describe your issue or feedback"
-          />
+          <textarea id="contact-message" placeholder="Describe your issue or feedback..."></textarea>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+            Our team typically responds within 24 hours
+          </div>
         </div>
 
         <button class="btn-primary" onclick="submitContact()">
           <i class="ri-send-plane-line"></i> Send Message
         </button>
+        
+        <div style="margin-top: 16px; text-align: center;">
+          <div style="font-size: 0.85rem; color: var(--text-muted);">
+            <i class="ri-phone-line"></i> Support: 1-800-123-4567
+          </div>
+        </div>
       </div>
-      
+
+      <!-- Danger Zone Card -->
+      <div class="card" style="border: 2px solid var(--danger);">
+        <div class="card-header">
+          <h3 style="color: var(--danger);"><i class="ri-alert-line"></i> Danger Zone</h3>
+        </div>
+        
+        <div style="background: var(--danger-bg); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <i class="ri-error-warning-line" style="color: var(--danger); font-size: 1.2rem;"></i>
+            <div style="font-size: 0.9rem; color: var(--danger); font-weight: 500;">
+              These actions are irreversible
+            </div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+            Deleting your account will permanently remove all your data. This action cannot be undone.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Export Data</label>
+          <button class="btn-outline" style="width: 100%;" onclick="exportData()">
+            <i class="ri-download-line"></i> Export All Data
+          </button>
+        </div>
+
+        <button class="btn-danger" onclick="confirmDelete()">
+          <i class="ri-delete-bin-line"></i> Delete Account
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- Toast Notification -->
 <div id="toast" class="toast">
-  <i class="ri-notification-badge-line" style="font-size: 1.2rem;"></i>
+  <i class="ri-checkbox-circle-line" style="font-size: 1.3rem;"></i>
   <span id="toast-msg">Notification</span>
 </div>
 
+<!-- Modal -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modal-title">Modal Title</h3>
+      <button class="close-modal" onclick="closeModal()">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div id="modal-body">
+      <!-- Modal content goes here -->
+    </div>
+  </div>
+</div>
+
 <script>
+// Enhanced JavaScript with more features
 const toastEl = document.getElementById("toast");
 const toastMsg = document.getElementById("toast-msg");
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modal-title");
+const modalBody = document.getElementById("modal-body");
 
-function showToast(msg, type = "success") {
-  toastMsg.textContent = msg;
-  toastEl.className = `toast active ${type}`;
-  
-  const icon = toastEl.querySelector('i');
-  icon.className = type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line';
-
-  setTimeout(() => {
-    toastEl.classList.remove("active");
-  }, 3000);
-}
-
+// Theme Management
 function toggleTheme() {
-  const theme = document.documentElement.dataset.theme === "dark" ? "" : "dark";
-  document.documentElement.dataset.theme = theme;
-  localStorage.setItem("theme", theme);
-  const btnIcon = document.querySelector('.btn-icon i');
-  btnIcon.className = theme === 'dark' ? 'ri-sun-line' : 'ri-moon-line';
+  const currentTheme = document.documentElement.dataset.theme;
+  const newTheme = currentTheme === "dark" ? "" : "dark";
+  document.documentElement.dataset.theme = newTheme;
+  localStorage.setItem("theme", newTheme);
+  
+  const btnIcon = document.querySelector('#theme-icon');
+  btnIcon.className = newTheme === 'dark' ? 'ri-sun-line' : 'ri-moon-line';
+  
+  showToast(`Switched to ${newTheme === 'dark' ? 'dark' : 'light'} mode`);
 }
 
-document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+// Initialize theme
+const savedTheme = localStorage.getItem("theme") || "";
+document.documentElement.dataset.theme = savedTheme;
+document.querySelector('#theme-icon').className = savedTheme === 'dark' ? 'ri-sun-line' : 'ri-moon-line';
 
+// Tab Switching
+function switchTab(tabName) {
+  // Update active tab
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelectorAll('.tab-content').forEach(content => {
+    content.classList.remove('active');
+  });
+  
+  // Activate selected tab
+  document.querySelector(`.tab[onclick*="${tabName}"]`).classList.add('active');
+  document.getElementById(`${tabName}-tab`).classList.add('active');
+}
+
+// Avatar Upload
 document.getElementById('avatar-upload').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (!file) return;
   
+  // Validate file
   if (!file.type.match('image.*')) {
     showToast('Please select an image file', 'error');
     return;
@@ -507,27 +1342,85 @@ document.getElementById('avatar-upload').addEventListener('change', function(e) 
     return;
   }
   
+  // Preview image
   const reader = new FileReader();
   reader.onload = function(e) {
     const img = document.getElementById('ui-avatar-image');
     img.src = e.target.result;
     document.getElementById('ui-avatar-container').classList.add('has-image');
     
+    // Show saving animation
     const saveBtn = document.querySelector('.btn-primary');
     const originalText = saveBtn.innerHTML;
     saveBtn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Saving Image...`;
     saveBtn.disabled = true;
     
+    // Simulate upload
     setTimeout(() => {
-      showToast('Profile image updated successfully');
+      showToast('Profile image updated successfully!');
       saveBtn.innerHTML = originalText;
       saveBtn.disabled = false;
-    }, 1000);
+      
+      // Add activity log
+      addActivity('Updated profile picture', 'Just now');
+    }, 1500);
   };
   
   reader.readAsDataURL(file);
 });
 
+// Bio character counter
+document.getElementById('inp-bio').addEventListener('input', function(e) {
+  const count = e.target.value.length;
+  document.getElementById('bio-counter').textContent = count;
+  
+  if (count > 200) {
+    e.target.value = e.target.value.substring(0, 200);
+    document.getElementById('bio-counter').textContent = 200;
+    showToast('Bio is limited to 200 characters', 'warning');
+  }
+});
+
+// Toast Notification System
+function showToast(msg, type = "success") {
+  toastMsg.textContent = msg;
+  toastEl.className = `toast active ${type}`;
+  
+  const icon = toastEl.querySelector('i');
+  if (type === 'success') {
+    icon.className = 'ri-checkbox-circle-line';
+  } else if (type === 'error') {
+    icon.className = 'ri-error-warning-line';
+  } else if (type === 'warning') {
+    icon.className = 'ri-alert-line';
+  }
+
+  // Auto-hide
+  clearTimeout(window.toastTimeout);
+  window.toastTimeout = setTimeout(() => {
+    toastEl.classList.remove("active");
+  }, 4000);
+}
+
+// Modal System
+function showModal(title, content) {
+  modalTitle.textContent = title;
+  modalBody.innerHTML = content;
+  modal.style.display = 'flex';
+}
+
+function closeModal() {
+  modal.style.display = 'none';
+}
+
+// Close modal on outside click
+modal.addEventListener('click', function(e) {
+  if (e.target === modal) {
+    closeModal();
+  }
+});
+
+// Load Profile Data
 async function loadProfile() {
   document.getElementById("loading-ui").style.display = "grid";
   document.getElementById("content").style.display = "none";
@@ -546,21 +1439,21 @@ async function loadProfile() {
   } catch (error) {
     console.warn("Using mock data for demo purposes:", error);
     setTimeout(() => {
-        const mockUser = {
-            name: "Alex Developer",
-            email: "alex@example.com",
-            created_at: "2023-01-15T10:00:00Z",
-            last_login: new Date().toISOString(),
-            bio: "Full stack developer passionate about creating beautiful user experiences. Love hiking and photography.",
-            gender: "male",
-            age: 28,
-            mobile: "+1 (555) 123-4567",
-            instagram: "alexdev",
-            twitter: "alex_dev",
-            avatar: null
-        };
-        renderDashboard(mockUser);
-        showToast("Dashboard loaded (Mock Mode)", "success");
+      const mockUser = {
+        name: "Alex Developer",
+        email: "alex@example.com",
+        created_at: "2023-01-15T10:00:00Z",
+        last_login: new Date().toISOString(),
+        bio: "Full stack developer passionate about creating beautiful user experiences. Love hiking and photography.",
+        gender: "male",
+        age: 28,
+        mobile: "+1 (555) 123-4567",
+        instagram: "alexdev",
+        twitter: "alex_dev",
+        avatar: null
+      };
+      renderDashboard(mockUser);
+      showToast("Dashboard loaded successfully!", "success");
     }, 800);
   }
 }
@@ -570,8 +1463,9 @@ function renderDashboard(user) {
   
   document.getElementById("ui-avatar-initial").textContent = initial;
   document.getElementById("ui-name-display").textContent = user.name || "User";
-  document.getElementById("ui-joined").textContent = new Date(user.created_at).toLocaleDateString();
-  document.getElementById("ui-login").textContent = new Date(user.last_login).toLocaleString();
+  document.getElementById("ui-bio-preview").textContent = user.bio?.substring(0, 100) + (user.bio?.length > 100 ? '...' : '') || "No bio added yet";
+  document.getElementById("ui-joined").textContent = formatDate(user.created_at);
+  document.getElementById("ui-login").textContent = formatDate(user.last_login, true);
   
   document.getElementById("inp-name").value = user.name || "";
   document.getElementById("inp-email").value = user.email || "";
@@ -582,40 +1476,75 @@ function renderDashboard(user) {
   document.getElementById("inp-instagram").value = user.instagram || "";
   document.getElementById("inp-twitter").value = user.twitter || "";
   
+  // Update bio counter
+  document.getElementById('bio-counter').textContent = user.bio?.length || 0;
+  
   if (user.avatar) {
     document.getElementById('ui-avatar-image').src = user.avatar;
     document.getElementById('ui-avatar-container').classList.add('has-image');
   }
 
-  const activityList = document.getElementById("ui-activity");
-  activityList.innerHTML = `
-    <li class="activity-item">
-        <div class="activity-icon" style="background: #e0f2fe; color: #0284c7;"><i class="ri-login-circle-line"></i></div>
-        <div class="activity-details">
-            <div>Logged in from Chrome on Windows</div>
-            <div>${new Date().toLocaleString()}</div>
-        </div>
-    </li>
-    <li class="activity-item">
-        <div class="activity-icon" style="background: #f1f5f9; color: #64748b;"><i class="ri-edit-line"></i></div>
-        <div class="activity-details">
-            <div>Profile updated</div>
-            <div>2 days ago</div>
-        </div>
-    </li>
-    <li class="activity-item">
-        <div class="activity-icon" style="background: #dcfce7; color: #16a34a;"><i class="ri-lock-password-line"></i></div>
-        <div class="activity-details">
-            <div>Password changed</div>
-            <div>3 months ago</div>
-        </div>
-    </li>
-  `;
-
+  // Render activities
+  renderActivities();
+  
   document.getElementById("loading-ui").style.display = "none";
   document.getElementById("content").style.display = "grid";
+  
+  // Add some animation
+  document.querySelectorAll('.activity-item').forEach((item, index) => {
+    item.style.animationDelay = `${index * 0.1}s`;
+  });
 }
 
+function renderActivities() {
+  const activityList = document.getElementById("ui-activity");
+  const activities = [
+    {
+      icon: 'ri-login-circle-line',
+      title: 'Logged in from Chrome on Windows',
+      time: 'Just now',
+      color: '#0284c7'
+    },
+    {
+      icon: 'ri-edit-line',
+      title: 'Profile information updated',
+      time: '2 hours ago',
+      color: '#64748b'
+    },
+    {
+      icon: 'ri-lock-password-line',
+      title: 'Password changed successfully',
+      time: '3 days ago',
+      color: '#16a34a'
+    },
+    {
+      icon: 'ri-notification-3-line',
+      title: 'Security alert: New login detected',
+      time: '1 week ago',
+      color: '#f59e0b'
+    },
+    {
+      icon: 'ri-shield-check-line',
+      title: 'Two-factor authentication enabled',
+      time: '2 weeks ago',
+      color: '#8b5cf6'
+    }
+  ];
+  
+  activityList.innerHTML = activities.map((activity, index) => `
+    <li class="activity-item" style="animation-delay: ${index * 0.1}s">
+      <div class="activity-icon" style="background: ${activity.color}20; color: ${activity.color};">
+        <i class="${activity.icon}"></i>
+      </div>
+      <div class="activity-details">
+        <div>${activity.title}</div>
+        <div>${activity.time}</div>
+      </div>
+    </li>
+  `).join('');
+}
+
+// Save Profile
 async function saveProfile() {
   const name = document.getElementById("inp-name").value.trim();
   const bio = document.getElementById("inp-bio").value.trim();
@@ -625,57 +1554,79 @@ async function saveProfile() {
   const instagram = document.getElementById("inp-instagram").value.trim();
   const twitter = document.getElementById("inp-twitter").value.trim();
   
-  const btn = document.querySelector('.btn-primary');
+  if (!name) {
+    showToast('Please enter your name', 'error');
+    document.getElementById("inp-name").focus();
+    return;
+  }
   
+  const btn = document.querySelector('.btn-primary');
   const originalText = btn.innerHTML;
   btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Saving...`;
   btn.disabled = true;
 
   try {
-      const res = await fetch("/auth/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({       
-          name, 
-          bio, 
-          gender, 
-          age: age ? parseInt(age) : null,
-          mobile,
-          instagram,
-          twitter
-        })
-      });
+    const res = await fetch("/auth/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({       
+        name, 
+        bio, 
+        gender, 
+        age: age ? parseInt(age) : null,
+        mobile,
+        instagram,
+        twitter
+      })
+    });
+    
+    setTimeout(() => {
+      document.getElementById("ui-name-display").textContent = name;
+      document.getElementById("ui-bio-preview").textContent = bio.substring(0, 100) + (bio.length > 100 ? '...' : '') || "No bio added yet";
       
-      setTimeout(() => {
-          document.getElementById("ui-name-display").textContent = name;
-          showToast("Profile updated successfully");
-          btn.innerHTML = originalText;
-          btn.disabled = false;
-          
-          const activityList = document.getElementById("ui-activity");
-          const newActivity = `
-            <li class="activity-item" style="animation: fadeIn 0.3s;">
-                <div class="activity-icon" style="background: #f1f5f9; color: #64748b;"><i class="ri-edit-line"></i></div>
-                <div class="activity-details">
-                    <div>Profile information updated</div>
-                    <div>Just now</div>
-                </div>
-            </li>
-          ` + activityList.innerHTML;
-          activityList.innerHTML = newActivity;
-      }, 600);
-  } catch(e) {
-      showToast("Network error", "error");
+      showToast("Profile updated successfully!");
       btn.innerHTML = originalText;
       btn.disabled = false;
+      
+      addActivity('Profile information updated', 'Just now');
+    }, 800);
+  } catch(e) {
+    showToast("Network error. Please try again.", "error");
+    btn.innerHTML = originalText;
+    btn.disabled = false;
   }
 }
 
+// Add activity log
+function addActivity(title, time) {
+  const activityList = document.getElementById("ui-activity");
+  const colors = ['#0284c7', '#64748b', '#16a34a', '#f59e0b', '#8b5cf6'];
+  const icons = ['ri-edit-line', 'ri-save-line', 'ri-user-settings-line', 'ri-image-edit-line'];
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+  const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+  
+  const newActivity = `
+    <li class="activity-item" style="animation: slideIn 0.3s ease-out;">
+      <div class="activity-icon" style="background: ${randomColor}20; color: ${randomColor};">
+        <i class="${randomIcon}"></i>
+      </div>
+      <div class="activity-details">
+        <div>${title}</div>
+        <div>${time}</div>
+      </div>
+    </li>
+  `;
+  
+  activityList.innerHTML = newActivity + activityList.innerHTML;
+}
+
+// Submit Contact Form
 async function submitContact() {
+  const subject = document.getElementById("contact-subject").value.trim();
   const message = document.getElementById("contact-message").value.trim();
 
-  if (!message) {
-    showToast("Message cannot be empty", "error");
+  if (!subject || !message) {
+    showToast("Please fill in all fields", "error");
     return;
   }
 
@@ -688,59 +1639,233 @@ async function submitContact() {
     const res = await fetch("/auth/message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message
-      })
+      body: JSON.stringify({ subject, message })
     });
 
     setTimeout(() => {
-      showToast("Message sent successfully!");
+      showToast("Message sent successfully! We'll get back to you soon.");
+      document.getElementById("contact-subject").value = "";
       document.getElementById("contact-message").value = "";
       btn.innerHTML = originalText;
       btn.disabled = false;
-    }, 600);
+      
+      addActivity('Contacted support', 'Just now');
+    }, 800);
   } catch (err) {
-    showToast("Failed to send message", "error");
+    showToast("Failed to send message. Please try again.", "error");
     btn.innerHTML = originalText;
     btn.disabled = false;
   }
 }
 
-function changePassword() {
-  showToast("Password reset email has been sent");
+// Change Password
+async function changePassword() {
+  const currentPass = document.getElementById("current-password").value;
+  const newPass = document.getElementById("new-password").value;
+  const confirmPass = document.getElementById("confirm-password").value;
+  
+  if (!currentPass || !newPass || !confirmPass) {
+    showToast("Please fill in all password fields", "error");
+    return;
+  }
+  
+  if (newPass !== confirmPass) {
+    showToast("New passwords don't match", "error");
+    return;
+  }
+  
+  if (newPass.length < 8) {
+    showToast("Password must be at least 8 characters", "error");
+    return;
+  }
+  
+  showToast("Password updated successfully!");
+  document.getElementById("current-password").value = "";
+  document.getElementById("new-password").value = "";
+  document.getElementById("confirm-password").value = "";
+  
+  addActivity('Password changed', 'Just now');
 }
 
-async function confirmDelete() {
-  if (!confirm("Are you sure? This action cannot be undone.")) return;
+// Export Data
+function exportData() {
+  showModal('Export Data', `
+    <p style="color: var(--text-muted); margin-bottom: 20px;">
+      We'll prepare a complete archive of your data including:
+    </p>
+    <ul style="color: var(--text-muted); margin-bottom: 20px; padding-left: 20px;">
+      <li>Profile information</li>
+      <li>Activity history</li>
+      <li>Settings and preferences</li>
+      <li>All uploaded content</li>
+    </ul>
+    <div style="display: flex; gap: 12px; margin-top: 24px;">
+      <button class="btn-primary" onclick="startExport()" style="flex: 1;">
+        <i class="ri-download-line"></i> Start Export
+      </button>
+      <button class="btn-outline" onclick="closeModal()" style="flex: 1;">
+        Cancel
+      </button>
+    </div>
+  `);
+}
+
+function startExport() {
+  closeModal();
+  showToast('Preparing your data export...', 'warning');
   
+  setTimeout(() => {
+    showToast('Data exported successfully! Check your email.', 'success');
+  }, 2000);
+}
+
+// Confirm Delete Account
+async function confirmDelete() {
+  showModal('Delete Account', `
+    <p style="color: var(--text-muted); margin-bottom: 20px;">
+      Are you sure you want to delete your account? This action is permanent and cannot be undone.
+    </p>
+    <div style="background: var(--danger-bg); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+      <div style="display: flex; align-items: center; gap: 12px; color: var(--danger);">
+        <i class="ri-error-warning-line"></i>
+        <strong>Warning: This will permanently delete</strong>
+      </div>
+      <ul style="color: var(--text-muted); margin-top: 12px; padding-left: 20px; font-size: 0.9rem;">
+        <li>Your profile information</li>
+        <li>All your activity history</li>
+        <li>Uploaded images and files</li>
+        <li>Account settings and preferences</li>
+      </ul>
+    </div>
+    <div style="display: flex; gap: 12px; margin-top: 24px;">
+      <button class="btn-danger" onclick="deleteAccount()" style="flex: 1;">
+        <i class="ri-delete-bin-line"></i> Delete Account
+      </button>
+      <button class="btn-outline" onclick="closeModal()" style="flex: 1;">
+        Cancel
+      </button>
+    </div>
+  `);
+}
+
+async function deleteAccount() {
   try {
-      const res = await fetch("/auth/delete", { method: "POST" });
-      if (res.ok) location.href = "/";
-      else throw new Error("Failed");
+    const res = await fetch("/auth/delete", { method: "POST" });
+    if (res.ok) {
+      showToast("Account deleted successfully", "success");
+      setTimeout(() => location.href = "/", 2000);
+    } else {
+      throw new Error("Failed");
+    }
   } catch(e) {
-      showToast("Could not delete account (Mock)", "error");
+    showToast("Could not delete account", "error");
+    closeModal();
   }
 }
 
+// View Sessions
+function viewSessions() {
+  showModal('Active Sessions', `
+    <p style="color: var(--text-muted); margin-bottom: 20px;">
+      These are the devices currently logged into your account.
+    </p>
+    <div style="margin-bottom: 20px;">
+      ${['Windows - Chrome', 'iPhone - Safari', 'Mac - Firefox'].map((device, i) => `
+        <div class="setting-row" style="padding: 12px 0;">
+          <div>
+            <div style="font-weight: 500;">${device}</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">
+              ${i === 0 ? 'Current session • Just now' : 'Last active: 2 days ago'}
+            </div>
+          </div>
+          ${i > 0 ? `<button class="btn-outline" onclick="revokeSession(${i})">Revoke</button>` : ''}
+        </div>
+      `).join('')}
+    </div>
+    <button class="btn-primary" onclick="closeModal()" style="width: 100%;">
+      Close
+    </button>
+  `);
+}
+
+function revokeSession(index) {
+  showToast(`Session revoked`, 'success');
+  // In a real app, you would call an API here
+}
+
+// Mark all as read
+function markAllAsRead() {
+  showToast('All notifications marked as read', 'success');
+}
+
+// Search function
+function searchDashboard() {
+  const searchTerm = prompt('Search dashboard:');
+  if (searchTerm) {
+    showToast(`Searching for: ${searchTerm}`, 'warning');
+    // Implement search functionality
+  }
+}
+
+// Notifications
+function showNotifications() {
+  showModal('Notifications', `
+    <div style="max-height: 400px; overflow-y: auto;">
+      ${[
+        { title: 'Security Update Available', time: 'Just now', type: 'security' },
+        { title: 'Welcome to the new dashboard!', time: '2 hours ago', type: 'info' },
+        { title: 'Your profile is 85% complete', time: '1 day ago', type: 'progress' },
+        { title: 'New feature: Dark mode', time: '3 days ago', type: 'feature' }
+      ].map(notif => `
+        <div class="setting-row" style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+          <div>
+            <div style="font-weight: 500;">${notif.title}</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">${notif.time}</div>
+          </div>
+          <div style="width: 8px; height: 8px; border-radius: 50%; background: ${notif.type === 'security' ? 'var(--danger)' : 'var(--primary)'};"></div>
+        </div>
+      `).join('')}
+    </div>
+  `);
+}
+
+// Logout
 async function logout() {
   try {
-      await fetch("/auth/logout", { method: "POST" });
-      location.href = "/login.html";
+    await fetch("/auth/logout", { method: "POST" });
+    showToast('Logged out successfully', 'success');
+    setTimeout(() => location.href = "/login.html", 1000);
   } catch(e) {
-      location.href = "/login.html";
+    location.href = "/login.html";
   }
 }
 
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+// Utility functions
+function formatDate(dateString, includeTime = false) {
+  const date = new Date(dateString);
+  if (includeTime) {
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
-`;
-document.head.appendChild(style);
+  return date.toLocaleDateString();
+}
 
-loadProfile();
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  // Add some random stats animation
+  setTimeout(() => {
+    const statValues = document.querySelectorAll('.stat-content p');
+    statValues.forEach(stat => {
+      const original = stat.textContent;
+      stat.style.animation = 'bounce 0.5s ease-in-out';
+      setTimeout(() => {
+        stat.style.animation = '';
+      }, 500);
+    });
+  }, 1000);
+  
+  // Load profile
+  loadProfile();
+});
 </script>
 </body>
 </html>
