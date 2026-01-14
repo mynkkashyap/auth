@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+l<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Google reCAPTCHA v3 -->
+  <script src="https://www.google.com/recaptcha/api.js?render=6LfZHUosAAAAADxJnNrOps_IP7kAFQsssDaA9Yr6"></script>
 
   <style>
     :root {
@@ -132,32 +135,6 @@
       display: flex;
     }
     .toggle-password:hover { color: var(--text-main); }
-
-    /* CAPTCHA Styles */
-    .captcha-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-top: 5px;
-    }
-    
-    .captcha-canvas {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #fff;
-      cursor: pointer;
-    }
-    
-    .btn-refresh {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-      padding: 8px;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-    .btn-refresh:hover { background: #f1f5f9; color: var(--primary); }
 
     button.btn-submit {
       width: 100%;
@@ -313,23 +290,8 @@
       </div>
     </div>
 
-    <div class="input-group">
-      <label for="captcha">Verify you are human</label>
-      <div class="input-wrapper">
-        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-        <input id="captcha" type="text" placeholder="Enter code shown below" autocomplete="off">
-      </div>
-      <div class="captcha-row">
-        <canvas id="captchaCanvas" width="160" height="50" class="captcha-canvas" onclick="drawCaptcha()" title="Click to refresh"></canvas>
-        <button type="button" class="btn-refresh" onclick="drawCaptcha()" title="Refresh Captcha">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-        </button>
-      </div>
-    </div>
+    <!-- Google reCAPTCHA v3 badge will appear automatically -->
+    <div class="g-recaptcha" data-sitekey="6LfZHUosAAAAADxJnNrOps_IP7kAFQsssDaA9Yr6" data-size="invisible"></div>
 
     <button id="submitBtn" class="btn-submit" onclick="register()">
       <span class="spinner"></span>
@@ -356,8 +318,16 @@
   </div>
 
   <script>
-    // Global variable to store current captcha
-    let generatedCaptcha = "";
+    // 🔐 Get Google reCAPTCHA token
+    function getRecaptchaToken() {
+      return new Promise((resolve, reject) => {
+        grecaptcha.ready(() => {
+          grecaptcha.execute("6LfZHUosAAAAADxJnNrOps_IP7kAFQsssDaA9Yr6", { action: "register" })
+            .then(resolve)
+            .catch(reject);
+        });
+      });
+    }
 
     function togglePasswordVisibility() {
       const passwordInput = document.getElementById("password");
@@ -372,76 +342,10 @@
       }
     }
 
-    // CAPTCHA Logic
-    function drawCaptcha() {
-      const canvas = document.getElementById('captchaCanvas');
-      const ctx = canvas.getContext('2d');
-      const width = canvas.width;
-      const height = canvas.height;
-      
-      // Clear canvas
-      ctx.clearRect(0, 0, width, height);
-      
-      // Background color
-      ctx.fillStyle = '#f8fafc';
-      ctx.fillRect(0, 0, width, height);
-      
-      // Generate random string
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Removed confusing chars like I, 1, 0, O
-      let result = "";
-      for (let i = 0; i < 6; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      generatedCaptcha = result;
-
-      // Add noise (lines)
-      for(let i=0; i<7; i++) {
-        ctx.beginPath();
-        ctx.moveTo(Math.random() * width, Math.random() * height);
-        ctx.lineTo(Math.random() * width, Math.random() * height);
-        ctx.strokeStyle = `rgba(100, 116, 139, ${Math.random()})`; // Random opacity slate color
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-
-      // Add noise (dots)
-      for(let i=0; i<30; i++) {
-        ctx.beginPath();
-        ctx.arc(Math.random() * width, Math.random() * height, 1, 0, 2 * Math.PI);
-        ctx.fillStyle = '#94a3b8';
-        ctx.fill();
-      }
-
-      // Draw text
-      ctx.font = 'bold 24px Inter';
-      ctx.textBaseline = 'middle';
-      const charWidth = width / 6;
-      
-      for(let i=0; i<6; i++) {
-        ctx.save();
-        // Position each char with slight random offset
-        const x = 15 + i * 20;
-        const y = height/2;
-        
-        // Random rotation
-        const angle = (Math.random() - 0.5) * 0.4; // -0.2 to 0.2 radians
-        
-        ctx.translate(x, y);
-        ctx.rotate(angle);
-        ctx.fillStyle = '#2563eb'; // Primary blue
-        ctx.fillText(result[i], 0, 0);
-        ctx.restore();
-      }
-    }
-
-    // Initialize Captcha on load
-    window.onload = drawCaptcha;
-
     async function register() {
       const nameInput = document.getElementById("name");
       const emailInput = document.getElementById("email");
       const passwordInput = document.getElementById("password");
-      const captchaInput = document.getElementById("captcha");
       
       const msg = document.getElementById("msg");
       const btn = document.getElementById("submitBtn");
@@ -459,12 +363,18 @@
         return;
       }
 
-      // CAPTCHA Validation
-      if (captchaInput.value.toUpperCase().trim() !== generatedCaptcha) {
-        msg.textContent = "Incorrect CAPTCHA code. Please try again.";
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailInput.value.trim())) {
+        msg.textContent = "Please enter a valid email address.";
         msg.classList.add("error");
-        drawCaptcha(); // Generate new code on failure
-        captchaInput.value = "";
+        return;
+      }
+
+      // Password validation (min 8 characters)
+      if (passwordInput.value.length < 8) {
+        msg.textContent = "Password must be at least 8 characters long.";
+        msg.classList.add("error");
         return;
       }
 
@@ -474,39 +384,55 @@
       btnText.textContent = "Creating...";
 
       try {
+        // Get reCAPTCHA token
+        const recaptchaToken = await getRecaptchaToken();
+        
         const res = await fetch("/auth/register", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "X-Recaptcha-Token": recaptchaToken
+          },
           body: JSON.stringify({
             name: nameInput.value.trim(),
             email: emailInput.value.trim(),
-            password: passwordInput.value
-            // Note: In a real app, send the captcha token here too for server verification
+            password: passwordInput.value,
+            recaptchaToken: recaptchaToken
           })
         });
 
         const data = await res.json();
 
         if (res.ok) {
-          msg.textContent = "Verification Email Sent! Redirecting...";
+          msg.textContent = data.message || "Account created successfully! Redirecting...";
           msg.classList.add("success");
-          setTimeout(() => location.href = "/login.html", 1500);
+          
+          // Redirect to login or verification page
+          setTimeout(() => {
+            window.location.href = data.redirectUrl || "/login.html";
+          }, 1500);
         } else {
-          msg.textContent = data.error || "Registration failed";
+          msg.textContent = data.error || "Registration failed. Please try again.";
           msg.classList.add("error");
           btn.disabled = false;
           spinner.style.display = "none";
           btnText.textContent = "Create account";
-          drawCaptcha(); // Reset captcha on server failure
         }
       } catch (err) {
-        msg.textContent = "Network error. Please try again.";
+        msg.textContent = "Network error. Please check your connection and try again.";
         msg.classList.add("error");
         btn.disabled = false;
         spinner.style.display = "none";
         btnText.textContent = "Create account";
       }
     }
+
+    // Initialize reCAPTCHA on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      grecaptcha.ready(function() {
+        console.log('Google reCAPTCHA v3 loaded successfully');
+      });
+    });
   </script>
 </body>
 </html>
