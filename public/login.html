@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://www.google.com/recaptcha/api.js?render=6LdPGEosAAAAAMGxuszOMJdR8bJ1yk4jO4sa85pW"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6LfZHUosAAAAADxJnNrOps_IP7kAFQsssDaA9Yr6"></script>
   
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -291,7 +291,7 @@
       </button>
 
       <!-- Google reCAPTCHA badge will appear here automatically -->
-      <div class="g-recaptcha" data-sitekey="6LdPGEosAAAAAMGxuszOMJdR8bJ1yk4jO4sa85pW" data-size="invisible"></div>
+      <div class="g-recaptcha" data-sitekey="6LfZHUosAAAAADxJnNrOps_IP7kAFQsssDaA9Yr6" data-size="invisible"></div>
     </form>
 
     <div class="divider"><span>OR</span></div>
@@ -328,7 +328,7 @@
     function getRecaptchaToken() {
       return new Promise((resolve, reject) => {
         grecaptcha.ready(() => {
-          grecaptcha.execute("6LdPGEosAAAAAMGxuszOMJdR8bJ1yk4jO4sa85pW", { action: "login" })
+          grecaptcha.execute("6LfZHUosAAAAADxJnNrOps_IP7kAFQsssDaA9Yr6", { action: "login" })
             .then(resolve)
             .catch(reject);
         });
