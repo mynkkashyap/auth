@@ -1,6 +1,6 @@
 const enc = new TextEncoder();
 
-/* 🔐 PBKDF2 */
+/* 🔐 PBKDF2 Hash Function */
 async function pbkdf2Hash(password: string) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
 
@@ -40,15 +40,88 @@ export async function onRequestGet() {
 
 /* ✅ POST /auth/register */
 export async function onRequestPost({ request, env }) {
-  const headers = { "Content-Type": "application/json" };
+  const headers = { 
+    "Content-Type": "application/json",
+    "Cache-Control": "no-store"
+  };
 
   try {
     if (!env.DB || !env.RESEND_API_KEY || !env.BASE_URL) {
-      throw new Error("Missing env vars");
+      throw new Error("Missing environment variables");
     }
 
-    const { name = "", email, password } = await request.json();
+    const body = await request.json();
+    const { name = "", email, password, recaptchaToken } = body;
+    
+    // Get reCAPTCHA token from body or header
+    const token = recaptchaToken || request.headers.get("X-Recaptcha-Token");
+    
+    if (!token) {
+      return new Response(
+        JSON.stringify({ error: "Missing reCAPTCHA token" }),
+        { status: 400, headers }
+      );
+    }
 
+    /* ------------------ Verify reCAPTCHA ------------------ */
+    if (!env.RECAPTCHA_SECRET_KEY) {
+      console.error("RECAPTCHA_SECRET_KEY is not set in environment");
+      return new Response(
+        JSON.stringify({ error: "Server configuration error" }),
+        { status: 500, headers }
+      );
+    }
+
+    const googleRes = await fetch(
+      "https://www.google.com/recaptcha/api/siteverify",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          secret: env.RECAPTCHA_SECRET_KEY,
+          response: token,
+        }),
+      }
+    );
+
+    const captcha = await googleRes.json();
+
+    // Debug logging (remove in production)
+    console.log("reCAPTCHA response:", {
+      success: captcha.success,
+      score: captcha.score,
+      action: captcha.action,
+      hostname: captcha.hostname
+    });
+
+    if (!captcha.success || captcha.score < 0.5) {
+      console.warn("reCAPTCHA failed:", {
+        success: captcha.success,
+        score: captcha.score,
+        errors: captcha["error-codes"]
+      });
+      return new Response(
+        JSON.stringify({ 
+          error: "Security check failed. Please try again.",
+          details: "reCAPTCHA verification failed"
+        }),
+        { status: 403, headers }
+      );
+    }
+
+    // Optional: Verify the action if provided
+    if (captcha.action && captcha.action !== "register") {
+      console.warn("reCAPTCHA action mismatch:", captcha.action);
+      // You can decide to be strict or lenient about this
+      // return new Response(
+      //   JSON.stringify({ error: "Invalid request action" }),
+      //   { status: 400, headers }
+      // );
+    }
+
+    /* ------------------ Validate Input ------------------ */
     if (!email || !password) {
       return new Response(
         JSON.stringify({ error: "Missing email or password" }),
@@ -56,7 +129,39 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const normalizedEmail = email.toLowerCase().trim();
+    
+    if (!emailRegex.test(normalizedEmail)) {
+      return new Response(
+        JSON.stringify({ error: "Please enter a valid email address" }),
+        { status: 400, headers }
+      );
+    }
+
+    // Password validation
+    if (password.length < 8) {
+      return new Response(
+        JSON.stringify({ error: "Password must be at least 8 characters long" }),
+        { status: 400, headers }
+      );
+    }
+
+    // Optional: Check password strength
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Password must contain uppercase, lowercase, numbers, and special characters" 
+        }),
+        { status: 400, headers }
+      );
+    }
 
     /* 🚫 BLOCK if Google account already exists */
     const googleUser = await env.DB.prepare(
@@ -65,7 +170,10 @@ export async function onRequestPost({ request, env }) {
 
     if (googleUser) {
       return new Response(
-        JSON.stringify({ error: "Use Google Sign-In for this email" }),
+        JSON.stringify({ 
+          error: "This email is registered with Google Sign-In. Please use Google Sign-In instead.",
+          provider: "google" 
+        }),
         { status: 409, headers }
       );
     }
@@ -80,13 +188,17 @@ export async function onRequestPost({ request, env }) {
       if (existing.verified === 0) {
         await sendVerificationEmail(env, normalizedEmail, existing.verify_token);
         return new Response(
-          JSON.stringify({ success: true, message: "Verification email resent" }),
+          JSON.stringify({ 
+            success: true, 
+            message: "Verification email resent. Please check your inbox.",
+            needsVerification: true 
+          }),
           { headers }
         );
       }
 
       return new Response(
-        JSON.stringify({ error: "Email already exists" }),
+        JSON.stringify({ error: "Email already registered" }),
         { status: 409, headers }
       );
     }
@@ -94,6 +206,7 @@ export async function onRequestPost({ request, env }) {
     /* 🆕 CREATE EMAIL USER */
     const { hash, salt } = await pbkdf2Hash(password);
     const verifyToken = generateToken();
+    const userId = crypto.randomUUID();
 
     await env.DB.prepare(`
       INSERT INTO users (
@@ -104,30 +217,55 @@ export async function onRequestPost({ request, env }) {
         password_salt,
         provider,
         verified,
-        verify_token
+        verify_token,
+        created_at,
+        recaptcha_score
       )
-      VALUES (?, ?, ?, ?, ?, 'email', 0, ?)
+      VALUES (?, ?, ?, ?, ?, 'email', 0, ?, ?, ?)
     `).bind(
-      crypto.randomUUID(),
-      name,
+      userId,
+      name.trim(),
       normalizedEmail,
       hash,
       salt,
-      verifyToken
+      verifyToken,
+      Math.floor(Date.now() / 1000), // Unix timestamp
+      captcha.score // Store reCAPTCHA score for analytics
     ).run();
 
     /* 📧 SEND VERIFICATION EMAIL (BEST-EFFORT) */
     await sendVerificationEmail(env, normalizedEmail, verifyToken);
 
+    // Optional: Log successful registration for analytics
+    await env.DB.prepare(`
+      INSERT INTO registration_logs (user_id, email, recaptcha_score, created_at)
+      VALUES (?, ?, ?, ?)
+    `).bind(
+      userId,
+      normalizedEmail,
+      captcha.score,
+      Math.floor(Date.now() / 1000)
+    ).run().catch(err => {
+      console.warn("Failed to log registration:", err);
+      // Don't fail the registration if logging fails
+    });
+
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ 
+        success: true,
+        message: "Registration successful! Please check your email to verify your account.",
+        userId: userId
+      }),
       { headers }
     );
 
   } catch (err) {
     console.error("REGISTER ERROR:", err);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({ 
+        error: "An unexpected error occurred. Please try again later.",
+        details: process.env.NODE_ENV === "development" ? err.message : undefined
+      }),
       { status: 500, headers }
     );
   }
@@ -136,7 +274,9 @@ export async function onRequestPost({ request, env }) {
 /* 📧 EMAIL SENDER (FAIL-SAFE) */
 async function sendVerificationEmail(env: any, email: string, token: string) {
   try {
-    await fetch("https://api.resend.com/emails", {
+    const verifyUrl = `${env.BASE_URL}/auth/verify?token=${token}`;
+    
+    const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${env.RESEND_API_KEY}`,
@@ -168,7 +308,7 @@ async function sendVerificationEmail(env: any, email: string, token: string) {
   </p>
 
   <div style="text-align:center;margin:28px 0;">
-    <a href="${env.BASE_URL}/auth/verify?token=${token}"
+    <a href="${verifyUrl}"
        style="display:inline-block;
               padding:12px 26px;
               background:#2563eb;
@@ -185,19 +325,76 @@ async function sendVerificationEmail(env: any, email: string, token: string) {
             color:#6b7280;
             font-size:13px;
             line-height:1.5;">
-    If you didn’t create an account, you can safely ignore this email.
+    If the button doesn't work, copy and paste this link into your browser:
+  </p>
+  
+  <p style="margin:8px 0 20px 0;
+            padding:12px;
+            background:#f9fafb;
+            border-radius:6px;
+            border:1px solid #e5e7eb;
+            color:#4b5563;
+            font-size:13px;
+            word-break:break-all;">
+    ${verifyUrl}
+  </p>
+
+  <p style="margin:20px 0 0 0;
+            color:#6b7280;
+            font-size:13px;
+            line-height:1.5;">
+    If you didn't create an account, you can safely ignore this email.
   </p>
 
   <p style="margin:12px 0 0 0;
             color:#9ca3af;
             font-size:12px;">
-    This link will expire for security reasons.
+    This link will expire in 24 hours for security reasons.
   </p>
 
 </div>`
       })
     });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error("RESEND API error:", error);
+      throw new Error(`Email service failed: ${response.status}`);
+    }
+
+    console.log(`Verification email sent to ${email}`);
   } catch (e) {
-    console.error("EMAIL ERROR (ignored):", e);
+    console.error("EMAIL ERROR:", e);
+    // Don't throw - we don't want to fail registration if email fails
+    // Just log it and continue
   }
 }
+
+/* ------------------ ENVIRONMENT VARIABLES REQUIRED ------------------ */
+/*
+RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key_here
+RESEND_API_KEY=your_resend_api_key_here
+BASE_URL=https://yourdomain.com
+*/
+
+/* ------------------ OPTIONAL DATABASE SCHEMA EXTENSIONS ------------------ */
+/*
+-- Store reCAPTCHA score with user
+ALTER TABLE users ADD COLUMN recaptcha_score REAL;
+
+-- Registration logs for analytics
+CREATE TABLE IF NOT EXISTS registration_logs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL,
+  email TEXT NOT NULL,
+  recaptcha_score REAL,
+  ip_address TEXT,
+  user_agent TEXT,
+  created_at INTEGER DEFAULT (unixepoch()),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Index for faster queries
+CREATE INDEX idx_registration_logs_created ON registration_logs(created_at);
+CREATE INDEX idx_registration_logs_email ON registration_logs(email);
+*/
